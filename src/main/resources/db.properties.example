@@ -1,0 +1,4 @@
+driver=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://localhost:3306/lms_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+user=your_mysql_id
+password=your_mysql_password

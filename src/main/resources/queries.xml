@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+    <query key="students.findAll">
+        select
+        *
+        from 학생
+    </query>
+
+    <query key="course.findClass">
+        select
+        c.class_no,
+        c.class_name,
+        c.class_time,
+        pr.professor_name
+        from 강의 c
+        join 교수 pr on c.professor_id = pr.professor_id
+    </query>
+
+    <query key="enrollment.addClass">
+        insert into 수강 (student_id, class_no)
+        values (?, ?);
+    </query>
+
+    <query key="enrollment.myEnrollView">
+        select
+            en.student_id,
+            st.student_name,
+            en.class_no,
+            c.class_name,
+            c.class_time,
+            c.class_room,
+            pr.professor_name,
+            en.enroll_date
+        from 수강 en
+        join 학생 st on en.student_id = st.student_id
+        join 강의 c on en.class_no = c.class_no
+        join 교수 pr on c.professor_id = pr.professor_id
+        where en.student_id = ?
+        order by class_no asc
+    </query>
+
+    <query key="enrollment.deleteClass">
+        delete from 수강
+        where student_id = ? and class_no = ?
+    </query>
+</properties>

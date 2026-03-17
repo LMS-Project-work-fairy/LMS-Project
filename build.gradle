@@ -15,6 +15,10 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // Source: https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
     implementation("com.mysql:mysql-connector-j:8.4.0")
+    // Source: https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testImplementation("org.slf4j:slf4j-simple:2.0.17")
 }
 
 test {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+
+<!--    <query key="lms.findAll">-->
+<!--        select-->
+<!--            *-->
+<!--        from lmsdb-->
+<!--    </query>-->
+
+    <query key="lms.save">
+        insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
+        where (?, ?, ?, ?, ?, ?, ?)
+    </query>
+</properties>

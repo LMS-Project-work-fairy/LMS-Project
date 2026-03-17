@@ -1,14 +1,23 @@
 package com.lms.application;
 
+import com.lms.common.JDBCTemplate;
 import com.lms.controller.AuthController;
+import com.lms.model.dao.ProfessorDAO;
+import com.lms.model.dto.ProfessorDTO;
+import com.lms.model.service.AuthService;
 import com.lms.view.MainView;
+
+import java.sql.Connection;
 
 public class Application {
 
     public static void main(String[] args) {
 
+        Connection con = JDBCTemplate.getConnection();
+        ProfessorDAO professorDAO = new ProfessorDAO(con);
+        AuthService authService = new AuthService(professorDAO);
+        AuthController authController = new AuthController(authService);
         MainView mainView = new MainView();
-        AuthController authController = new AuthController();
 
         boolean running = true;
 
@@ -35,3 +44,15 @@ public class Application {
         }
     }
 }
+
+int menu = mainView.displayMainMenu();
+if (menu == 3) {
+    ProfessorDTO newProfessor = mainView.inputProfessorInfo();
+Boolean success = authController.registerProfessor(newProfessor);
+
+    if (success) {
+        mainView.displayMessage("✅교수 등록 성공");
+        } else {
+        mainView.displayMessage("🚨교수 등록 실패");
+        }
+    }

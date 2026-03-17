@@ -67,8 +67,6 @@ public class MainView {
         System.out.print("비밀번호: ");
         student.setStudentPw(sc.nextLine());
 
-        System.out.print("지도교수 ID: ");
-        student.setProfessorId(sc.nextLine());
 
         return student;
     }

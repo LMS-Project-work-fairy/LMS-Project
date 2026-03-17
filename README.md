@@ -55,27 +55,30 @@ LMS (Learning Management System)는
 
 # 🏗 Project Structure
 
-LMS-Project
-│
-├── .github
-│   ├── ISSUE_TEMPLATE
-│   │   ├── feature_request.md
-│   │   ├── bug_report.md
-│   │   └── task.md
-│   │
-│   └── PULL_REQUEST_TEMPLATE.md
-│
-├── src
-│   └── main
-│       └── java
-│           └── com
-│               └── lms
-│
-├── docs
-│   └── daily-log
-│
-├── README.md
-└── .gitignore
+```text
+src/main/java
+└─ com.lms
+   ├─ application
+   ├─ common
+   ├─ controller
+   ├─ model
+   │  ├─ dao
+   │  ├─ dto
+   │  └─ service
+   ├─ query
+   └─ view
+
+src/main/resources
+├─ db.properties
+└─ db.properties.example
+
+database
+├─ 01_create_database.sql
+├─ 02_create_tables.sql
+├─ 03_constraints.sql
+├─ 04_dummy_data.sql
+└─ 05_test_query.sql
+```
 
 ---
 

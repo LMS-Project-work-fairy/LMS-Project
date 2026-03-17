@@ -6,3 +6,20 @@
         *
         from 학생
     </query>
+
+    <query key = "loginStudent">
+        SELECT student_id, student_name
+        FROM 학생
+        WHERE student_id = ?
+        AND student_pw = ?
+    </query>
+
+
+    <query key="loginProfessor">
+        SELECT professor_id, professor_name
+        FROM 교수
+        WHERE professor_id = ?
+        AND professor_pw = ?
+    </query>
+
+</properties>

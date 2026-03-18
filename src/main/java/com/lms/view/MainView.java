@@ -47,7 +47,7 @@ public class MainView {
         StudentDTO student = new StudentDTO();
 
         System.out.print("학번: ");
-        student.setStudentId(Long.parseLong(sc.nextLine()));
+        student.setStudentId(sc.nextLine());
 
         System.out.print("이름: ");
         student.setStudentName(sc.nextLine());

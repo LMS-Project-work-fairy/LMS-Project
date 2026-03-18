@@ -50,7 +50,7 @@ COMMENT = '강의';
 
 CREATE TABLE `수강`
 (
-    `student_id`     BIGINT NOT NULL COMMENT '학번',
+    `student_id`     varchar(10) NOT NULL COMMENT '학번',
     `class_no`       VARCHAR(10) NOT NULL COMMENT '강의번호',
     `enroll_date`    DATETIME COMMENT '수강신청일',
     `score`          DECIMAL(4,2) COMMENT '성적',

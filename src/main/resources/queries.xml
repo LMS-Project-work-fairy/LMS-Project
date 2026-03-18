@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<properties>
+
+    <query key="students.findAll">
+        select
+        *
+        from 학생
+    </query>
+
+    <query key="students.save">
+    insert into 학생 (student_id , student_pw , student_no, student_name , student_address , student_email , student_phone)
+    values(?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+    <query key="students.existsByStudentId">
+        select count(*)
+        from student
+        where student_id = ?
+    </query>
+</properties>

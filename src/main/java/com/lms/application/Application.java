@@ -3,6 +3,7 @@ package com.lms.application;
 import com.lms.common.JDBCTemplate;
 import com.lms.controller.AuthController;
 import com.lms.model.dao.ProfessorDAO;
+import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 import com.lms.view.MainView;
@@ -11,19 +12,30 @@ import java.sql.Connection;
 
 public class Application {
 
+//    private static MainView mainView;
+
     public static void main(String[] args) {
 
         Connection con = JDBCTemplate.getConnection();
         ProfessorDAO professorDAO = new ProfessorDAO(con);
-        AuthService authService = new AuthService(professorDAO);
-        AuthController authController = new AuthController(authService);
+        StudentDAO studentDAO = new StudentDAO(con);
+        AuthService authService = new AuthService(studentDAO, professorDAO);
+
         MainView mainView = new MainView();
-        AuthController authController = new AuthController(mainView);
+
+        AuthController authController = new AuthController(mainView, authService);
+
+
+//        authController.handleProfessorRegistration();
+//        AuthController authController = new AuthController(mainView);
+//        ProfessorDAO dao = new ProfessorDAO(JDBCTemplate.getConnection());
+//        AuthService service = new AuthService(dao);
 
         boolean running = true;
 
         while (running) {
             int menu = mainView.displayMainMenu();
+            authController.startAuthProcess(menu);
 
             switch (menu) {
                 case 1:
@@ -43,18 +55,8 @@ public class Application {
                     mainView.displayMessage("잘못된 메뉴 번호입니다.");
             }
         }
+
     }
 
-int menu = MainView.displayMainMenu();
-if (menu == 3) {
-    ProfessorDTO newProfessor = MainView.inputProfessorInfo();
-Boolean success = AuthController.registerProfessor(newProfessor);
-
-    if (success) {
-        MainView.displayMessage("✅교수 등록 성공");
-        } else {
-        MainView.displayMessage("🚨교수 등록 실패");
-        }
-    }
     
 }

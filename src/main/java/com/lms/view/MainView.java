@@ -89,31 +89,31 @@ public class MainView {
 //        return student;
 //    }
 
-//    public ProfessorDTO inputProfessorInfo() {
-//        System.out.println("\n========== 교수 회원가입 ==========");
-//        ProfessorDTO professor = new ProfessorDTO();
-//
-//        System.out.print("교수번호: ");
-//        professor.setProfessorId(sc.nextLine());
-//
-//        System.out.print("이름: ");
-//        professor.setProfessorName(sc.nextLine());
-//
-//        System.out.print("주민등록번호: ");
-//        professor.setProfessorNo(sc.nextLine());
-//
-//        System.out.print("주소: ");
-//        professor.setProfessorAddress(sc.nextLine());
-//
-//        System.out.print("이메일: ");
-//        professor.setProfessorEmail(sc.nextLine());
-//
-//        System.out.print("전화번호: ");
-//        professor.setProfessorPhone(sc.nextLine());
-//
-//        System.out.print("비밀번호: ");
-//        professor.setProfessorPw(sc.nextLine());
-//
-//        return professor;
-//    }
+    public ProfessorDTO inputProfessorInfo() {
+        System.out.println("\n========== 교수 회원가입 ==========");
+        ProfessorDTO professor = new ProfessorDTO();
+
+        System.out.print("교수번호: ");
+        professor.setProfessorId(sc.nextLine());
+
+        System.out.print("이름: ");
+        professor.setProfessorName(sc.nextLine());
+
+        System.out.print("주민등록번호: ");
+        professor.setProfessorNo(sc.nextLine());
+
+        System.out.print("주소: ");
+        professor.setProfessorAddress(sc.nextLine());
+
+        System.out.print("이메일: ");
+        professor.setProfessorEmail(sc.nextLine());
+
+        System.out.print("전화번호: ");
+        professor.setProfessorPhone(sc.nextLine());
+
+        System.out.print("비밀번호: ");
+        professor.setProfessorPw(sc.nextLine());
+
+        return professor;
+    }
 }

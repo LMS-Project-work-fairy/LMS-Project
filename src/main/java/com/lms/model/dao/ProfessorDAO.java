@@ -25,7 +25,7 @@ public class ProfessorDAO {
     // 교수 회원가입 정보 저장 
     public String save(ProfessorDTO newprofessor) throws SQLException {
 
-        String query = QueryUtil.getQuery("lms.save");
+        String query = QueryUtil.getQuery("professor.save");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)){
 

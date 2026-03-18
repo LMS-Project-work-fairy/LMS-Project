@@ -6,6 +6,8 @@ import com.lms.model.dto.StudentDTO;
 
 import java.util.Scanner;
 
+
+
 public class MainView {
 
     private final Scanner sc = new Scanner(System.in);
@@ -60,34 +62,34 @@ public class MainView {
         return new LoginRequestDTO(role,userId,password);
     }
 
-//    public StudentDTO inputStudentInfo() {
-//        System.out.println("\n========== 학생 회원가입 ==========");
-//        StudentDTO student = new StudentDTO();
-//
-//        System.out.print("학번: ");
-//        student.setStudentId(Long.parseLong(sc.nextLine()));
-//
-//        System.out.print("이름: ");
-//        student.setStudentName(sc.nextLine());
-//
-//        System.out.print("주민등록번호: ");
-//        student.setStudentNo(sc.nextLine());
-//
-//        System.out.print("주소: ");
-//        student.setStudentAddress(sc.nextLine());
-//
-//        System.out.print("이메일: ");
-//        student.setStudentEmail(sc.nextLine());
-//
-//        System.out.print("전화번호: ");
-//        student.setStudentPhone(sc.nextLine());
-//
-//        System.out.print("비밀번호: ");
-//        student.setStudentPw(sc.nextLine());
-//
-//
-//        return student;
-//    }
+    public StudentDTO inputStudentInfo() {
+        System.out.println("\n========== 학생 회원가입 ==========");
+        StudentDTO student = new StudentDTO();
+
+        System.out.print("학번: ");
+        student.setStudentId(sc.nextLine());
+
+        System.out.print("이름: ");
+        student.setStudentName(sc.nextLine());
+
+        System.out.print("주민등록번호: ");
+        student.setStudentNo(sc.nextLine());
+
+        System.out.print("주소: ");
+        student.setStudentAddress(sc.nextLine());
+
+        System.out.print("이메일: ");
+        student.setStudentEmail(sc.nextLine());
+
+        System.out.print("전화번호: ");
+        student.setStudentPhone(sc.nextLine());
+
+        System.out.print("비밀번호: ");
+        student.setStudentPw(sc.nextLine());
+
+
+        return student;
+    }
 
     public ProfessorDTO inputProfessorInfo() {
         System.out.println("\n========== 교수 회원가입 ==========");

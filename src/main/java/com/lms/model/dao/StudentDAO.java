@@ -2,6 +2,7 @@ package com.lms.model.dao;
 
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
+import com.lms.controller.StudentController;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 
@@ -26,6 +27,7 @@ import java.util.List;
 public class StudentDAO {
 
     //StudentDAO(Connection con) 제거함
+
 
     public LoginUserDTO loginStudent(Connection con, LoginRequestDTO request) {
         PreparedStatement pstmt = null;
@@ -116,6 +118,7 @@ public class StudentDAO {
                 enroll.setClassRoom(rset.getString("class_room"));
                 enroll.setProfessorName(rset.getString("professor_name"));
                 enroll.setEnrollDate(rset.getString("enroll_date"));
+                enroll.setCurrentCount(rset.getInt("current_count"));
 
                 enrollList.add(enroll);
             }
@@ -174,7 +177,7 @@ public class StudentDAO {
                 EnrollmentDTO score = new EnrollmentDTO();
 
                 enroll.setScore(rset.getString("score"));
-                enroll.setClassName(rset.getString("course_name"));
+                enroll.setClassName(rset.getString("class_name"));
 
                 scoreList.add(enroll);
             }
@@ -184,4 +187,22 @@ public class StudentDAO {
     }
 
 
+    public CourseDTO timeEqual(String applyClassNo, String userId) throws SQLException {
+        String query = QueryUtil.getQuery("course.timeCheck");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, userId); //로그인된 학번
+            pstmt.setString(2, applyClassNo); //신청할 강의번호(요일 추출용)
+            pstmt.setString(3, applyClassNo); //신청할 강의번호(종료시간 비교용)
+            pstmt.setString(4, applyClassNo); //신청할 강의번호(시작시간 비교용)
+
+            ResultSet rset = pstmt.executeQuery();
+            if(rset.next()) { //겹치는 강의가 있다면
+                CourseDTO timeEqual = new CourseDTO();
+                timeEqual.setClassName(rset.getString("class_name"));
+                timeEqual.setClassTime(rset.getString("class_time"));
+                return timeEqual;
+            } //결과가 존재(true)하면 시간이 겹친다.
+        }
+        return null;
+    }
 }

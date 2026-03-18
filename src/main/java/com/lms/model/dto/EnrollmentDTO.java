@@ -13,6 +13,7 @@ public class EnrollmentDTO {
         private String classTime;
         private String classType;
         private String classRoom;
+        private int currentCount;
 
         public EnrollmentDTO() {
         }
@@ -72,9 +73,10 @@ public class EnrollmentDTO {
                     "\n강의명: " + className + " (" + classNo + ")" +
                     "\n강의 종류: " + classType +
                     "\n강의 시간: " + classTime +
-                    "\n강의실: " + classTime +
+                    "\n강의실: " + classRoom +
                     "\n교수명: " + professorName +
-                    "\n신청일: " + enrollDate;
+                    "\n신청일: " + enrollDate +
+                    "\n수강 신청 인원: " + currentCount;
         }
 
         public String getStudentName() {
@@ -121,4 +123,12 @@ public class EnrollmentDTO {
         public void setClassRoom(String classRoom) {
             this.classRoom = classRoom;
         }
+
+    public int getCurrentCount() {
+        return currentCount;
+    }
+
+    public void setCurrentCount(int currentCount) {
+        this.currentCount = currentCount;
+    }
 }

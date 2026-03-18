@@ -49,8 +49,8 @@
     </query>
 
     <query key="enrollment.addClass">
-        insert into 수강 (student_id, class_no)
-        values (?, ?);
+        insert into 수강 (student_id, class_no, enroll_date)
+        values (?, ?, now());
     </query>
 
     <query key="enrollment.myEnrollView">
@@ -63,7 +63,8 @@
         c.class_type,
         c.class_room,
         pr.professor_name,
-        en.enroll_date
+        en.enroll_date,
+        (select count(*) from 수강 where class_no = en.class_no) as current_count
         from 수강 en
         join 학생 st on en.student_id = st.student_id
         join 강의 c on en.class_no = c.class_no
@@ -89,10 +90,22 @@
     <query key="enroll.scoreCheck">
         select
         en.score,
-        c.course_name
+        c.class_name
         from 수강 en
-        join 강의 c on en.course_id = c.course_id
-        where en.student_id = ? and en.course_id = ?
+        join 강의 c on en.class_no = c.class_no
+        where en.student_id = ? and en.class_no = ?
+    </query>
+
+    <query key="course.timeCheck">
+        select
+            c.class_name,
+            c.class_time
+        from 강의 c
+        join 수강 en on c.class_no = en.class_no
+        where en.student_id = ?
+        and substring(c.class_time, 1, 1) = substring((select class_time from 강의 where class_no = ?), 1, 1)
+        and substring((select class_time from 강의 where class_no = ?), 4, 1) >= (substring(c.class_time, 2, 1)
+        and (substring(c.class_time, 4, 1)) >= substring((select class_time from 강의 where class_no = ?), 2, 1))
     </query>
 
 </properties>

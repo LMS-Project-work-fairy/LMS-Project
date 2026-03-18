@@ -1,8 +1,10 @@
 package com.lms.view;
 
+import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
 import com.lms.model.dto.CourseDTO;
 import com.lms.model.dto.EnrollmentDTO;
+import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.service.StudentService;
 
 import java.util.List;
@@ -10,10 +12,12 @@ import java.util.Scanner;
 
 public class StudentView {
     private final StudentController controller;
+    private final LoginUserDTO loginUser;
     private final Scanner sc = new Scanner(System.in);
 
-    public StudentView(StudentController controller) {
+    public StudentView(StudentController controller, LoginUserDTO loginUser) {
         this.controller = controller;
+        this.loginUser = loginUser;
     }
 
     public void displayStudentMenu() {
@@ -73,20 +77,45 @@ public class StudentView {
             String confirm = sc.nextLine();
 
             if (confirm.equals("1")) {
-                int result = controller.addClass(applyClassNo);
-                if (result > 0) {
+                // [추가] 리스트에서 내가 입력한 번호(applyClassNo)와 똑같은 강의 객체 하나를 찾음
+                CourseDTO applyCourse = null;
+                for (CourseDTO c : allClass) {
+                    if (c.getClassNo().equals(applyClassNo)) {
+                        applyCourse = c;
+                        break;
+                    }
+                }
+                CourseDTO timeEqualClass = controller.timeEqual(applyClassNo, loginUser.getUserId());
+                if (timeEqualClass != null) {
+                    System.out.println("🚨시간표가 중복됩니다.");
+                    System.out.println("신청하신 강의가 기존 수강 목록과 겹칩니다.");
+                    System.out.println("기존 강의: " + timeEqualClass.getClassName());
+                    System.out.println("강의 시간: " + timeEqualClass.getClassTime());
+                    System.out.println("신청 시도한 강의: " + applyCourse.getClassName());
+                    System.out.println("신청 시도한 강의 시간: " + applyCourse.getClassTime());
+                } else{
+                    int result = controller.addClass(applyClassNo, loginUser.getUserId());
+                    if (result > 0) {
                     //addClass(추가) 성공 시
                     System.out.println("✅ " + applyClassNo + " 강의가 신청됐습니다.");
                 } else {
                     //addClass 실패 시(이 기능 발전 시켜서 인원 초과 상황도 가능?)
                     System.out.println("🚨 실패했습니다. 다시 시도해주세요.");
+                    }
                 }
+                System.out.print("엔터로 뒤로가기");
+                sc.nextLine();
 
             } else {
                 System.out.println("취소합니다.");
             }
 
         }
+    }
+
+    private CourseDTO timeEqual(String applyClassNo) {
+        CourseDTO timeEqual = controller.timeEqual(applyClassNo, loginUser.getUserId());
+        return timeEqual;
     }
 
     private void displayMyEnrollList(List<EnrollmentDTO> list) {
@@ -102,7 +131,7 @@ public class StudentView {
 
     private void subjectView() {
         while(true) {
-            String studentId = "20230001"; //현재 로그인한 학생의 ID
+            String studentId = loginUser.getUserId(); //현재 로그인한 학생의 ID
             List<EnrollmentDTO> myEnrollList = controller.enrollView(studentId);
 
             displayMyEnrollList(myEnrollList);
@@ -117,7 +146,7 @@ public class StudentView {
             if (subMenu.equals("1")) {
                 taskView(myEnrollList);
             } else if (subMenu.equals("2")) {
-                scoreView();
+                scoreView(myEnrollList);
             } else {
                 System.out.println("옵션 번호를 확인해주세요.");
                 System.out.println("엔터로 뒤로가기");
@@ -153,7 +182,7 @@ public class StudentView {
             return;
         }
 
-        List<CourseDTO> myTaskList = controller.taskView(taskClassNo);
+        List<CourseDTO> myTaskList = controller.taskView(taskClassNo, loginUser.getUserId());
 
         System.out.println("======= 상세 과제 내용 =======");
         if (myTaskList == null || myTaskList.isEmpty()) {
@@ -169,18 +198,51 @@ public class StudentView {
         sc.nextLine();
     }
 
-    public void scoreView() {
-        System.out.println("성적 확인할 강의 번호를 입력해주세요: ");
+    public void scoreView(List<EnrollmentDTO> myEnrollList) {
+        System.out.print("성적 확인할 강의 번호를 입력해주세요(돌아가기는 0): ");
         String scoreClassNo = sc.nextLine();
-        List<EnrollmentDTO> scoreList = controller.scoreView(scoreClassNo);
+
+        if (scoreClassNo.equals("0")) {
+            return;
+        }
+
+        // [검증 로직] 입력한 번호가 내 리스트에 있는지 확인
+        boolean isExist = false;
+        for (EnrollmentDTO enroll : myEnrollList) {
+            if (enroll.getClassNo().equals(scoreClassNo)) {
+                isExist = true;
+                break;
+            }
+        }
+
+        // 리스트에 없는 번호면 컷!
+        if (!isExist) {
+            System.out.println("⚠️ 수강 중인 강의 번호가 아닙니다. 번호를 확인해주세요.");
+            System.out.println("(엔터를 누르면 목록으로 돌아갑니다)"); // 이 한 줄이 중요!
+            sc.nextLine();
+            return;
+        }
+
+        List<EnrollmentDTO> scoreList = controller.scoreView(scoreClassNo, loginUser.getUserId());
+        System.out.println("====== 강의별 성적 ======");
+        if (scoreList == null || scoreList.isEmpty()) {
+            System.out.println("조회된 과제 내용이 없습니다.");
+        } else {
+            for (EnrollmentDTO score : scoreList) {
+                System.out.println("강의명: " + score.getClassName());
+                System.out.println("성적: " + score.getScore());
+                System.out.println("------------------------------");
+            }
+        }
+        System.out.print("엔터로 뒤로가기");
+        sc.nextLine();
 
 
     }
 
     private void subjectDelete() {
         System.out.println("======= 수강 취소 모드 =======");
-
-        String studentId = "20230001";
+        String studentId = loginUser.getUserId();
         List<EnrollmentDTO> myEnrollList = controller.enrollView(studentId);
         displayMyEnrollList(myEnrollList);
 
@@ -194,7 +256,7 @@ public class StudentView {
         String confirm = sc.nextLine();
 
         if (confirm.equals("1")) {
-            int result = controller.deleteClass(deleteClassNo);
+            int result = controller.deleteClass(deleteClassNo, loginUser.getUserId());
             if (result > 0) {
                 System.out.println("✅🚮 성공적으로 취소되었습니다.");
             } else {

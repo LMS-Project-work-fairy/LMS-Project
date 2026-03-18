@@ -10,6 +10,9 @@ public class EnrollmentDTO {
     private String studentName;
     private String className;
     private String professorName;
+    private String classTime;
+    private String classType;
+    private String classRoom;
 
     public EnrollmentDTO() {
     }
@@ -66,7 +69,10 @@ public class EnrollmentDTO {
     public String toString() {
         return "수강 신청 내역 =" +
                 "\n학생명: " + studentName + " (" + studentId + ")" +
-                ",\n과목명: " + className + " (" + classNo + ")" +
+                ",\n강의명: " + className + " (" + classNo + ")" +
+                "\n강의 종류: " + classType +
+                "\n강의 시간: " + classTime +
+                "\n강의실: " + classTime +
                 "\n교수명: " + professorName +
                 "\n신청일: " + enrollDate;
     }
@@ -91,4 +97,30 @@ public class EnrollmentDTO {
     public void setProfessorName(String professorName) {
         this.professorName = professorName;
     }
+
+    public String getClassTime() {
+        return classTime;
+    }
+
+    public void setClassTime(String classTime) {
+        this.classTime = classTime;
+    }
+
+    public String getClassType() {
+        return classType;
+    }
+
+    public void setClassType(String classType) {
+        this.classType = classType;
+    }
+
+    public String getClassRoom() {
+        return classRoom;
+    }
+
+    public void setClassRoom(String classRoom) {
+        this.classRoom = classRoom;
+    }
 }
+
+

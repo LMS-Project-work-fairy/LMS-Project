@@ -31,6 +31,7 @@ public class StudentDAO {
                         course.setClassNo(rset.getString("class_no"));
                 course.setClassName(rset.getString("class_name"));
                 course.setClassTime(rset.getString("class_time"));
+                course.setClassType(rset.getString("class_type"));
                 course.setProfessorName(rset.getString("professor_name"));
                 courseList.add(course);
             }
@@ -63,8 +64,11 @@ public class StudentDAO {
 
                 enroll.setStudentId(rset.getString("student_id"));
                 enroll.setStudentName(rset.getString("student_name")); // DTO에 이 필드가 있어야 함!
-                enroll.setClassName(rset.getString("class_name"));   // DTO에 이 필드가 있어야 함!
                 enroll.setClassNo(rset.getString("class_no"));
+                enroll.setClassName(rset.getString("class_name")); // DTO에 이 필드가 있어야 함!
+                enroll.setClassTime(rset.getString("class_time"));
+                enroll.setClassType(rset.getString("class_type"));
+                enroll.setClassRoom(rset.getString("class_room"));
                 enroll.setProfessorName(rset.getString("professor_name"));
                 enroll.setEnrollDate(rset.getString("enroll_date"));
 

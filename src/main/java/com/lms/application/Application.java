@@ -18,6 +18,7 @@ public class Application {
         AuthService authService = new AuthService(professorDAO);
         AuthController authController = new AuthController(authService);
         MainView mainView = new MainView();
+        AuthController authController = new AuthController(mainView);
 
         boolean running = true;
 

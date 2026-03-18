@@ -41,6 +41,7 @@ CREATE TABLE `강의`
     `class_time`     VARCHAR(15) COMMENT '시간표',
     `class_room`     VARCHAR(10) NOT NULL COMMENT '강의실',
     `class_type`     VARCHAR(10) NOT NULL COMMENT '분류',
+    `class_task`	 VARCHAR(6000) NULL COMMENT '과제',
     `professor_id`   VARCHAR(10) NOT NULL COMMENT '교수번호',
     PRIMARY KEY (`class_no`),
     CONSTRAINT `FK_강의_교수`

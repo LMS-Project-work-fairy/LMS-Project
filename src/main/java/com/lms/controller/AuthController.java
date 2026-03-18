@@ -1,20 +1,36 @@
 package com.lms.controller;
-
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.service.AuthService;
 import com.lms.view.MainView;
+import com.lms.model.dto.ProfessorDTO;
+import com.lms.model.service.AuthService;
 
 public class AuthController {
 
+    private final AuthService service;
     private final MainView mainView;
     private final AuthService authService;
+  
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
+
+    public boolean registerProfessor(ProfessorDTO professor) {
+        return service.insertProfessor(professor);
+    }
+
+    public void registerProfessor() {
+    }
+
 
     public AuthController(MainView mainView) {
         this.mainView = mainView;
         this.authService = new AuthService();
     }
 
+  
+    //로그인 기능 로직
     public void login() {
 
         LoginRequestDTO request = mainView.inputLoginInfo();
@@ -50,3 +66,4 @@ public class AuthController {
         mainView.displayMessage("교수 회원가입 기능은 현재 준비 중입니다.");
     }
 }
+

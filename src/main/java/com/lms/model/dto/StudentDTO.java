@@ -16,7 +16,7 @@ public class StudentDTO {
                       String studentAddress, String studentEmail, String studentPhone) {
         this.studentId = studentId;
         this.studentPw = studentPw;
-        this.studentPw = studentNo;
+        this.studentNo = studentNo;
         this.studentName = studentName;
         this.studentAddress = studentAddress;
         this.studentEmail = studentEmail;

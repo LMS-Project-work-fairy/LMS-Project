@@ -11,6 +11,7 @@
         c.class_no,
         c.class_name,
         c.class_time,
+        c.class_type,
         pr.professor_name
         from 강의 c
         join 교수 pr on c.professor_id = pr.professor_id
@@ -28,6 +29,7 @@
             en.class_no,
             c.class_name,
             c.class_time,
+            c.class_type,
             c.class_room,
             pr.professor_name,
             en.enroll_date

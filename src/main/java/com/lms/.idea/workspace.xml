@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="27ef6500-24b4-4a25-937a-ce6c55094fb4" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../../../database/01_ddl.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../database/01_ddl.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/JDBCTemplate.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/JDBCTemplate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/QueryUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/QueryUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/dao/StudentDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/model/dao/StudentDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/dto/ProfessorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/model/dto/ProfessorDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/dto/StudentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/model/dto/StudentDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/model/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/view/MainView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/StudentView.java" beforeDir="false" afterPath="$PROJECT_DIR$/view/StudentView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../resources/queries.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../resources/queries.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3B3nWRFYpFjb1b5mQp4Q9CWhx1Z" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Desktop/프로젝트_1/LMS-Project/src/main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-84258761d1cc-intellij.indexing.shared.core-IU-243.28141.18" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.28141.18" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="27ef6500-24b4-4a25-937a-ce6c55094fb4" name="변경" comment="" />
+      <created>1773726652107</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1773726652107</updated>
+      <workItem from="1773726653181" duration="25000" />
+      <workItem from="1773726685987" duration="1016000" />
+      <workItem from="1773734692983" duration="9000" />
+      <workItem from="1773734889996" duration="5000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

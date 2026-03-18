@@ -43,7 +43,6 @@ public class Application {
             }
         }
     }
-}
 
 int menu = mainView.displayMainMenu();
 if (menu == 3) {
@@ -56,3 +55,5 @@ Boolean success = authController.registerProfessor(newProfessor);
         mainView.displayMessage("🚨교수 등록 실패");
         }
     }
+    
+}

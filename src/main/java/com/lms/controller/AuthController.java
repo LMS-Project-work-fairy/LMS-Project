@@ -12,9 +12,9 @@ public class AuthController {
     private final AuthService authService;
 
 
-    public boolean registerProfessor(ProfessorDTO professor) {
-        return authService.insertProfessor(professor);
-    }
+//    public boolean registerProfessor(ProfessorDTO professor) {
+//        return authService.insertProfessor(professor);
+//    }
 
 
     public AuthController(MainView mainView, AuthService authService) {

@@ -12,7 +12,7 @@ import java.sql.Connection;
 
 public class Application {
 
-    private static MainView mainView;
+//    private static MainView mainView;
 
     public static void main(String[] args) {
 
@@ -21,8 +21,10 @@ public class Application {
         StudentDAO studentDAO = new StudentDAO(con);
         AuthService authService = new AuthService(studentDAO, professorDAO);
 
-        AuthController authController = new AuthController(mainView, authService);
         MainView mainView = new MainView();
+
+        AuthController authController = new AuthController(mainView, authService);
+
 
 //        authController.handleProfessorRegistration();
 //        AuthController authController = new AuthController(mainView);

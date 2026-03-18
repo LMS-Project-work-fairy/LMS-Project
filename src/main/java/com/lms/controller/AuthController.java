@@ -8,25 +8,18 @@ import com.lms.model.service.AuthService;
 
 public class AuthController {
 
-    private final AuthService service;
     private final MainView mainView;
     private final AuthService authService;
-  
-    public AuthController(AuthService service) {
-        this.service = service;
-    }
+
 
     public boolean registerProfessor(ProfessorDTO professor) {
-        return service.insertProfessor(professor);
-    }
-
-    public void registerProfessor() {
+        return authService.insertProfessor(professor);
     }
 
 
-    public AuthController(MainView mainView) {
+    public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
-        this.authService = new AuthService();
+        this.authService = authService;
     }
 
   
@@ -65,5 +58,26 @@ public class AuthController {
     public void registerProfessor() {
         mainView.displayMessage("교수 회원가입 기능은 현재 준비 중입니다.");
     }
+
+    public void startAuthProcess(int menu) {
+        if (menu == 3) {
+            handleProfessorRegistration();
+        } else if (menu == 2) {
+            System.out.println("학생 가입 기능은 준비 중입니다.");
+        }
+
+    }
+
+    public void handleProfessorRegistration() {
+        ProfessorDTO newProfessor = mainView.inputProfessorInfo();
+        boolean success = authService.insertProfessor(newProfessor);
+
+        if (success) {
+            mainView.displayMessage("✅ 교수 등록 성공");
+        } else {
+            mainView.displayMessage("🚨 교수 등록 실패");
+        }
+    }
+
 }
 

@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class StudentDAO {
+    public StudentDAO(Connection con) {
+    }
+
     public LoginUserDTO loginStudent(Connection con, LoginRequestDTO request) {
         PreparedStatement pstmt = null;
         ResultSet rset = null;

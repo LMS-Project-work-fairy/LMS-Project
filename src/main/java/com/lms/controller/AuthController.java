@@ -69,14 +69,17 @@ public class AuthController {
     }
 
     public void handleProfessorRegistration() {
-        ProfessorDTO newProfessor = mainView.inputProfessorInfo();
-        boolean success = authService.insertProfessor(newProfessor);
+        try {
+            ProfessorDTO newProfessor = mainView.inputProfessorInfo();
+            boolean success = authService.insertProfessor(newProfessor);
 
-        if (success) {
-            mainView.displayMessage("✅ 교수 등록 성공");
-        } else {
-            mainView.displayMessage("🚨 교수 등록 실패");
+            if (success) {
+                mainView.displayMessage("✅ 교수 등록 성공");
+            }
+        } catch (RuntimeException e) {
+            mainView.displayMessage("🚨 교수 등록 실패/n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
         }
+
     }
 
 }

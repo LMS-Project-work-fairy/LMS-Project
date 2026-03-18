@@ -44,15 +44,15 @@ public class Application {
         }
     }
 
-int menu = mainView.displayMainMenu();
+int menu = MainView.displayMainMenu();
 if (menu == 3) {
-    ProfessorDTO newProfessor = mainView.inputProfessorInfo();
-Boolean success = authController.registerProfessor(newProfessor);
+    ProfessorDTO newProfessor = MainView.inputProfessorInfo();
+Boolean success = AuthController.registerProfessor(newProfessor);
 
     if (success) {
-        mainView.displayMessage("✅교수 등록 성공");
+        MainView.displayMessage("✅교수 등록 성공");
         } else {
-        mainView.displayMessage("🚨교수 등록 실패");
+        MainView.displayMessage("🚨교수 등록 실패");
         }
     }
     

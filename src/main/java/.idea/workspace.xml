@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7e30ce40-80d3-4e17-8514-42c54147db5c" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/../resources/db.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/db.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../resources/db.properties.example" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/db.properties.example" afterDir="false" />
-    </list>
+    <list default="true" id="7e30ce40-80d3-4e17-8514-42c54147db5c" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,9 +10,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="3B3p3pQY1cm29wgAyvf8fRshyef" />
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
@@ -24,9 +21,9 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/user/Desktop/project01/LMS-Project/src",
+    "last_opened_file_path": "C:/Users/user/Desktop/LMS-Project/LMS-Program",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -48,6 +45,10 @@
       <option name="presentableId" value="Default" />
       <updated>1773727411601</updated>
       <workItem from="1773727412655" duration="240000" />
+      <workItem from="1773818909805" duration="42000" />
+      <workItem from="1773819155819" duration="7000" />
+      <workItem from="1773822034850" duration="8000" />
+      <workItem from="1773885759673" duration="16000" />
     </task>
     <servers />
   </component>

@@ -1,5 +1,4 @@
 package com.lms.model.dao;
-
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
@@ -132,3 +131,4 @@ public class CourseDAO {
         return result;
     }
 }
+

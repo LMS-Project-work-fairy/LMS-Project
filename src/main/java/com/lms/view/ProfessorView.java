@@ -1,6 +1,4 @@
 package com.lms.view;
-
-
 import com.lms.controller.ProfessorController;
 
 import com.lms.model.dto.EnrollmentCourseDTO;
@@ -198,7 +196,4 @@ public class ProfessorView {
                     " | 성적: " + scoreDisplay);
         }
     }
-
 }
-
-

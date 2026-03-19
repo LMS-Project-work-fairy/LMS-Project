@@ -4,7 +4,15 @@
 
     <query key="professor.save">
         insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
-        where (?, ?, ?, ?, ?, ?, ?)
+        values (?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+    <query key="professor.existsById">
+        SELECT COUNT(*) FROM 교수 WHERE professor_id = ?
+    </query>
+
+    <query key="professor.existsByEmail">
+        SELECT COUNT(*) FROM 교수 WHERE professor_email = ?
     </query>
 
     <query key="students.findAll">
@@ -28,7 +36,98 @@
         AND professor_pw = ?
     </query>
 
-    <query key="selectCoursesByProfId">
+    -- 학생 기능
+    <query key="students.findAll">
+        select
+        *
+        from 학생
+    </query>
+
+    <query key="course.findClass">
+        select
+        c.class_no,
+        c.class_name,
+        c.class_time,
+        c.class_type,
+        c.class_room,
+        c.class_point,
+        pr.professor_name
+        from 강의 c
+        join 교수 pr on c.professor_id = pr.professor_id
+    </query>
+
+
+    <query key="enrollment.addClass">
+        insert into 수강 (student_id, class_no, enroll_date)
+        values (?, ?, now());
+    </query>
+
+    <query key="enrollment.myEnrollView">
+        select
+        en.student_id,
+        st.student_name,
+        en.class_no,
+        c.class_name,
+        c.class_time,
+        c.class_type,
+        c.class_room,
+        pr.professor_name,
+        en.enroll_date,
+        (select count(*) from 수강 where class_no = en.class_no) as current_count
+        from 수강 en
+        join 학생 st on en.student_id = st.student_id
+        join 강의 c on en.class_no = c.class_no
+        join 교수 pr on c.professor_id = pr.professor_id
+        where en.student_id = ?
+        order by class_no asc
+    </query>
+
+    <query key="enrollment.deleteClass">
+        delete from 수강
+        where student_id = ? and class_no = ?
+    </query>
+
+    <query key="course.taskCheck">
+        select
+        c.class_task,
+        c.class_name
+        from 강의 c
+        join 수강 en on c.class_no = en.class_no
+        where en.student_id = ? and c.class_no = ?
+    </query>
+
+    <query key="enroll.scoreCheck">
+        select
+        en.score,
+        c.class_name
+        from 수강 en
+        join 강의 c on en.class_no = c.class_no
+        where en.student_id = ? and en.class_no = ?
+    </query>
+
+    <query key="course.timeCheck">
+        select
+            c.class_name,
+            c.class_time
+        from 강의 c
+        join 수강 en on c.class_no = en.class_no
+        where en.student_id = ?
+        and substring(c.class_time, 1, 1) = substring((select class_time from 강의 where class_no = ?), 1, 1)
+        and substring((select class_time from 강의 where class_no = ?), 4, 1) >= (substring(c.class_time, 2, 1)
+        and (substring(c.class_time, 4, 1)) >= substring((select class_time from 강의 where class_no = ?), 2, 1))
+    </query>
+
+    <query key="enroll.totalScoreView">
+        select
+            c.class_name,
+            en.score,
+            c.class_point
+        from 수강 en
+        join 강의 c on en.class_no = c.class_no
+        where student_id = ?
+    </query>
+  
+  <query key="selectCoursesByProfId">
         SELECT class_no, class_name, class_point, class_time, class_room, class_type, class_task, professor_id
         FROM 강의
         WHERE professor_id = ?

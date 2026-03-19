@@ -1,11 +1,14 @@
 package com.lms.controller;
+
 import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
+import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 import com.lms.model.service.StudentService;
 import com.lms.view.MainView;
+
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 import com.lms.view.StudentView;
@@ -17,33 +20,25 @@ public class AuthController {
     private final MainView mainView;
     private final AuthService authService;
 
-
-//    public boolean registerProfessor(ProfessorDTO professor) {
-//        return authService.insertProfessor(professor);
-//    }
-
-
     public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
         this.authService = authService;
     }
 
-  
-    //로그인 기능 로직
+    // 로그인 기능 로직
     public void login() {
-        while(true) {
-        LoginRequestDTO request = mainView.inputLoginInfo();
+        while (true) {
+            LoginRequestDTO request = mainView.inputLoginInfo();
 
-        if (request == null) {
-            mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.");
-            return;
-        }
-
-        if ("BACK".equals(request.getRole())) {
-            mainView.displayMessage("메인 화면으로 돌아갑니다.");
-            return;
-        }
-
+            if (request == null) {
+                mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.");
+                return;
+            }
+            if ("BACK".equals(request.getRole())) {
+                mainView.displayMessage("메인 화면으로 돌아갑니다.");
+                return;
+            }
+     
         LoginUserDTO loginUser = authService.login(request);
 
         if (loginUser == null) {
@@ -89,7 +84,6 @@ public class AuthController {
         mainView.displayMessage("교수 회원가입 기능은 현재 준비 중입니다.");
     }
 
-
     public void handleProfessorRegistration() {
         try {
             ProfessorDTO newProfessor = mainView.inputProfessorInfo();
@@ -100,11 +94,10 @@ public class AuthController {
             } else {
                 mainView.displayMessage("교수 등록에 실패했습니다.");
             }
+
         } catch (RuntimeException e) {
+
             mainView.displayMessage("🚨 교수 등록 실패\n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
         }
-
     }
-
 }
-

@@ -49,8 +49,5 @@ public class Application {
                     mainView.displayMessage("잘못된 메뉴 번호입니다.");
             }
         }
-
     }
-
-    
 }

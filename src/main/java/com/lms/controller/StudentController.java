@@ -2,6 +2,7 @@ package com.lms.controller;
 
 import com.lms.model.dto.CourseDTO;
 import com.lms.model.dto.EnrollmentDTO;
+import com.lms.model.dto.StudentDTO;
 import com.lms.model.service.StudentService;
 
 import java.util.List;
@@ -64,6 +65,18 @@ public class StudentController {
 
     public List<EnrollmentDTO> totalScoreView(String studentId) {
         return service.totalScoreView(studentId);
+    }
+
+    public List<StudentDTO> messageMember() {
+        return service.messageMember();
+    }
+
+    public StudentDTO myInfoView(String studentId) {
+        return service.myInfoView(studentId);
+    }
+
+    public int editMyInfo(StudentDTO myInfo) {
+        return service.editMyInfo(myInfo);
     }
 }
 

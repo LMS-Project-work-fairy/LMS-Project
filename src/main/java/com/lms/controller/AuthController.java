@@ -30,20 +30,26 @@ public class AuthController {
   
     //로그인 기능 로직
     public void login() {
+        while (true) {
+            LoginRequestDTO request = mainView.inputLoginInfo();
 
-        LoginRequestDTO request = mainView.inputLoginInfo();
+            if (request == null) {
+                mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.");
+                continue;
+            }
 
-        if (request == null) {
-            mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.");
-            return;
-        }
+            if("BACK".equals(request.getRole())){
+                mainView.displayMessage("메인 화면으로 돌아갑니다.");
+                return;
+            }
 
-        LoginUserDTO loginUser = authService.login(request);
+            LoginUserDTO loginUser = authService.login(request);
 
-        if (loginUser == null) {
-            mainView.displayMessage("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
-            return;
-        }
+            if (loginUser == null) {
+                mainView.displayMessage("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+                continue;
+            }
+
 
         if ("STUDENT".equals(loginUser.getRole())) {
             System.out.println("학생 계정으로 로그인 성공했습니다.");
@@ -55,14 +61,18 @@ public class AuthController {
             StudentService studentService = new StudentService(new StudentDAO(JDBCTemplate.getConnection()));
             StudentController studentController = new StudentController(studentService);
             com.lms.view.StudentView studentView = new com.lms.view.StudentView(studentController, loginUser);
-
             studentView.displayStudentMenu();
+            break;
         } else if ("PROFESSOR".equals(loginUser.getRole())) {
             System.out.println("교수 계정으로 로그인 성공했습니다.");
             // 나중에 교수 기능 연결
             // new ProfessorController().openProfessorMain();
+            break;
+        }else{
+          mainView.displayMessage("알 수 없는 사용자 권한입니다.");
+          continue;
         }
-    }
+        
 
     public void registerStudent() {
         mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");

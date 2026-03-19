@@ -179,19 +179,26 @@ public class ProfessorView {
             return;
         }
         System.out.println("===============담당 과목 조회 결과==================");
-        for (CourseDTO courseDTO : courseList) {
-            System.out.println(courseDTO);
+        for (CourseDTO course : courseList) {
+            // View에서 DTO의 Getter를 이용해 직접 문자열을 조립합니다!
+            System.out.println("[" + course.getClassNo() + "] " + course.getClassName() +
+                    " (강의실: " + course.getClassRoom() + ", 시간: " + course.getClassTime() + ")");
         }
     }
 
-    public void printStudents(List<CourseDTO> studentList) { // StudentDTO -> CourseDTO 변경
+    public void printStudents(List<CourseDTO> studentList) {
         if (studentList == null || studentList.isEmpty()) {
-            System.out.println("해당 과목에 수강 중인 학생이 없습니다.");
+            System.out.println("해당 과목에 수강 중인 학생이 없거나 과목 번호가 틀렸습니다.");
             return;
         }
         System.out.println("===============수강 학생 명단==================");
-        for (CourseDTO courseDTO : studentList) { // StudentDTO -> CourseDTO 변경
-            System.out.println(courseDTO);
+        for (CourseDTO student : studentList) {
+            // 성적이 0.0보다 크면 점수 출력, 아니면 "미입력" 출력
+            String scoreDisplay = (student.getScore() > 0.0) ? String.valueOf(student.getScore()) : "미입력";
+
+            // View에서 DTO의 Getter를 이용해 직접 문자열을 조립합니다!
+            System.out.println("[학번: " + student.getStudentId() + "] " + student.getStudentName() +
+                    " | 성적: " + scoreDisplay);
         }
     }
 

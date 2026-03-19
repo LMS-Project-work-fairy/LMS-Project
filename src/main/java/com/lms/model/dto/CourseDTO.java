@@ -141,14 +141,21 @@ public class CourseDTO {
         this.status = status;
     }
     public String toString() {
-        if (studentId != null) {
-            // 학생 정보가 들어있을 때 (수강생 명단 출력용)
-            String scoreDisplay = (score > 0.0) ? String.valueOf(score) : "미입력";
-            return "[학번: " + studentId + "] " + studentName + " | 성적: " + scoreDisplay;
-        } else {
-            // 강의 정보만 들어있을 때 (담당 과목 조회용)
-            return "[" + classNo + "] " + className + " (강의실: " + classRoom + ", 시간: " + classTime + ")";
-        }
+        return "CourseDTO{" +
+                "classNo='" + classNo + '\'' +
+                ", className='" + className + '\'' +
+                ", classPoint=" + classPoint +
+                ", classTime='" + classTime + '\'' +
+                ", classRoom='" + classRoom + '\'' +
+                ", classType='" + classType + '\'' +
+                ", classTask='" + classTask + '\'' +
+                ", professorId='" + professorId + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", studentName='" + studentName + '\'' +
+                ", enrollDate='" + enrollDate + '\'' +
+                ", score=" + score +
+                ", status=" + status +
+                '}';
     }
 
 

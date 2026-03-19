@@ -28,31 +28,6 @@
         AND professor_pw = ?
     </query>
 
-    <query key="selectCoursesByProfId">
-        SELECT class_no, class_name, class_point, class_time, class_room, class_type, class_task, professor_id
-        FROM 강의
-        WHERE professor_id = ?
-    </query>
-
-    <query key="selectStudentsByClassNo">
-        SELECT s.student_id, s.student_name, e.enroll_date, e.score, e.status
-        FROM 수강 e
-        JOIN 학생 s ON e.student_id = s.student_id
-        WHERE e.class_no = ?
-    </query>
-
-    <query key="updateClassTask">
-        UPDATE 강의
-        SET class_task = ?
-        WHERE class_no = ? AND professor_id = ?
-    </query>
-
-    <query key="updateStudentScore">
-        UPDATE 수강
-        SET score = ?
-        WHERE class_no = ? AND student_id = ?
-  </query>
-
     -- 학생 기능
     <query key="students.findAll">
         select

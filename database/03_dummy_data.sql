@@ -15,11 +15,11 @@ VALUES
 
 -- 강의 더미 데이터
 INSERT INTO `강의`
-(`class_no`, `class_name`, `class_point`, `class_time`, `class_room`, `class_type`, `professor_id`)
+(`class_no`, `class_name`, `class_point`, `class_time`, `class_room`, `class_type`,`class_task`, `professor_id`)
 VALUES
-('C101', '자바프로그래밍', 3.0, '월1-3', 'A101', '전공', 'P1001'),
-('C102', '데이터베이스',   3.0, '화2-4', 'B201', '전공', 'P1002'),
-('C103', '웹개발기초',     2.0, '수1-2', 'C301', '교양', 'P1001');
+('C101', '자바프로그래밍', 3.0, '월1-3', 'A101', '전공', null,'P1001'),
+('C102', '데이터베이스',   3.0, '화2-4', 'B201', '전공', null,'P1002'),
+('C103', '웹개발기초',     2.0, '수1-2', 'C301', '교양', null,'P1001');
 
 -- 수강 더미 데이터
 INSERT INTO `수강`

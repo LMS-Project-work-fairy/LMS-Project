@@ -13,6 +13,7 @@ import java.sql.Connection;
 public class Application {
 
 
+    //
     public static void main(String[] args) {
 
         Connection con = JDBCTemplate.getConnection();
@@ -21,6 +22,7 @@ public class Application {
         AuthService authService = new AuthService(studentDAO, professorDAO);
 
         MainView mainView = new MainView();
+
 
         AuthController authController = new AuthController(mainView, authService);
 
@@ -48,8 +50,5 @@ public class Application {
                     mainView.displayMessage("잘못된 메뉴 번호입니다.");
             }
         }
-
     }
-
-    
 }

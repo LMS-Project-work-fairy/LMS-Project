@@ -1,12 +1,14 @@
 package com.lms.model.service;
-import com.lms.model.dao.ProfessorDAO;
-import com.lms.model.dto.ProfessorDTO;
-import java.sql.SQLException;
+
 import com.lms.common.JDBCTemplate;
+import com.lms.model.dao.ProfessorDAO;
 import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
+import com.lms.model.dto.ProfessorDTO;
+import com.lms.model.dto.StudentDTO;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class AuthService {
@@ -14,14 +16,14 @@ public class AuthService {
     private final ProfessorDAO professorDAO;
     private final StudentDAO studentDAO;
 
-    public AuthService(StudentDAO studentDAO,ProfessorDAO professorDAO) {
+    public AuthService(StudentDAO studentDAO, ProfessorDAO professorDAO) {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
     }
 
 
-    public boolean insertProfessor(ProfessorDTO professorDTO) throws SQLException {
 
+    public boolean insertProfessor(ProfessorDTO professorDTO) throws SQLException {
 
         if (!professorDTO.getProfessorId().matches("^P\\d{4}$")) {
             throw new RuntimeException("\n교수 번호는 'P' 로 시작하는 숫자 4자리여야 합니다.");
@@ -71,28 +73,71 @@ public class AuthService {
                 JDBCTemplate.close(con);
             }
 
-
     }
-
-    
 
     public LoginUserDTO login(LoginRequestDTO request) {
 
-        if(request == null){
+        if (request == null) {
             return null;
         }
 
         Connection con = JDBCTemplate.getConnection();
+        StudentDAO studentDAO = new StudentDAO(con);
 
-        try{
-            if ("STUDENT".equalsIgnoreCase(request.getRole())){
-                return studentDAO.loginStudent(con,request);
-            }else if ("PROFESSOR".equalsIgnoreCase(request.getRole())){
-                return professorDAO.loginProfessor(con,request);
+        try {
+            if ("STUDENT".equalsIgnoreCase(request.getRole())) {
+                return studentDAO.loginStudent(request);
+            } else if ("PROFESSOR".equalsIgnoreCase(request.getRole())) {
+                return professorDAO.loginProfessor(con, request);
             }
             return null;
-        }finally{
+        } finally {
             JDBCTemplate.close(con);
+        }
+    }
+
+    public int registerStudent(StudentDTO student) {
+
+        String pw = student.getStudentPw();
+        String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+
+        if (!pw.matches(regex)) {
+            throw new RuntimeException("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
+        }
+
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+
+            if (studentDAO.existsByStudentId(student.getStudentId())) {
+                throw new RuntimeException("이미 사용 중인 학번입니다.");
+            }
+
+            int result = studentDAO.save(student);
+
+            if (result > 0) {
+                connection.commit();
+                return result;
+            } else {
+                connection.rollback();
+                throw new RuntimeException("회원가입 저장에 실패했습니다.");
+            }
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException("롤백 중 오류 발생", ex);
+            }
+            throw new RuntimeException("학생 회원가입 중 DB 오류 발생: " + e.getMessage(), e);
+
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Connection 종료 중 오류 발생", e);
+            }
         }
     }
 }

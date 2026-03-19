@@ -14,6 +14,7 @@ public class Application {
 
 //    private static MainView mainView;
 
+    //
     public static void main(String[] args) {
 
         Connection con = JDBCTemplate.getConnection();
@@ -23,7 +24,7 @@ public class Application {
 
         MainView mainView = new MainView();
 
-        
+
         AuthController authController = new AuthController(mainView, authService);
 
 

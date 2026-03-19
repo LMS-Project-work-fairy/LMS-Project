@@ -1,30 +1,28 @@
 package com.lms.model.dto;
 
 public class StudentDTO {
+
     private String studentId;
-    private String studentName;
+    private String studentPw;
     private String studentNo;
+    private String studentName;
     private String studentAddress;
     private String studentEmail;
     private String studentPhone;
-    private String studentPw;
     private String professorId;
 
     public StudentDTO() {
     }
 
-    public StudentDTO(String student_id, String student_name, String student_no, String student_address, String student_email, String student_phone, String student_pw, String professorId) {
+    public StudentDTO(String studentId, String studentPw, String studentNo, String studentName, String studentAddress, String studentEmail, String studentPhone, String professorId) {
         this.studentId = studentId;
-        this.studentName = studentName;
+        this.studentPw = studentPw;
         this.studentNo = studentNo;
+        this.studentName = studentName;
         this.studentAddress = studentAddress;
         this.studentEmail = studentEmail;
         this.studentPhone = studentPhone;
-        this.studentPw = studentPw;
         this.professorId = professorId;
-    }
-
-    public StudentDTO(String classNo, String className, String classTime, String professorName, String professorId) {
     }
 
     public String getStudentId() {
@@ -35,20 +33,28 @@ public class StudentDTO {
         this.studentId = studentId;
     }
 
-    public String getStudentName() {
-        return studentName;
+    public String getStudentPw() {
+        return studentPw;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
+    public void setStudentPw(String studentPw) {
+        this.studentPw = studentPw;
     }
 
     public String getStudentNo() {
         return studentNo;
     }
 
-    public void setStudent_no(String studentNo) {
+    public void setStudentNo(String studentNo) {
         this.studentNo = studentNo;
+    }
+
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
 
     public String getStudentAddress() {
@@ -75,14 +81,6 @@ public class StudentDTO {
         this.studentPhone = studentPhone;
     }
 
-    public String getStudentPw() {
-        return studentPw;
-    }
-
-    public void setStudentPw(String studentPw) {
-        this.studentPw = studentPw;
-    }
-
     public String getProfessorId() {
         return professorId;
     }
@@ -94,14 +92,14 @@ public class StudentDTO {
     @Override
     public String toString() {
         return "StudentDTO{" +
-                "student_id=" + studentId +
-                ", student_name='" + studentName + '\'' +
-                ", student_no=" + studentNo +
-                ", student_address='" + studentAddress + '\'' +
-                ", student_email='" + studentEmail + '\'' +
-                ", student_phone=" + studentPhone +
-                ", student_pw=" + studentPw +
-                ", professor_id=" + professorId +
+                "studentId='" + studentId + '\'' +
+                ", studentPw='" + studentPw + '\'' +
+                ", studentNo='" + studentNo + '\'' +
+                ", studentName='" + studentName + '\'' +
+                ", studentAddress='" + studentAddress + '\'' +
+                ", studentEmail='" + studentEmail + '\'' +
+                ", studentPhone='" + studentPhone + '\'' +
+                ", professorId='" + professorId + '\'' +
                 '}';
     }
 }

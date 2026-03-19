@@ -4,6 +4,7 @@ import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
+import com.lms.model.dto.StudentDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 import com.lms.model.service.StudentService;
@@ -28,6 +29,7 @@ public class AuthController {
     }
 
     // 로그인 기능 로직
+
     public void login() {
         while (true) {
             LoginRequestDTO request = mainView.inputLoginInfo();
@@ -79,8 +81,21 @@ public class AuthController {
         }
 
     public void registerStudent() {
-//        mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");
+        try {
+            StudentDTO newStudent = mainView.inputStudentInfo();
+
+            int result = authService.registerStudent(newStudent);
+
+            if (result > 0) {
+                mainView.displayMessage("회원가입에 성공하였습니다!");
+            } else {
+                mainView.displayMessage("회원가입에 실패하였습니다!");
+            }
+        } catch (RuntimeException e) {
+            mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
+
 
     public void registerProfessor() {
         try {

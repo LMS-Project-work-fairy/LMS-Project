@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <properties>
 
+    <query key="students.findAll">
+        select *
+        from 학생
+    </query>
+
+    <query key="students.save">
+        insert into 학생 (student_id, student_pw, student_no, student_name, student_address, student_email, student_phone)
+        values (?, ?, ?, ?, ?, ?, ?)
+    </query>
 
     <query key="professor.save">
         insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
@@ -13,21 +22,26 @@
 
     <query key="professor.existsByEmail">
         SELECT COUNT(*) FROM 교수 WHERE professor_email = ?
+
     </query>
 
-    <query key="students.findAll">
-        select
-        *
+    <query key="students.existsByStudentId">
+        select count(*)
         from 학생
+        where student_id = ?
     </query>
 
-    <query key = "loginStudent">
+    <query key="loginStudent">
         SELECT student_id, student_name
         FROM 학생
         WHERE student_id = ?
         AND student_pw = ?
     </query>
 
+    <query key="professor.save">
+        insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
+        values (?, ?, ?, ?, ?, ?, ?)
+    </query>
 
     <query key="loginProfessor">
         SELECT professor_id, professor_name

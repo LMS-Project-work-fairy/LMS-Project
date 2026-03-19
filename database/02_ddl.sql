@@ -26,7 +26,7 @@ CREATE TABLE `학생`
     `student_email`   VARCHAR(30) NOT NULL COMMENT '이메일',
     `student_phone`   VARCHAR(15) NOT NULL COMMENT '전화번호',
     `student_pw`      VARCHAR(255) NOT NULL COMMENT '비밀번호',
-    `professor_id`    VARCHAR(10) NOT NULL COMMENT '지도교수',
+    `professor_id`    VARCHAR(10) NULL COMMENT '지도교수',
     PRIMARY KEY (`student_id`),
     CONSTRAINT `FK_학생_교수`
         FOREIGN KEY (`professor_id`) REFERENCES `교수` (`professor_id`)

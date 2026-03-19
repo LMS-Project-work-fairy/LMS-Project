@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 public class StudentDAO {
@@ -79,7 +80,7 @@ public class StudentDAO {
                 course.setClassType(rset.getString("class_type"));
                 course.setClassRoom(rset.getString("class_room"));
                 course.setClassPoint(rset.getString("class_point"));
-                course.setProfessorName(rset.getString("professor_name"));
+                course.setProfessorId(rset.getString("professor_name"));
                 courseList.add(course);
             }
             return courseList;
@@ -110,15 +111,16 @@ public class StudentDAO {
                 EnrollmentDTO enroll = new EnrollmentDTO();
 
                 enroll.setStudentId(rset.getString("student_id"));
-                enroll.setStudentName(rset.getString("student_name")); // DTO에 이 필드가 있어야 함!
                 enroll.setClassNo(rset.getString("class_no"));
-                enroll.setClassName(rset.getString("class_name")); // DTO에 이 필드가 있어야 함!
-                enroll.setClassTime(rset.getString("class_time"));
-                enroll.setClassType(rset.getString("class_type"));
-                enroll.setClassRoom(rset.getString("class_room"));
-                enroll.setProfessorName(rset.getString("professor_name"));
-                enroll.setEnrollDate(rset.getString("enroll_date"));
-                enroll.setCurrentCount(rset.getInt("current_count"));
+
+                String detailInfo = (("학생명: " + rset.getString("student_name") +
+                        ("\n강의명: " + rset.getString("class_name") + " (" + rset.getString("class_type") + ")")+
+                        ("\n강의실: " + rset.getString("class_room") + " (" + rset.getString("class_time") + ")") +
+                        ("\n교수명: " + rset.getString("professor_name")) +
+                        ("\n신청일: " + rset.getString("enroll_date")) +
+                        ("\n수강신청 인원: " + rset.getString("current_count"))));
+
+                enroll.setEnrollDate(detailInfo);
 
                 enrollList.add(enroll);
             }
@@ -177,7 +179,7 @@ public class StudentDAO {
                 EnrollmentDTO score = new EnrollmentDTO();
 
                 enroll.setScore(rset.getString("score"));
-                enroll.setClassName(rset.getString("class_name"));
+                enroll.setClassNo(rset.getString("class_name"));
 
                 scoreList.add(enroll);
             }
@@ -204,5 +206,23 @@ public class StudentDAO {
             } //결과가 존재(true)하면 시간이 겹친다.
         }
         return null;
+    }
+
+    public List<EnrollmentDTO> totalScoreView(String studentId) throws SQLException {
+        List<EnrollmentDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("enroll.totalScoreView");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, studentId);
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                EnrollmentDTO enroll = new EnrollmentDTO();
+                enroll.setClassNo(rset.getString("class_name"));
+                String scorePoint = ("학점: " + rset.getString("score") + " (" + rset.getString("class_point") + ")");
+                enroll.setScore(scorePoint);
+                list.add(enroll);
+            }
+        }
+        return list;
     }
 }

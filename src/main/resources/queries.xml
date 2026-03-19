@@ -108,4 +108,14 @@
         and (substring(c.class_time, 4, 1)) >= substring((select class_time from 강의 where class_no = ?), 2, 1))
     </query>
 
+    <query key="enroll.totalScoreView">
+        select
+            c.class_name,
+            en.score,
+            c.class_point
+        from 수강 en
+        join 강의 c on en.class_no = c.class_no
+        where student_id = ?
+    </query>
+
 </properties>

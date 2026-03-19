@@ -26,11 +26,6 @@ public class Application {
         AuthController authController = new AuthController(mainView, authService);
 
 
-//        authController.handleProfessorRegistration();
-//        AuthController authController = new AuthController(mainView);
-//        ProfessorDAO dao = new ProfessorDAO(JDBCTemplate.getConnection());
-//        AuthService service = new AuthService(dao);
-
         boolean running = true;
 
         while (running) {

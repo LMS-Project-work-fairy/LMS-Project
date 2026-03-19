@@ -35,7 +35,6 @@ public class Application {
 
         while (running) {
             int menu = mainView.displayMainMenu();
-            authController.startAuthProcess(menu);
 
             switch (menu) {
                 case 1:

@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7e30ce40-80d3-4e17-8514-42c54147db5c" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/com/lms/application/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/com/lms/application/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/com/lms/view/MainView.java" beforeDir="false" afterPath="$PROJECT_DIR$/com/lms/view/MainView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../resources/db.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../resources/db.properties" afterDir="false" />
-    </list>
+    <list default="true" id="7e30ce40-80d3-4e17-8514-42c54147db5c" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,17 +17,17 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/login-fix&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/Desktop/LMS-Project/LMS-Program&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "develop",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/user/Desktop/LMS-Project/LMS-Program",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -53,6 +48,7 @@
       <workItem from="1773818909805" duration="42000" />
       <workItem from="1773819155819" duration="7000" />
       <workItem from="1773822034850" duration="8000" />
+      <workItem from="1773885759673" duration="16000" />
     </task>
     <servers />
   </component>

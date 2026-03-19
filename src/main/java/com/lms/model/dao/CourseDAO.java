@@ -72,7 +72,6 @@ public class CourseDAO {
                 CourseDTO course = new CourseDTO();
                 course.setStudentId(rset.getString("student_id"));
                 course.setStudentName(rset.getString("student_name"));
-                course.setEnrollDate(rset.getString("enroll_date"));
                 course.setScore(rset.getDouble("score"));
                 course.setStatus(rset.getBoolean("status"));
                 studentList.add(course);

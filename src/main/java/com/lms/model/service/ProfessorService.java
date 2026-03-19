@@ -1,7 +1,7 @@
 package com.lms.model.service;
 
 import com.lms.common.JDBCTemplate;
-import com.lms.model.dao.CourseDAO; // 🌟 CourseDAO 임포트로 변경!
+import com.lms.model.dao.CourseDAO;
 import com.lms.model.dto.CourseDTO;
 
 import java.sql.Connection;
@@ -15,7 +15,7 @@ public class ProfessorService {
     public List<CourseDTO> selectCoursesByProfId(String profId) {
         Connection conn = JDBCTemplate.getConnection();
 
-        // 🌟 ProfessorDAO 대신 CourseDAO 배달부를 부릅니다!
+
         CourseDAO courseDAO = new CourseDAO(conn);
         List<CourseDTO> courseList = courseDAO.selectCoursesByProfId(conn, profId);
 
@@ -28,7 +28,7 @@ public class ProfessorService {
     // ==============================================================
     public List<CourseDTO> selectStudentsByClassNo(String classNo) {
         Connection conn = JDBCTemplate.getConnection();
-        CourseDAO courseDAO = new CourseDAO(conn); // 🌟 변경
+        CourseDAO courseDAO = new CourseDAO(conn);
 
         List<CourseDTO> studentList = courseDAO.selectStudentsByClassNo(conn, classNo);
 
@@ -41,7 +41,7 @@ public class ProfessorService {
     // ==============================================================
     public int updateClassTask(String classNo, String professorId, String classTask) {
         Connection conn = JDBCTemplate.getConnection();
-        CourseDAO courseDAO = new CourseDAO(conn); // 🌟 변경
+        CourseDAO courseDAO = new CourseDAO(conn);
 
         int result = courseDAO.updateClassTask(conn, classNo, professorId, classTask);
 
@@ -60,7 +60,7 @@ public class ProfessorService {
     // ==============================================================
     public int updateStudentScore(String classNo, String studentId, double score) {
         Connection conn = JDBCTemplate.getConnection();
-        CourseDAO courseDAO = new CourseDAO(conn); // 🌟 변경
+        CourseDAO courseDAO = new CourseDAO(conn);
 
         int result = courseDAO.updateStudentScore(conn, classNo, studentId, score);
 

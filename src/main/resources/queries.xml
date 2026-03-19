@@ -35,7 +35,7 @@
     </query>
 
     <query key="selectStudentsByClassNo">
-        SELECT s.student_id, s.student_name, e.enroll_date, e.score, e.status
+        SELECT s.student_id, s.student_name, e.score, e.status
         FROM 수강 e
         JOIN 학생 s ON e.student_id = s.student_id
         WHERE e.class_no = ?

@@ -9,8 +9,13 @@ import com.lms.model.service.AuthService;
 import com.lms.view.MainView;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Application {
+
+    // 공용 메시지함 (프로그램 꺼질 때까지 유지됨)
+    public static List<String[]> totalMessages = new ArrayList<>();
 
 //    private static MainView mainView;
 

@@ -89,14 +89,24 @@ public class StudentDAO {
 
     public int addClass(EnrollmentDTO enroll) throws SQLException {
         String query = QueryUtil.getQuery("enrollment.addClass");
+        int result = 0;
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, enroll.getStudentId());
             pstmt.setString(2, enroll.getClassNo());
 
-            return pstmt.executeUpdate();
+            result = pstmt.executeUpdate();
             //insert, update, delete는 db의 상태를 바꾸기 때문에 executeUpdate 사용
             //insert에 성공하면 1이 반환됨(1행이 추가되므로)
+
+            if (result > 0) {
+                JDBCTemplate.commit(connection);
+                System.out.println("DB에 영구 반영되었습니다.");
+            } else {
+                // 삭제할 데이터가 없거나 실패했다면 롤백 (안전장치)
+                JDBCTemplate.rollback(connection);
+            }
         }
+        return result;
     }
 
     public List<EnrollmentDTO> enrollView(String studentId) throws SQLException {
@@ -131,12 +141,23 @@ public class StudentDAO {
 
     public int deleteClass(EnrollmentDTO enroll) throws SQLException {
         String query = QueryUtil.getQuery("enrollment.deleteClass");
+        int result = 0;
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, enroll.getStudentId());
             pstmt.setString(2, enroll.getClassNo());
 
-            return pstmt.executeUpdate();
+            result =  pstmt.executeUpdate();
+
+            if (result > 0) {
+                JDBCTemplate.commit(connection);
+                System.out.println("DB에 영구 반영되었습니다.");
+            } else {
+                // 삭제할 데이터가 없거나 실패했다면 롤백 (안전장치)
+                JDBCTemplate.rollback(connection);
+            }
+
         }
+        return result;
     }
 
     public List<CourseDTO> taskView(EnrollmentDTO enroll) throws SQLException {
@@ -224,5 +245,79 @@ public class StudentDAO {
             }
         }
         return list;
+    }
+
+    public List<StudentDTO> messageMember() throws SQLException {
+        List<StudentDTO> memberList = new ArrayList<>();
+        String query = QueryUtil.getQuery("student.allMemberView");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            ResultSet rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                String name = rset.getString("NAME");
+                String id = rset.getString("ID");
+                String type = rset.getString("TYPE");
+
+                StudentDTO person = new StudentDTO();
+                person.setStudentId(id);
+
+                if (type.equals("교수")) {
+                    person.setStudentName(name + " (교수)");
+                } else {
+                    person.setStudentName(name + " (학생)");
+                }
+
+                memberList.add(person);
+            }
+        }
+        return memberList;
+    }
+
+    public StudentDTO myInfoView(String studentId) throws SQLException {
+        String query = QueryUtil.getQuery("student.myInfoView");
+        StudentDTO student = null;
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, studentId);
+
+            ResultSet rset = pstmt.executeQuery();
+            if (rset.next()) {
+                student = new StudentDTO();
+
+                student.setStudentId(rset.getString("student_id"));
+                student.setStudentName(rset.getString("student_name"));
+                student.setStudent_no(rset.getString("student_no"));
+                student.setStudentAddress(rset.getString("student_address"));
+                student.setStudentEmail(rset.getString("student_email"));
+                student.setStudentPhone(rset.getString("student_phone"));
+                student.setStudentPw(rset.getString("student_pw"));
+                student.setProfessorId(rset.getString("professor_id"));
+            }
+        }
+        return student;
+    }
+
+    public int editMyInfo(StudentDTO myInfo) throws SQLException {
+        String query = QueryUtil.getQuery("student.editMyInfo");
+        int result = 0; //수정된 행의 개수(성공 시 1 리턴)
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, myInfo.getStudentName());
+            pstmt.setString(2, myInfo.getStudentAddress());
+            pstmt.setString(3, myInfo.getStudentEmail());
+            pstmt.setString(4, myInfo.getStudentPhone());
+            pstmt.setString(5, myInfo.getStudentPw());
+
+            pstmt.setString(6, myInfo.getStudentId());
+
+            result = pstmt.executeUpdate();
+
+            if (result > 0) {
+                JDBCTemplate.commit(connection);
+                System.out.println("DB에 반영되었습니다.");
+            } else {
+                JDBCTemplate.rollback(connection);
+            }
+        }
+        return result;
     }
 }

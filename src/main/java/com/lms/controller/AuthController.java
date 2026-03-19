@@ -77,9 +77,9 @@ public class AuthController {
             break;
         } else {
             mainView.displayMessage("알 수 없는 사용자 권한입니다.");
+            }
         }
     }
-        }
 
     public void registerStudent() {
         mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");

@@ -11,7 +11,6 @@ public class CourseDTO {
     private String classTask;
 
 
-
     public CourseDTO() {
     }
 

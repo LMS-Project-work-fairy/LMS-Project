@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class StudentService {
 
 
+
     public class StudentView {
         private final StudentController controller;
         private final LoginUserDTO loginUser; // 로그인 정보 저장용
@@ -101,6 +102,14 @@ public class StudentService {
     public CourseDTO timeEqual(String applyClassNo, String studentId) {
         try {
             return studentDAO.timeEqual(applyClassNo, studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<EnrollmentDTO> totalScoreView(String studentId) {
+        try {
+            return studentDAO.totalScoreView(studentId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

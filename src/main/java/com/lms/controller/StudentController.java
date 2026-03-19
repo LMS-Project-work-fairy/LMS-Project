@@ -61,5 +61,9 @@ public class StudentController {
     public CourseDTO timeEqual(String applyClassNo, String studentId) {
         return service.timeEqual(applyClassNo, studentId);
     }
+
+    public List<EnrollmentDTO> totalScoreView(String studentId) {
+        return service.totalScoreView(studentId);
+    }
 }
 

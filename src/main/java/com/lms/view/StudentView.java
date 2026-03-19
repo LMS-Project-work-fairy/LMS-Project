@@ -50,18 +50,25 @@ public class StudentView {
         }
     }
 
-
+    public void courseDetailView(CourseDTO course) {
+        System.out.println("강의명: " + course.getClassName() + " (" + course.getClassNo() + ")");
+        System.out.println("강의실: " + course.getClassRoom() + " (" + course.getClassTime() + ")");
+        System.out.println("강의 종류: " + course.getClassType());
+        System.out.println("학점: " + course.getClassPoint());
+        System.out.println("교수: " + course.getProfessorId());
+        System.out.println("-------------------------------------------");
+    }
 
     public void subjectApply() {
         List<CourseDTO> allClass = controller.findClass();
+
         while(true) {
             System.out.println("======= 수강 가능 강의 목록 ======");
             if (allClass == null || allClass.isEmpty()) {
                 System.out.println("현재 개설된 강의가 없습니다.");
             } else {
                 for (CourseDTO course : allClass) {
-                    System.out.println(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
-                    System.out.println("------------------------------------"); // 구분선
+                    courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
                 }
             }
             System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
@@ -126,7 +133,9 @@ public class StudentView {
             return;
         }
         for (EnrollmentDTO e : list) {
-            System.out.println(e);
+            System.out.println("강의 번호: " + e.getClassNo());
+            System.out.println(e.getEnrollDate());
+            System.out.println("--------------------------------------");
         }
     }
 
@@ -147,7 +156,19 @@ public class StudentView {
             if (subMenu.equals("1")) {
                 taskView(myEnrollList);
             } else if (subMenu.equals("2")) {
-                scoreView(myEnrollList);
+                System.out.println("1. 전체 성적 조회, 2. 상세 과목 성적 조회");
+                System.out.print("확인할 옵션을 선택해주세요(돌아가기는 0): ");
+                String scoreMenu = sc.nextLine();
+                if (scoreMenu.equals("0")) {
+                    return;
+                }
+                if (scoreMenu.equals("1")) {
+                    totalScoreView();
+                } else if (scoreMenu.equals("2")) {
+                    scoreView(myEnrollList);
+                } else {
+                    System.out.println("옵션 번호를 확인해주세요.");
+                }
             } else {
                 System.out.println("옵션 번호를 확인해주세요.");
                 System.out.println("엔터로 뒤로가기");
@@ -200,45 +221,79 @@ public class StudentView {
     }
 
     public void scoreView(List<EnrollmentDTO> myEnrollList) {
-        System.out.print("성적 확인할 강의 번호를 입력해주세요(돌아가기는 0): ");
-        String scoreClassNo = sc.nextLine();
+        while(true) {
+            displayMyEnrollList(myEnrollList);
+            System.out.print("성적 확인할 강의 번호를 입력해주세요(돌아가기는 0): ");
+            String scoreClassNo = sc.nextLine();
 
-        if (scoreClassNo.equals("0")) {
-            return;
-        }
-
-        // [검증 로직] 입력한 번호가 내 리스트에 있는지 확인
-        boolean isExist = false;
-        for (EnrollmentDTO enroll : myEnrollList) {
-            if (enroll.getClassNo().equals(scoreClassNo)) {
-                isExist = true;
-                break;
+            if (scoreClassNo.equals("0")) {
+                return;
             }
-        }
 
-        // 리스트에 없는 번호면 컷!
-        if (!isExist) {
-            System.out.println("⚠️ 수강 중인 강의 번호가 아닙니다. 번호를 확인해주세요.");
-            System.out.println("(엔터를 누르면 목록으로 돌아갑니다)"); // 이 한 줄이 중요!
+            // [검증 로직] 입력한 번호가 내 리스트에 있는지 확인
+            boolean isExist = false;
+            for (EnrollmentDTO enroll : myEnrollList) {
+                if (enroll.getClassNo().equals(scoreClassNo)) {
+                    isExist = true;
+                    break;
+                }
+            }
+
+
+            // 리스트에 없는 번호면 컷!
+            if (!isExist) {
+                System.out.println("⚠️ 수강 중인 강의 번호가 아닙니다. 번호를 확인해주세요.");
+                System.out.println("(엔터를 누르면 목록으로 돌아갑니다)"); // 이 한 줄이 중요!
+                sc.nextLine();
+                return;
+            }
+
+            List<EnrollmentDTO> scoreList = controller.scoreView(scoreClassNo, loginUser.getUserId());
+            System.out.println("====== 강의별 성적 ======");
+            if (scoreList == null || scoreList.isEmpty()) {
+                System.out.println("조회된 과제 내용이 없습니다.");
+            } else {
+                for (EnrollmentDTO score : scoreList) {
+                    System.out.println("강의명: " + score.getClassNo());
+                    System.out.println("성적: " + score.getScore());
+                    System.out.println("------------------------------");
+                }
+            }
+            System.out.print("엔터로 뒤로가기");
             sc.nextLine();
-            return;
+        }
+    }
+
+    public void totalScoreView() {
+        String studentId = loginUser.getUserId();
+        List<EnrollmentDTO> totalScoreList = controller.totalScoreView(studentId);
+        System.out.println("======= 전체 성적 조회 =======");
+
+        double totalScoreSum = 0; //총 학점
+        int totalPoints = 0; //이수 학점
+
+        for (EnrollmentDTO e : totalScoreList) {
+            System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
+            String scoreStr = e.getScore().substring(4, 8);
+            String pointStr = e.getScore().substring(10, 13);
+
+            double score = Double.parseDouble(scoreStr); //글자를 숫자로 바꾸는 형변환
+            double point = Double.parseDouble(pointStr);
+
+            totalScoreSum += (score * point);
+            totalPoints += (int)point;
         }
 
-        List<EnrollmentDTO> scoreList = controller.scoreView(scoreClassNo, loginUser.getUserId());
-        System.out.println("====== 강의별 성적 ======");
-        if (scoreList == null || scoreList.isEmpty()) {
-            System.out.println("조회된 과제 내용이 없습니다.");
-        } else {
-            for (EnrollmentDTO score : scoreList) {
-                System.out.println("강의명: " + score.getClassName());
-                System.out.println("성적: " + score.getScore());
-                System.out.println("------------------------------");
-            }
+        System.out.println("---------------------------");
+        if (totalPoints > 0) {
+            double gpa = totalScoreSum / totalPoints;
+            double resultGpa = Math.round(gpa * 100) / 100.0;
+            System.out.println("총 이수 학점: " + totalPoints);
+            System.out.println("전체 평균 평점: " + resultGpa + "/4.5");
         }
-        System.out.print("엔터로 뒤로가기");
+        System.out.println("============================");
+        System.out.println("\n엔터로 뒤로가기");
         sc.nextLine();
-
-
     }
 
     private void subjectDelete() {

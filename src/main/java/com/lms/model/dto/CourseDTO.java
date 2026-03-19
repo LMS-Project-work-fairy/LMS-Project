@@ -1,7 +1,6 @@
 package com.lms.model.dto;
 
 public class CourseDTO {
-
     // 강의 정보
     private String classNo;      // 강의번호
     private String className;    // 강의명
@@ -22,6 +21,21 @@ public class CourseDTO {
     public CourseDTO(){}
 
     public CourseDTO(String classNo, String className, double classPoint, String classTime, String classRoom, String classType, String classTask, String professorId, String studentId, String studentName, String enrollDate, double score, boolean status) {
+    private String classNo;
+    private String className;
+    private String classPoint;
+    private String classTime;
+    private String classRoom;
+    private String classType;
+    private String professorId;
+    private String classTask;
+
+    private String professorName;
+
+    public CourseDTO() {
+    }
+
+    public CourseDTO(String classNo, String className, String classPoint, String classTime, String classRoom, String classType, String professorId, String classTask) {
         this.classNo = classNo;
         this.className = className;
         this.classPoint = classPoint;
@@ -35,6 +49,8 @@ public class CourseDTO {
         this.enrollDate = enrollDate;
         this.score = score;
         this.status = status;
+        this.professorId = professorId;
+        this.classTask = classTask;
     }
 
     public String getClassNo() {
@@ -52,12 +68,16 @@ public class CourseDTO {
     public void setClassName(String className) {
         this.className = className;
     }
-
     public double getClassPoint() {
         return classPoint;
     }
 
     public void setClassPoint(double classPoint) {
+    public String getClassPoint() {
+        return classPoint;
+    }
+
+    public void setClassPoint(String classPoint) {
         this.classPoint = classPoint;
     }
 
@@ -92,7 +112,6 @@ public class CourseDTO {
     public void setClassTask(String classTask) {
         this.classTask = classTask;
     }
-
     public String getProfessorId() {
         return professorId;
     }
@@ -151,5 +170,30 @@ public class CourseDTO {
         }
     }
 
+    public String getClassTask() {
+        return classTask;
+    }
+
+    public void setClassTask(String classTask) {
+        this.classTask = classTask;
+    }
+
+    @Override
+    public String toString() {
+        return "\n강의명: " + className + " (" + classNo + ") " +
+                "\n강의실: " + classRoom + " (" + classTime + ") " +
+                "\n강의 종류: " + classType +
+                "\n학점: " + classPoint +
+                "\n교수: " + professorName;
+    }
+
+    public String getProfessorName() {
+        return professorName;
+    }
+
+    public void setProfessorName(String professorName) {
+        this.professorName = professorName;
+    }
 
 }
+

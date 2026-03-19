@@ -1,6 +1,6 @@
 package com.lms.controller;
 
-import com.lms.model.dto.CourseDTO;
+import com.lms.model.dto.EnrollmentDTO;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;
 
@@ -22,11 +22,11 @@ public class ProfessorController {
     }
 
 
-    public List<CourseDTO> findCoursesByProfId(String profId) {
+    public List<EnrollmentDTO> findCoursesByProfId(String profId) {
         return service.selectCoursesByProfId(profId);
     }
-    public List<CourseDTO> findStudentsByCourseId(String courseId) {
-        return service.selectStudentsByClassNo(courseId); // 만능 상자(CourseDTO)로 받음
+    public List<EnrollmentDTO> findStudentsByCourseId(String courseId) {
+        return service.selectStudentsByClassNo(courseId);
     }
 
     public int createAssignment(String courseId, String profId, String classTask) {

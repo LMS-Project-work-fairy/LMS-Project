@@ -2,7 +2,7 @@ package com.lms.view;
 
 
 import com.lms.controller.ProfessorController;
-import com.lms.model.dto.CourseDTO;
+import com.lms.model.dto.EnrollmentDTO;
 import com.lms.model.dto.StudentDTO;
 
 import java.util.Scanner;
@@ -48,7 +48,7 @@ public class ProfessorView {
         printMessage("\n--- [담당 과목 조회] ---");
 
 
-        List<CourseDTO> courseList = controller.findCoursesByProfId(profId);
+        List<EnrollmentDTO> courseList = controller.findCoursesByProfId(profId);
         printCourses(courseList);
 
         while(true){
@@ -91,7 +91,7 @@ public class ProfessorView {
         printMessage("\n--- [" + courseId + "] 수강 학생 명단 ---");
 
 
-        List<CourseDTO> studentList = controller.findStudentsByCourseId(courseId);
+        List<EnrollmentDTO> studentList = controller.findStudentsByCourseId(courseId);
         printStudents(studentList);
     }
 
@@ -173,25 +173,25 @@ public class ProfessorView {
         System.out.println("✅ " + message);
     }
 
-    public void printCourses(List<CourseDTO> courseList) {
+    public void printCourses(List<EnrollmentDTO> courseList) {
         if (courseList == null || courseList.isEmpty()) {
             System.out.println("조회 된 담당 과목이 없습니다!!");
             return;
         }
         System.out.println("===============담당 과목 조회 결과==================");
-        for (CourseDTO course : courseList) {
+        for (EnrollmentDTO course : courseList) {
             System.out.println("[" + course.getClassNo() + "] " + course.getClassName() +
                     " (강의실: " + course.getClassRoom() + ", 시간: " + course.getClassTime() + ")");
         }
     }
 
-    public void printStudents(List<CourseDTO> studentList) {
+    public void printStudents(List<EnrollmentDTO> studentList) {
         if (studentList == null || studentList.isEmpty()) {
             System.out.println("해당 과목에 수강 중인 학생이 없거나 과목 번호가 틀렸습니다.");
             return;
         }
         System.out.println("===============수강 학생 명단==================");
-        for (CourseDTO student : studentList) {
+        for (EnrollmentDTO student : studentList) {
             String scoreDisplay = (student.getScore() > 0.0) ? String.valueOf(student.getScore()) : "미입력";
             System.out.println("[학번: " + student.getStudentId() + "] " + student.getStudentName() +
                     " | 성적: " + scoreDisplay);

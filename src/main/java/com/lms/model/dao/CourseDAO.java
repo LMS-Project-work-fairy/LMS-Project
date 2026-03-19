@@ -2,7 +2,7 @@ package com.lms.model.dao;
 
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
-import com.lms.model.dto.CourseDTO;
+import com.lms.model.dto.EnrollmentDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,8 +22,8 @@ public class CourseDAO {
     // ==============================================================
     // [교수 기능 1] 담당 과목 조회
     // ==============================================================
-    public List<CourseDTO> selectCoursesByProfId(Connection con, String profId) {
-        List<CourseDTO> courseList = new ArrayList<>();
+    public List<EnrollmentDTO> selectCoursesByProfId(Connection con, String profId) {
+        List<EnrollmentDTO> courseList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rset = null;
         String query = QueryUtil.getQuery("selectCoursesByProfId");
@@ -34,7 +34,7 @@ public class CourseDAO {
             rset = pstmt.executeQuery();
 
             while (rset.next()) {
-                CourseDTO course = new CourseDTO();
+                EnrollmentDTO course = new EnrollmentDTO();
                 course.setClassNo(rset.getString("class_no"));
                 course.setClassName(rset.getString("class_name"));
                 course.setClassPoint(rset.getDouble("class_point"));
@@ -57,8 +57,8 @@ public class CourseDAO {
     // ==============================================================
     // [교수 기능 2] 수강 학생 확인
     // ==============================================================
-    public List<CourseDTO> selectStudentsByClassNo(Connection con, String classNo) {
-        List<CourseDTO> studentList = new ArrayList<>();
+    public List<EnrollmentDTO> selectStudentsByClassNo(Connection con, String classNo) {
+        List<EnrollmentDTO> studentList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rset = null;
         String query = QueryUtil.getQuery("selectStudentsByClassNo");
@@ -69,7 +69,7 @@ public class CourseDAO {
             rset = pstmt.executeQuery();
 
             while (rset.next()) {
-                CourseDTO course = new CourseDTO();
+                EnrollmentDTO course = new EnrollmentDTO();
                 course.setStudentId(rset.getString("student_id"));
                 course.setStudentName(rset.getString("student_name"));
                 course.setScore(rset.getDouble("score"));

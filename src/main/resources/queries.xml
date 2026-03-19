@@ -118,4 +118,35 @@
         where student_id = ?
     </query>
 
+    <query key="student.allMemberView">
+        select
+            student_name as NAME,
+            student_id as ID,
+            '학생' as TYPE -- 모든 행의 type 컬럼에 '학생' 구분 추가
+        from 학생
+        union all
+        select
+            professor_name as NAME,
+            professor_id as ID,
+            '교수' as TYPE
+        from 교수
+    </query>
+
+    <query key="student.myInfoView">
+        select
+            *
+        from 학생
+        where student_id = ?
+    </query>
+
+    <query key="student.editMyInfo">
+        update 학생
+            set student_name = ?,
+                student_address = ?,
+                student_email = ?,
+                student_phone = ?,
+                student_pw = ?
+        where student_id = ?
+    </query>
+
 </properties>

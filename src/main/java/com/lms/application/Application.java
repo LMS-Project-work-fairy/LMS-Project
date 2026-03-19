@@ -23,6 +23,7 @@ public class Application {
 
         MainView mainView = new MainView();
 
+        
         AuthController authController = new AuthController(mainView, authService);
 
 

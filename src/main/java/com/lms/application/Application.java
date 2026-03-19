@@ -12,7 +12,6 @@ import java.sql.Connection;
 
 public class Application {
 
-//    private static MainView mainView;
 
     //
     public static void main(String[] args) {

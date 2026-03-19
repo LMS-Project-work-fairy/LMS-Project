@@ -16,11 +16,11 @@
         values (?, ?, ?, ?, ?, ?, ?)
     </query>
 
-    <query key="professor.existsById">
+    <query key="professor.existById">
         SELECT COUNT(*) FROM 교수 WHERE professor_id = ?
     </query>
 
-    <query key="professor.existsByEmail">
+    <query key="professor.existByEmail">
         SELECT COUNT(*) FROM 교수 WHERE professor_email = ?
 
     </query>

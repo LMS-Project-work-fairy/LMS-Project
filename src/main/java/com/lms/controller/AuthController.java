@@ -17,11 +17,13 @@ import com.lms.view.StudentView;
 import java.sql.Connection;
 
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 
 public class AuthController {
 
     private final MainView mainView;
     private final AuthService authService;
+
 
     public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
@@ -98,23 +100,46 @@ public class AuthController {
 
 
     public void registerProfessor() {
+
+        String secretKey = "LMS-ADMIN-777";
+        while(true) {
+            System.out.println("\n 🔐교수 가입 인증 코드를 입력하세요 (취소:q)");
+            System.out.println("\n 인증코드 \n");
+            String inputKey = new java.util.Scanner(System.in).nextLine().trim();
+
+            if ("q".equalsIgnoreCase(inputKey)) {
+                System.out.println("🚫 가입 절차를 중단합니다.");
+                return;
+            }
+            if (secretKey.equalsIgnoreCase(inputKey)) {
+                System.out.println("✅ 인증 성공! 가입 창으로 이동합니다.");
+                break;
+            } else {
+                System.out.println("🚨 인증 코드가 일치하지 않습니다. 다시 입력해주세요.");
+            }
+        }
+
+        ProfessorDTO professorDTO = mainView.inputProfessorInfo();
+
+        if (professorDTO == null) {
+            System.out.println("🚫입력을 취소하셨습니다.");
+            return;
+        }
+
         try {
-            ProfessorDTO newProfessor = mainView.inputProfessorInfo();
             boolean success = false;
             try {
-                success = authService.insertProfessor(newProfessor);
+                success = authService.insertProfessor(professorDTO);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
 
             if (success) {
-                mainView.displayMessage("✅ 교수 등록 성공");
-            } else {
-                mainView.displayMessage("교수 등록에 실패했습니다.");
+                mainView.displayMessage("🌟 교수 회원가입 성공");
             }
 
         } catch (RuntimeException e) {
-            mainView.displayMessage("🚨 교수 등록 실패\n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
+            mainView.displayMessage("🚨 교수 회원가입 실패" + e.getMessage());
         }
     }
 }

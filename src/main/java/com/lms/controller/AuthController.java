@@ -47,7 +47,7 @@ public class AuthController {
         } else if ("PROFESSOR".equals(loginUser.getRole())) {
             System.out.println("교수 계정으로 로그인 성공했습니다.");
             // 나중에 교수 기능 연결'
-            /// sSsSADSAD
+
              new ProfessorController().startProfessorMenu(loginUser.getUserId());
         }
     }

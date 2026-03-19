@@ -34,6 +34,8 @@
         WHERE professor_id = ?
     </query>
 
+    
+
     <query key="selectStudentsByClassNo">
         SELECT s.student_id, s.student_name, e.score, e.status
         FROM 수강 e

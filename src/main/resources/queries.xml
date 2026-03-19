@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <properties>
 
+
+    <query key="professor.save">
+        insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
+        where (?, ?, ?, ?, ?, ?, ?)
+    </query>
+
     <query key="students.findAll">
         select
         *
@@ -20,6 +26,31 @@
         FROM 교수
         WHERE professor_id = ?
         AND professor_pw = ?
+    </query>
+
+    <query key="selectCoursesByProfId">
+        SELECT class_no, class_name, class_point, class_time, class_room, class_type, class_task, professor_id
+        FROM 강의
+        WHERE professor_id = ?
+    </query>
+
+    <query key="selectStudentsByClassNo">
+        SELECT s.student_id, s.student_name, e.score, e.status
+        FROM 수강 e
+        JOIN 학생 s ON e.student_id = s.student_id
+        WHERE e.class_no = ?
+    </query>
+
+    <query key="updateClassTask">
+        UPDATE 강의
+        SET class_task = ?
+        WHERE class_no = ? AND professor_id = ?
+    </query>
+
+    <query key="updateStudentScore">
+        UPDATE 수강
+        SET score = ?
+        WHERE class_no = ? AND student_id = ?
     </query>
 
 </properties>

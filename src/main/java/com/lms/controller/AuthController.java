@@ -9,9 +9,6 @@ import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 import com.lms.model.service.StudentService;
 import com.lms.view.MainView;
-
-import com.lms.model.dto.ProfessorDTO;
-import com.lms.model.service.AuthService;
 import com.lms.view.StudentView;
 
 import java.sql.Connection;
@@ -44,100 +41,102 @@ public class AuthController {
                 mainView.displayMessage("메인 화면으로 돌아갑니다.");
                 return;
             }
-     
-        LoginUserDTO loginUser = authService.login(request);
 
-        if (loginUser == null) {
-            mainView.displayMessage("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
-            continue;
-        }
+            LoginUserDTO loginUser = authService.login(request);
 
-        if ("STUDENT".equals(loginUser.getRole())) {
-            System.out.println("학생 계정으로 로그인 성공했습니다.");
-            // 나중에 학생 기능 연결
-            // new StudentController().openStudentMain();
+            if (loginUser == null) {
+                mainView.displayMessage("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+                continue;
+            }
 
-            Connection con = JDBCTemplate.getConnection();
-            StudentService studentService = new StudentService(new StudentDAO(con));
-            StudentController studentController = new StudentController(studentService);
-            StudentView studentView = new StudentView(studentController, loginUser);
-            studentView.displayStudentMenu();
-            break;
+            if ("STUDENT".equals(loginUser.getRole())) {
+                System.out.println("학생 계정으로 로그인 성공했습니다.");
+                // 나중에 학생 기능 연결
+                // new StudentController().openStudentMain();
 
-            //여기에 학생 기능
+                Connection con = JDBCTemplate.getConnection();
+                StudentService studentService = new StudentService(new StudentDAO(con));
+                StudentController studentController = new StudentController(studentService);
+                StudentView studentView = new StudentView(studentController, loginUser);
+                studentView.displayStudentMenu();
+                break;
+
+                //여기에 학생 기능
 //            Connection con = JDBCTemplate.getConnection();
 //            StudentDAO studentDAO = new StudentDAO(con);
 //            StudentService studentService = new StudentService(new StudentDAO(JDBCTemplate.getConnection()));
 //            StudentController studentController = new StudentController(studentService);
 //            com.lms.view.StudentView studentView = new com.lms.view.StudentView(studentController, loginUser);
 
-        } else if ("PROFESSOR".equals(loginUser.getRole())) {
-            System.out.println("교수 계정으로 로그인 성공했습니다.");
-             new ProfessorController().startProfessorMenu(loginUser.getUserId());
-            break;
-        } else {
-            mainView.displayMessage("알 수 없는 사용자 권한입니다.");
-        }
-    }
-
-    public void registerStudent() {
-        try {
-            StudentDTO newStudent = mainView.inputStudentInfo();
-
-            int result = authService.registerStudent(newStudent);
-
-            if (result > 0) {
-                mainView.displayMessage("회원가입에 성공하였습니다!");
-            } else {
-                mainView.displayMessage("회원가입에 실패하였습니다!");
-            }
-        } catch (RuntimeException e) {
-            mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
-
-
-    public void registerProfessor() {
-
-        String secretKey = "LMS-ADMIN-777";
-        while(true) {
-            System.out.println("\n 🔐교수 가입 인증 코드를 입력하세요 (취소:q)");
-            System.out.println("\n 인증코드 \n");
-            String inputKey = new java.util.Scanner(System.in).nextLine().trim();
-
-            if ("q".equalsIgnoreCase(inputKey)) {
-                System.out.println("🚫 가입 절차를 중단합니다.");
-                return;
-            }
-            if (secretKey.equalsIgnoreCase(inputKey)) {
-                System.out.println("✅ 인증 성공! 가입 창으로 이동합니다.");
+            } else if ("PROFESSOR".equals(loginUser.getRole())) {
+                System.out.println("교수 계정으로 로그인 성공했습니다.");
+                new ProfessorController().startProfessorMenu(loginUser.getUserId());
                 break;
             } else {
-                System.out.println("🚨 인증 코드가 일치하지 않습니다. 다시 입력해주세요.");
+                mainView.displayMessage("알 수 없는 사용자 권한입니다.");
             }
-        }
-
-        ProfessorDTO professorDTO = mainView.inputProfessorInfo();
-
-        if (professorDTO == null) {
-            System.out.println("🚫입력을 취소하셨습니다.");
-            return;
-        }
-
-        try {
-            boolean success = false;
-            try {
-                success = authService.insertProfessor(professorDTO);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (success) {
-                mainView.displayMessage("🌟 교수 회원가입 성공");
-            }
-
-        } catch (RuntimeException e) {
-            mainView.displayMessage("🚨 교수 회원가입 실패" + e.getMessage());
         }
     }
-}
+
+        public void registerStudent () {
+            try {
+                StudentDTO newStudent = mainView.inputStudentInfo();
+
+                int result = authService.registerStudent(newStudent);
+
+                if (result > 0) {
+                    mainView.displayMessage("회원가입에 성공하였습니다!");
+                } else {
+                    mainView.displayMessage("회원가입에 실패하였습니다!");
+                }
+            } catch (RuntimeException e) {
+                mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            }
+        }
+
+
+        public void registerProfessor () {
+
+            String secretKey = "LMS-ADMIN-777";
+            while (true) {
+                System.out.println("\n 🔐교수 가입 인증 코드를 입력하세요 (취소:q)");
+                System.out.println("\n 인증코드 \n");
+                String inputKey = new java.util.Scanner(System.in).nextLine().trim();
+
+                if ("q".equalsIgnoreCase(inputKey)) {
+                    System.out.println("🚫 가입 절차를 중단합니다.");
+                    return;
+                }
+                if (secretKey.equalsIgnoreCase(inputKey)) {
+                    System.out.println("✅ 인증 성공! 가입 창으로 이동합니다.");
+                    break;
+                } else {
+                    System.out.println("🚨 인증 코드가 일치하지 않습니다. 다시 입력해주세요.");
+                }
+            }
+
+            ProfessorDTO professorDTO = mainView.inputProfessorInfo();
+
+            if (professorDTO == null) {
+                System.out.println("🚫입력을 취소하셨습니다.");
+                return;
+            }
+
+            try {
+                boolean success = false;
+                try {
+                    success = authService.insertProfessor(professorDTO);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (success) {
+                    mainView.displayMessage("🌟 교수 회원가입 성공");
+                }
+
+            } catch (RuntimeException e) {
+                mainView.displayMessage("🚨 교수 회원가입 실패" + e.getMessage());
+            }
+        }
+    }
+

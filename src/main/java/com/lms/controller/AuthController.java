@@ -1,10 +1,15 @@
 package com.lms.controller;
+import com.lms.common.JDBCTemplate;
+import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.service.AuthService;
+import com.lms.model.service.StudentService;
 import com.lms.view.MainView;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
+
+import java.sql.Connection;
 
 public class AuthController {
 
@@ -45,22 +50,29 @@ public class AuthController {
                 continue;
             }
 
-            if ("STUDENT".equals(loginUser.getRole())) {
-                System.out.println("학생 계정으로 로그인 성공했습니다.");
-                // 나중에 학생 기능 연결
-                // new StudentController().openStudentMain();
-                break;
-            } else if ("PROFESSOR".equals(loginUser.getRole())) {
-                System.out.println("교수 계정으로 로그인 성공했습니다.");
-                // 나중에 교수 기능 연결
-                // new ProfessorController().openProfessorMain();
-                break;
-            }else{
-                mainView.displayMessage("알 수 없는 사용자 권합입니다.");
-                continue;
-            }
+
+        if ("STUDENT".equals(loginUser.getRole())) {
+            System.out.println("학생 계정으로 로그인 성공했습니다.");
+            // 나중에 학생 기능 연결
+            // new StudentController().openStudentMain();
+            //여기에 학생 기능
+            Connection con = JDBCTemplate.getConnection();
+            StudentDAO studentDAO = new StudentDAO(con);
+            StudentService studentService = new StudentService(new StudentDAO(JDBCTemplate.getConnection()));
+            StudentController studentController = new StudentController(studentService);
+            com.lms.view.StudentView studentView = new com.lms.view.StudentView(studentController, loginUser);
+            studentView.displayStudentMenu();
+            break;
+        } else if ("PROFESSOR".equals(loginUser.getRole())) {
+            System.out.println("교수 계정으로 로그인 성공했습니다.");
+            // 나중에 교수 기능 연결
+            // new ProfessorController().openProfessorMain();
+            break;
+        }else{
+          mainView.displayMessage("알 수 없는 사용자 권한입니다.");
+          continue;
         }
-    }
+        
 
     public void registerStudent() {
         mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");

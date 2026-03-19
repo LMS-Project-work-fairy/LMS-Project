@@ -70,15 +70,11 @@ public class AuthController {
 
 
     public void registerProfessor() {
+
         mainView.displayMessage("교수 회원가입 기능은 현재 준비 중입니다.");
     }
 
     public void startAuthProcess(int menu) {
-        if (menu == 3) {
-            handleProfessorRegistration();
-        } else if (menu == 2) {
-            System.out.println("학생 가입 기능은 준비 중입니다.");
-        }
 
     }
 

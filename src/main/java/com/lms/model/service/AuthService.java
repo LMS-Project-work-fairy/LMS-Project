@@ -73,18 +73,18 @@ public class AuthService {
             StudentDAO studentDAO = new StudentDAO(connection);
 
             if (studentDAO.existsByStudentId(student.getStudentId())) {
-                return 0;
+                throw new RuntimeException("이미 사용 중인 학번입니다.");
             }
 
             int result = studentDAO.save(student);
 
             if (result > 0) {
                 connection.commit();
+                return result;
             } else {
                 connection.rollback();
+                throw new RuntimeException("회원가입 저장에 실패했습니다.");
             }
-
-            return result;
 
         } catch (SQLException e) {
             try {
@@ -92,7 +92,7 @@ public class AuthService {
             } catch (SQLException ex) {
                 throw new RuntimeException("롤백 중 오류 발생", ex);
             }
-            throw new RuntimeException("학생 회원가입 중 오류 발생", e);
+            throw new RuntimeException("학생 회원가입 중 DB 오류 발생: " + e.getMessage(), e);
 
         } finally {
             try {

@@ -9,12 +9,12 @@ public class StudentDTO {
     private String studentAddress;
     private String studentEmail;
     private String studentPhone;
+    private String professorId;
 
     public StudentDTO() {
     }
 
-    public StudentDTO(String studentId, String studentPw, String studentNo, String studentName,
-                      String studentAddress, String studentEmail, String studentPhone) {
+    public StudentDTO(String studentId, String studentPw, String studentNo, String studentName, String studentAddress, String studentEmail, String studentPhone, String professorId) {
         this.studentId = studentId;
         this.studentPw = studentPw;
         this.studentNo = studentNo;
@@ -22,6 +22,7 @@ public class StudentDTO {
         this.studentAddress = studentAddress;
         this.studentEmail = studentEmail;
         this.studentPhone = studentPhone;
+        this.professorId = professorId;
     }
 
     public String getStudentId() {
@@ -79,4 +80,28 @@ public class StudentDTO {
     public void setStudentPhone(String studentPhone) {
         this.studentPhone = studentPhone;
     }
+
+    public String getProfessorId() {
+        return professorId;
+    }
+
+    public void setProfessorId(String professorId) {
+        this.professorId = professorId;
+    }
+
+    @Override
+    public String toString() {
+        return "StudentDTO{" +
+                "studentId='" + studentId + '\'' +
+                ", studentPw='" + studentPw + '\'' +
+                ", studentNo='" + studentNo + '\'' +
+                ", studentName='" + studentName + '\'' +
+                ", studentAddress='" + studentAddress + '\'' +
+                ", studentEmail='" + studentEmail + '\'' +
+                ", studentPhone='" + studentPhone + '\'' +
+                ", professorId='" + professorId + '\'' +
+                '}';
+    }
+
+
 }

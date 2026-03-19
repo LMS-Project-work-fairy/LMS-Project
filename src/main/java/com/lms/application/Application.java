@@ -14,6 +14,7 @@ public class Application {
 
 //    private static MainView mainView;
 
+    //
     public static void main(String[] args) {
 
         Connection con = JDBCTemplate.getConnection();
@@ -23,19 +24,14 @@ public class Application {
 
         MainView mainView = new MainView();
 
+
         AuthController authController = new AuthController(mainView, authService);
 
-
-//        authController.handleProfessorRegistration();
-//        AuthController authController = new AuthController(mainView);
-//        ProfessorDAO dao = new ProfessorDAO(JDBCTemplate.getConnection());
-//        AuthService service = new AuthService(dao);
 
         boolean running = true;
 
         while (running) {
             int menu = mainView.displayMainMenu();
-            authController.startAuthProcess(menu);
 
             switch (menu) {
                 case 1:
@@ -55,8 +51,5 @@ public class Application {
                     mainView.displayMessage("잘못된 메뉴 번호입니다.");
             }
         }
-
     }
-
-
 }

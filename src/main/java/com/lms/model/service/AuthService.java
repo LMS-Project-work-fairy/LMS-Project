@@ -7,9 +7,9 @@ import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class AuthService {
 
@@ -24,17 +24,57 @@ public class AuthService {
     public boolean insertProfessor(ProfessorDTO newProfessor) {
         String pw = newProfessor.getProfessorPw();
 
+    public boolean insertProfessor(ProfessorDTO newprofessor) throws SQLException {
+
+
+        if (!newprofessor.getProfessorId().matches("^p\\d{4}$")) {
+            throw new RuntimeException("교수 번호는 'P' 로 시작하는 숫자 4자리여야 합니다.");
+        }
+
+        if (!newprofessor.getProfessorNo().matches("^\\d{6}-\\d{7}$")) {
+            throw new RuntimeException("주민번호 형식이 올바르지 않습니다. (######-#######)");
+        }
+
+        if (!newprofessor.getProfessorPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
+            throw new RuntimeException("전화번호 형식이 올바르지 않습니다. (010-####-####)");
+        }
+
+
+        String pw = newprofessor.getProfessorPw();
         String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+
         if (!pw.matches(regex)) {
             throw new RuntimeException("비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.");
         }
 
+        Connection con = JDBCTemplate.getConnection();
+
         try {
-            String result = professorDAO.save(newProfessor);
-            return result != null && !result.isEmpty();
-        } catch (SQLException e) {
-            throw new RuntimeException("교수 데이터 입력 중 오류 발생 🚨", e);
-        }
+            if (professorDAO.existById(con, newprofessor.getProfessorId())) {
+                throw new RuntimeException("이미 사용 중인 교수 번호입니다.");
+            }
+
+            if (professorDAO.existByEmail(con, newprofessor.getProfessorEmail())) {
+                throw new RuntimeException("이미 등록된 이메일 주소 입니다.");
+            }
+
+            String result = professorDAO.save(con, newprofessor);
+
+            if ("SUCCESS".equals(result)) {
+                JDBCTemplate.commit(con);
+                return true;
+            } else {
+                JDBCTemplate.rollback(con);
+                return false;
+            }
+
+            } catch (SQLException e) {
+                JDBCTemplate.rollback(con);
+                throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨" + e);
+            } finally {
+                JDBCTemplate.close(con);
+            }
+
     }
 
     public LoginUserDTO login(LoginRequestDTO request) {

@@ -23,8 +23,7 @@ public class ProfessorDAO {
 
   
     // 교수 회원가입 정보 저장 
-    public String save(ProfessorDTO newprofessor) throws SQLException {
-
+    public String save(Connection connection, ProfessorDTO newprofessor) throws SQLException {
         String query = QueryUtil.getQuery("professor.save");
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)){
@@ -45,10 +44,52 @@ public class ProfessorDAO {
                 return "SUCCESS";
 
             }
+
+
+
+
         }
 
-        return null;
+        return "FAIL";
     }
+
+    public boolean existById(Connection con, String professorId) throws SQLException {
+        boolean exists = false;
+        String query = QueryUtil.getQuery("professor.existById");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1,professorId);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    exists = rset.getInt(1) > 0;
+                }
+            }
+        }
+
+        return exists;
+
+    }
+
+    public boolean existByEmail(Connection con, String professorEmail) throws SQLException {
+
+        boolean exists = false;
+        String query = QueryUtil.getQuery("professor.existByEmail");
+
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1,professorEmail);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    exists = rset.getInt(1) > 0;
+                }
+            }
+        }
+
+        return exists;
+
+    }
+
 
     //교수 로그인 메소드
     public LoginUserDTO loginProfessor(Connection con, LoginRequestDTO request) {
@@ -82,4 +123,6 @@ public class ProfessorDAO {
 
         return loginUser;
     }
+
+
 }

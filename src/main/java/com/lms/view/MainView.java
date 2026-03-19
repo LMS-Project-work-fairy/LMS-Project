@@ -32,9 +32,11 @@ public class MainView {
     }
 
     public LoginRequestDTO inputLoginInfo() {
+        while(true) {
         System.out.println("\n========== 로그인 ==========");
         System.out.println("1. 학생");
         System.out.println("2. 교수");
+        System.out.println("0. 뒤로가기");
         System.out.print("로그인 유형 선택: ");
 
         int roleMenu;
@@ -43,7 +45,11 @@ public class MainView {
             roleMenu = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
             displayMessage("로그인 유형은 숫자로 입력해주세요.");
-            return null;
+            continue;
+        }
+
+        if(roleMenu == 0) {
+            return new LoginRequestDTO("BACK", "", "");
         }
 
         String role;
@@ -53,7 +59,7 @@ public class MainView {
             role = "PROFESSOR";
         } else {
             displayMessage("잘못된 로그인 유형입니다.");
-            return null;
+            continue;
         }
 
         System.out.print("아이디 입력: ");
@@ -62,7 +68,8 @@ public class MainView {
         System.out.print("비밀번호 입력: ");
         String password = sc.nextLine();
 
-        return new LoginRequestDTO(role, userId, password);
+        return new LoginRequestDTO(role,userId,password);
+        }
     }
 
     public StudentDTO inputStudentInfo() {
@@ -289,6 +296,13 @@ public class MainView {
 
         System.out.print("비밀번호: ");
         professor.setProfessorPw(sc.nextLine());
+        System.out.print("비밀번호 확인: ");
+        String pwCheck = sc.nextLine();
+
+//        if (!professorPw.equals(pwCheck)) {
+//            System.out.println("🚨 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+//            return inputProfessorInfo();
+//        }
 
         return professor;
     }

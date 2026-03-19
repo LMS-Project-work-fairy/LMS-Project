@@ -56,6 +56,7 @@
         join 교수 pr on c.professor_id = pr.professor_id
     </query>
 
+
     <query key="enrollment.addClass">
         insert into 수강 (student_id, class_no, enroll_date)
         values (?, ?, now());
@@ -124,6 +125,33 @@
         from 수강 en
         join 강의 c on en.class_no = c.class_no
         where student_id = ?
+    </query>
+  
+  <query key="selectCoursesByProfId">
+        SELECT class_no, class_name, class_point, class_time, class_room, class_type, class_task, professor_id
+        FROM 강의
+        WHERE professor_id = ?
+    </query>
+
+    
+
+    <query key="selectStudentsByClassNo">
+        SELECT s.student_id, s.student_name, e.score, e.status
+        FROM 수강 e
+        JOIN 학생 s ON e.student_id = s.student_id
+        WHERE e.class_no = ?
+    </query>
+
+    <query key="updateClassTask">
+        UPDATE 강의
+        SET class_task = ?
+        WHERE class_no = ? AND professor_id = ?
+    </query>
+
+    <query key="updateStudentScore">
+        UPDATE 수강
+        SET score = ?
+        WHERE class_no = ? AND student_id = ?
     </query>
 
 </properties>

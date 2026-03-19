@@ -69,10 +69,7 @@ public class AuthController {
 
         } else if ("PROFESSOR".equals(loginUser.getRole())) {
             System.out.println("교수 계정으로 로그인 성공했습니다.");
-
              new ProfessorController().startProfessorMenu(loginUser.getUserId());
-
-       
             break;
         } else {
             mainView.displayMessage("알 수 없는 사용자 권한입니다.");

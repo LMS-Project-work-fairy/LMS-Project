@@ -91,6 +91,7 @@ public class StudentView {
                     System.out.println("신청하신 강의가 기존 수강 목록과 겹칩니다.");
                     System.out.println("기존 강의: " + timeEqualClass.getClassName());
                     System.out.println("강의 시간: " + timeEqualClass.getClassTime());
+                    System.out.println("---------------------------------------------");
                     System.out.println("신청 시도한 강의: " + applyCourse.getClassName());
                     System.out.println("신청 시도한 강의 시간: " + applyCourse.getClassTime());
                 } else{

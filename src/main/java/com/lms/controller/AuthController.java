@@ -1,10 +1,15 @@
 package com.lms.controller;
+import com.lms.common.JDBCTemplate;
+import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.service.AuthService;
+import com.lms.model.service.StudentService;
 import com.lms.view.MainView;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
+
+import java.sql.Connection;
 
 public class AuthController {
 
@@ -44,6 +49,14 @@ public class AuthController {
             System.out.println("학생 계정으로 로그인 성공했습니다.");
             // 나중에 학생 기능 연결
             // new StudentController().openStudentMain();
+            //여기에 학생 기능
+            Connection con = JDBCTemplate.getConnection();
+            StudentDAO studentDAO = new StudentDAO(con);
+            StudentService studentService = new StudentService(new StudentDAO(JDBCTemplate.getConnection()));
+            StudentController studentController = new StudentController(studentService);
+            com.lms.view.StudentView studentView = new com.lms.view.StudentView(studentController, loginUser);
+
+            studentView.displayStudentMenu();
         } else if ("PROFESSOR".equals(loginUser.getRole())) {
             System.out.println("교수 계정으로 로그인 성공했습니다.");
             // 나중에 교수 기능 연결

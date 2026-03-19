@@ -20,7 +20,6 @@ public class ProfessorDAO {
     public ProfessorDAO(Connection connection) {
         this.connection = connection;
     }
-
   
     // 교수 회원가입 정보 저장 
     public String save(Connection connection, ProfessorDTO newprofessor) throws SQLException {
@@ -123,6 +122,5 @@ public class ProfessorDAO {
 
         return loginUser;
     }
-
 
 }

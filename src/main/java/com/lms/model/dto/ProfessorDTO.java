@@ -90,4 +90,6 @@ public class ProfessorDTO {
                 ", ProfessorPw='" + ProfessorPw + '\'' +
                 '}';
     }
+
 }
+

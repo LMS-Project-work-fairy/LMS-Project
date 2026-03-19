@@ -101,12 +101,17 @@ public class CourseDTO {
         return "CourseDTO{" +
                 "classNo='" + classNo + '\'' +
                 ", className='" + className + '\'' +
-                ", classPoint='" + classPoint + '\'' +
+                ", classPoint=" + classPoint +
                 ", classTime='" + classTime + '\'' +
                 ", classRoom='" + classRoom + '\'' +
                 ", classType='" + classType + '\'' +
-                ", professorId='" + professorId + '\'' +
                 ", classTask='" + classTask + '\'' +
+                ", professorId='" + professorId + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", studentName='" + studentName + '\'' +
+                ", enrollDate='" + enrollDate + '\'' +
+                ", score=" + score +
+                ", status=" + status +
                 '}';
     }
 }

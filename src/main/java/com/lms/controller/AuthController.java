@@ -6,6 +6,8 @@ import com.lms.view.MainView;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.service.AuthService;
 
+import java.sql.SQLException;
+
 public class AuthController {
 
     private final MainView mainView;
@@ -52,35 +54,49 @@ public class AuthController {
     }
 
     public void registerStudent() {
-        mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");
+//        mainView.displayMessage("학생 회원가입 기능은 현재 준비 중입니다.");
     }
 
     public void registerProfessor() {
-        mainView.displayMessage("교수 회원가입 기능은 현재 준비 중입니다.");
-    }
-
-    public void startAuthProcess(int menu) {
-        if (menu == 3) {
-            handleProfessorRegistration();
-        } else if (menu == 2) {
-            System.out.println("학생 가입 기능은 준비 중입니다.");
-        }
-
-    }
-
-    public void handleProfessorRegistration() {
         try {
             ProfessorDTO newProfessor = mainView.inputProfessorInfo();
-            boolean success = authService.insertProfessor(newProfessor);
+            boolean success = false;
+            try {
+                success = authService.insertProfessor(newProfessor);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             if (success) {
                 mainView.displayMessage("✅ 교수 등록 성공");
             }
         } catch (RuntimeException e) {
-            mainView.displayMessage("🚨 교수 등록 실패/n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
+            mainView.displayMessage("🚨 교수 등록 실패 \n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
         }
-
     }
+
+//    public void startAuthProcess(int menu) {
+//        if (menu == 3) {
+//            handleProfessorRegistration();
+//        } else if (menu == 2) {
+//            System.out.println("학생 가입 기능은 준비 중입니다.");
+//        }
+//
+//    }
+//
+//    public void handleProfessorRegistration() {
+//        try {
+//            ProfessorDTO newProfessor = mainView.inputProfessorInfo();
+//            boolean success = authService.insertProfessor(newProfessor);
+//
+//            if (success) {
+//                mainView.displayMessage("✅ 교수 등록 성공");
+//            }
+//        } catch (RuntimeException e) {
+//            mainView.displayMessage("🚨 교수 등록 실패 \n 영문, 숫자, 특수 기호를 포함해 8자 이상 작성해주세요. " + e.getMessage());
+//        }
+//
+//    }
 
 }
 

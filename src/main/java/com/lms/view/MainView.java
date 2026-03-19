@@ -113,6 +113,13 @@ public class MainView {
 
         System.out.print("비밀번호: ");
         professor.setProfessorPw(sc.nextLine());
+        System.out.print("비밀번호 확인: ");
+        String pwCheck = sc.nextLine();
+
+//        if (!professorPw.equals(pwCheck)) {
+//            System.out.println("🚨 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+//            return inputProfessorInfo();
+//        }
 
         return professor;
     }

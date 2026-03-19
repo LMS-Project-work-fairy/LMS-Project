@@ -4,7 +4,15 @@
 
     <query key="professor.save">
         insert into 교수 (professor_id, professor_name, professor_no, professor_address, professor_email, professor_phone, professor_pw)
-        where (?, ?, ?, ?, ?, ?, ?)
+        values (?, ?, ?, ?, ?, ?, ?)
+    </query>
+
+    <query key="professor.existsById">
+        SELECT COUNT(*) FROM 교수 WHERE professor_id = ?
+    </query>
+
+    <query key="professor.existsByEmail">
+        SELECT COUNT(*) FROM 교수 WHERE professor_email = ?
     </query>
 
     <query key="students.findAll">

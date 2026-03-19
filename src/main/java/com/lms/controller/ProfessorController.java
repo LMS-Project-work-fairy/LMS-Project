@@ -1,6 +1,7 @@
 package com.lms.controller;
 
-import com.lms.model.dto.EnrollmentDTO;
+
+import com.lms.model.dto.EnrollmentCourseDTO;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;
 
@@ -22,10 +23,10 @@ public class ProfessorController {
     }
 
 
-    public List<EnrollmentDTO> findCoursesByProfId(String profId) {
+    public List<EnrollmentCourseDTO> findCoursesByProfId(String profId) {
         return service.selectCoursesByProfId(profId);
     }
-    public List<EnrollmentDTO> findStudentsByCourseId(String courseId) {
+    public List<EnrollmentCourseDTO> findStudentsByCourseId(String courseId) {
         return service.selectStudentsByClassNo(courseId);
     }
 

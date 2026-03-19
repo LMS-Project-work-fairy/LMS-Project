@@ -285,7 +285,7 @@ public class StudentDAO {
 
                 student.setStudentId(rset.getString("student_id"));
                 student.setStudentName(rset.getString("student_name"));
-                student.setStudent_no(rset.getString("student_no"));
+                student.setStudentNo(rset.getString("student_no"));
                 student.setStudentAddress(rset.getString("student_address"));
                 student.setStudentEmail(rset.getString("student_email"));
                 student.setStudentPhone(rset.getString("student_phone"));

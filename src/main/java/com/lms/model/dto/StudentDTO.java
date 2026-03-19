@@ -47,7 +47,7 @@ public class StudentDTO {
         return studentNo;
     }
 
-    public void setStudent_no(String studentNo) {
+    public void setStudentNo(String studentNo) {
         this.studentNo = studentNo;
     }
 

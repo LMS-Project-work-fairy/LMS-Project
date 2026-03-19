@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@localhost" uuid="52d058c7-b264-4566-ab81-70902b6b7e70">
     <data-source source="LOCAL" name="fairy_lms" uuid="312bbc43-8265-4489-9fb1-b5a3d40e6fdb">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>

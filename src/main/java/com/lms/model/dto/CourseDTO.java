@@ -10,12 +10,16 @@ public class CourseDTO {
     private String professorId;
     private String classTask;
 
-    private String professorName;
+
 
     public CourseDTO() {
     }
 
-    public CourseDTO(String classNo, String className, String classPoint, String classTime, String classRoom, String classType, String professorId, String classTask) {
+
+    public CourseDTO(String classNo, String className, String classPoint,
+                     String classTime, String classRoom,
+                     String classType, String professorId,
+                     String classTask) {
         this.classNo = classNo;
         this.className = className;
         this.classPoint = classPoint;
@@ -25,6 +29,7 @@ public class CourseDTO {
         this.professorId = professorId;
         this.classTask = classTask;
     }
+
 
     public String getClassNo() {
         return classNo;
@@ -90,21 +95,19 @@ public class CourseDTO {
         this.classTask = classTask;
     }
 
+
     @Override
     public String toString() {
-        return "\n강의명: " + className + " (" + classNo + ") " +
-                "\n강의실: " + classRoom + " (" + classTime + ") " +
-                "\n강의 종류: " + classType +
-                "\n학점: " + classPoint +
-                "\n교수: " + professorName;
-    }
-
-    public String getProfessorName() {
-        return professorName;
-    }
-
-    public void setProfessorName(String professorName) {
-        this.professorName = professorName;
+        return "CourseDTO{" +
+                "classNo='" + classNo + '\'' +
+                ", className='" + className + '\'' +
+                ", classPoint='" + classPoint + '\'' +
+                ", classTime='" + classTime + '\'' +
+                ", classRoom='" + classRoom + '\'' +
+                ", classType='" + classType + '\'' +
+                ", professorId='" + professorId + '\'' +
+                ", classTask='" + classTask + '\'' +
+                '}';
     }
 }
 

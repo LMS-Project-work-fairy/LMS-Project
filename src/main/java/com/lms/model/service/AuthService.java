@@ -7,6 +7,7 @@ import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import java.sql.Connection;
+import java.util.List;
 
 public class AuthService {
 
@@ -19,19 +20,56 @@ public class AuthService {
     }
 
 
-    public boolean insertProfessor(ProfessorDTO newprofessor) {
-        String pw = newprofessor.getProfessorPw();
 
+    public boolean insertProfessor(ProfessorDTO newprofessor) throws SQLException {
+
+
+        if (!newprofessor.getProfessorId().matches("^p\\d{4}$")) {
+            throw new RuntimeException("교수 번호는 'P' 로 시작하는 숫자 4자리여야 합니다.");
+        }
+
+        if (!newprofessor.getProfessorNo().matches("^\\d{6}-\\d{7}$")) {
+            throw new RuntimeException("주민번호 형식이 올바르지 않습니다. (######-#######)");
+        }
+
+        if (!newprofessor.getProfessorPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
+            throw new RuntimeException("전화번호 형식이 올바르지 않습니다. (010-####-####)");
+        }
+
+
+        String pw = newprofessor.getProfessorPw();
         String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+
         if (!pw.matches(regex)) {
             throw new RuntimeException("비밀번호는 최소 8자 이상 이여야 합니다.");
         }
 
-            try {
-                String result = professorDAO.save(newprofessor);
-                return result != null && !result.isEmpty();
+        Connection con = JDBCTemplate.getConnection();
+
+        try {
+            if (professorDAO.existById(con, newprofessor.getProfessorId())) {
+                throw new RuntimeException("이미 사용 중인 교수 번호입니다.");
+            }
+
+            if (professorDAO.existByEmail(con, newprofessor.getProfessorEmail())) {
+                throw new RuntimeException("이미 등록된 이메일 주소 입니다.");
+            }
+
+            String result = professorDAO.save(con, newprofessor);
+
+            if ("SUCCESS".equals(result)) {
+                JDBCTemplate.commit(con);
+                return true;
+            } else {
+                JDBCTemplate.rollback(con);
+                return false;
+            }
+
             } catch (SQLException e) {
+                JDBCTemplate.rollback(con);
                 throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨" + e);
+            } finally {
+                JDBCTemplate.close(con);
             }
 
 

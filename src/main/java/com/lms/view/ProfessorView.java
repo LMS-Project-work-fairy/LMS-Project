@@ -1,13 +1,5 @@
 package com.lms.view;
 
-
-import com.lms.controller.ProfessorController;
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.StudentDTO;
-
-import java.util.Scanner;
-import java.util.List;
-
 public class ProfessorView {
     private final ProfessorController controller;
     private final Scanner sc = new Scanner(System.in);
@@ -199,5 +191,3 @@ public class ProfessorView {
     }
 
 }
-
-

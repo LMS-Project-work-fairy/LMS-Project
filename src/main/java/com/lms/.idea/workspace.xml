@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="27ef6500-24b4-4a25-937a-ce6c55094fb4" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../resources/db.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../../../resources/db.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,6 +85,8 @@
       <workItem from="1773843775790" duration="9000" />
       <workItem from="1773914674697" duration="25000" />
       <workItem from="1773920663768" duration="4000" />
+      <workItem from="1773920933401" duration="7000" />
+      <workItem from="1773921087009" duration="9000" />
     </task>
     <servers />
   </component>

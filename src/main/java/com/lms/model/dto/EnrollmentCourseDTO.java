@@ -10,6 +10,8 @@ public class EnrollmentCourseDTO {
     private String classType;    // 분류
     private String classTask;    // 과제
     private String professorId;  // 교수번호
+    private float classCapacity;
+
 
     // 수강 학생 정보
     private String studentId;    // 학번
@@ -18,23 +20,8 @@ public class EnrollmentCourseDTO {
     private double score;        // 성적
     private boolean status;      // 수강상태
 
-    public EnrollmentCourseDTO() {
-    }
 
-    public EnrollmentCourseDTO(String classNo, String className, double classPoint, String classTime, String classRoom, String classType, String classTask, String professorId, String studentId, String studentName, String enrollDate, double score, boolean status) {
-        this.classNo = classNo;
-        this.className = className;
-        this.classPoint = classPoint;
-        this.classTime = classTime;
-        this.classRoom = classRoom;
-        this.classType = classType;
-        this.classTask = classTask;
-        this.professorId = professorId;
-        this.studentId = studentId;
-        this.studentName = studentName;
-        this.enrollDate = enrollDate;
-        this.score = score;
-        this.status = status;
+    public EnrollmentCourseDTO() {
     }
 
     public String getClassNo() {
@@ -101,6 +88,14 @@ public class EnrollmentCourseDTO {
         this.professorId = professorId;
     }
 
+    public float getClassCapacity() {
+        return classCapacity;
+    }
+
+    public void setClassCapacity(float classCapacity) {
+        this.classCapacity = classCapacity;
+    }
+
     public String getStudentId() {
         return studentId;
     }
@@ -152,6 +147,7 @@ public class EnrollmentCourseDTO {
                 ", classType='" + classType + '\'' +
                 ", classTask='" + classTask + '\'' +
                 ", professorId='" + professorId + '\'' +
+                ", classCapacity=" + classCapacity +
                 ", studentId='" + studentId + '\'' +
                 ", studentName='" + studentName + '\'' +
                 ", enrollDate='" + enrollDate + '\'' +

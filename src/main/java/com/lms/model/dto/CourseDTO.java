@@ -9,16 +9,16 @@ public class CourseDTO {
     private String classType;
     private String professorId;
     private String classTask;
+    private float classCapacity;
 
 
     public CourseDTO() {
     }
 
-
-    public CourseDTO(String classNo, String className, String classPoint,
-                     String classTime, String classRoom,
-                     String classType, String professorId,
-                     String classTask) {
+    public CourseDTO(String classNo, String className,
+                     String classPoint, String classTime,
+                     String classRoom, String classType,
+                     String professorId, String classTask, float classCapacity) {
         this.classNo = classNo;
         this.className = className;
         this.classPoint = classPoint;
@@ -27,6 +27,7 @@ public class CourseDTO {
         this.classType = classType;
         this.professorId = professorId;
         this.classTask = classTask;
+        this.classCapacity = classCapacity;
     }
 
 
@@ -94,6 +95,14 @@ public class CourseDTO {
         this.classTask = classTask;
     }
 
+    public float getClassCapacity() {
+        return classCapacity;
+    }
+
+    public void setClassCapacity(float classCapacity) {
+        this.classCapacity = classCapacity;
+    }
+
 
     @Override
     public String toString() {
@@ -106,6 +115,7 @@ public class CourseDTO {
                 ", classType='" + classType + '\'' +
                 ", professorId='" + professorId + '\'' +
                 ", classTask='" + classTask + '\'' +
+                ", classCapacity=" + classCapacity +
                 '}';
     }
 }

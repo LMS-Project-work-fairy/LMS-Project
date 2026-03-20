@@ -7,9 +7,10 @@ import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 public class AuthService {
 
@@ -20,8 +21,6 @@ public class AuthService {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
     }
-
-
 
     public boolean insertProfessor(ProfessorDTO professorDTO) throws SQLException {
 
@@ -36,7 +35,6 @@ public class AuthService {
         if (!professorDTO.getProfessorPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
             throw new RuntimeException("\n전화번호 형식이 올바르지 않습니다. (010-####-####)");
         }
-
 
         String pw = professorDTO.getProfessorPw();
         String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
@@ -66,13 +64,12 @@ public class AuthService {
                 return false;
             }
 
-            } catch (SQLException e) {
-                JDBCTemplate.rollback(con);
-                throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨" + e);
-            } finally {
-                JDBCTemplate.close(con);
-            }
-
+        } catch (SQLException e) {
+            JDBCTemplate.rollback(con);
+            throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨" + e);
+        } finally {
+            JDBCTemplate.close(con);
+        }
     }
 
     public LoginUserDTO login(LoginRequestDTO request) {
@@ -117,6 +114,20 @@ public class AuthService {
             int result = studentDAO.save(student);
 
             if (result > 0) {
+
+                String messageQuery = """
+                    insert into 메시지 (user_id, student_id, professor_id, receiver_id, content, user_name)
+                    values (?, ?, null, null, null, ?)
+                    """;
+
+                try (PreparedStatement pstmt = connection.prepareStatement(messageQuery)) {
+                    pstmt.setString(1, student.getStudentId());   // user_id
+                    pstmt.setString(2, student.getStudentId());   // student_id
+                    pstmt.setString(3, student.getStudentName()); // user_name
+
+                    pstmt.executeUpdate();
+                }
+
                 connection.commit();
                 return result;
             } else {

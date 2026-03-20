@@ -3,10 +3,7 @@ package com.lms.view;
 import com.lms.application.Application;
 import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.EnrollmentDTO;
-import com.lms.model.dto.LoginUserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 import com.lms.model.service.StudentService;
 
 import java.util.ArrayList;
@@ -37,25 +34,25 @@ public class StudentView {
             System.out.println("0. 로그아웃");
             System.out.print("번호를 입력해주세요: ");
 
-            int menu = sc.nextInt();
+            String menu = sc.nextLine();
 
             switch (menu) {
-                case 1:
+                case "1":
                     subjectApply();
                     break;
-                case 2:
+                case "2":
                     subjectDelete(); //수강 내역 기능 먼저
                     break;
-                case 3:
+                case "3":
                     subjectView();
                     break;
-                case 4:
+                case "4":
                     messageBox();
                     break;
-                case 5:
+                case "5":
                     editMyInfo();
                     break;
-                case 0:
+                case "0":
                     return;
                 default:
                     System.out.println("⚠️ 잘못된 번호입니다. 1~4번을 입력해주세요.");
@@ -71,6 +68,7 @@ public class StudentView {
         System.out.println("강의 종류: " + course.getClassType());
         System.out.println("학점: " + course.getClassPoint());
         System.out.println("교수: " + course.getProfessorId());
+        System.out.println("수강인원: " + course.getClassTask() + "/" + (int) course.getClassCapacity());
         System.out.println("-------------------------------------------");
     }
 
@@ -86,6 +84,9 @@ public class StudentView {
                     courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
                 }
             }
+            double myGpa = totalScoreView(false);
+            maxClassApply(myGpa);
+
             System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
             String applyClassNo = sc.nextLine();
 
@@ -136,6 +137,20 @@ public class StudentView {
         }
     }
 
+    public void maxClassApply(double gpa) {
+        int limit = 20; //기본 학점
+
+        if (gpa >= 4.0) {
+            limit = 25;
+            System.out.println("우수 성적자로 이번 학기 " + limit + "학점 신청 가능합니다.");
+        } else if (gpa < 2.0) {
+            limit = 10;
+            System.out.println("성적 경고로 이번 학기 " + limit + "학점까지만 신청 가능합니다.");
+        } else {
+            System.out.println("이번 학기 " + limit + "학점 신청 가능합니다.");
+        }
+    }
+
     private CourseDTO timeEqual(String applyClassNo) {
         CourseDTO timeEqual = controller.timeEqual(applyClassNo, loginUser.getUserId());
         return timeEqual;
@@ -178,7 +193,7 @@ public class StudentView {
                     return;
                 }
                 if (scoreMenu.equals("1")) {
-                    totalScoreView();
+                    totalScoreView(true);
                 } else if (scoreMenu.equals("2")) {
                     scoreView(myEnrollList);
                 } else {
@@ -279,21 +294,24 @@ public class StudentView {
         }
     }
 
-    public void totalScoreView() {
+    public double totalScoreView(boolean showFlag) {
         String studentId = loginUser.getUserId();
         List<EnrollmentDTO> totalScoreList = controller.totalScoreView(studentId);
-        System.out.println("======= 전체 성적 조회 =======");
+
+        if (showFlag) {
+            System.out.println("======= 전체 성적 조회 =======");
+        }
 
         double totalScoreSum = 0; //총 학점
-        int totalPoints = 0; //이수 학점
+        int totalPoints = 0;
+        double resultGpa = 0.0;//이수 학점
 
         for (EnrollmentDTO e : totalScoreList) {
-            System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
-            String scoreStr = e.getScore().substring(4, 8);
-            String pointStr = e.getScore().substring(10, 13);
-
-            double score = Double.parseDouble(scoreStr); //글자를 숫자로 바꾸는 형변환
-            double point = Double.parseDouble(pointStr);
+            if (showFlag) {
+                System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
+            }
+            double score = Double.parseDouble(e.getScore().substring(4, 8));
+            double point = Double.parseDouble(e.getScore().substring(10, 13));
 
             totalScoreSum += (score * point);
             totalPoints += (int) point;
@@ -302,13 +320,17 @@ public class StudentView {
         System.out.println("---------------------------");
         if (totalPoints > 0) {
             double gpa = totalScoreSum / totalPoints;
-            double resultGpa = Math.round(gpa * 100) / 100.0;
+            resultGpa = Math.round(gpa * 100) / 100.0;
             System.out.println("총 이수 학점: " + totalPoints);
             System.out.println("전체 평균 평점: " + resultGpa + "/4.5");
         }
-        System.out.println("============================");
-        System.out.println("\n엔터로 뒤로가기");
-        sc.nextLine();
+        if (showFlag) {
+            System.out.println("============================");
+            System.out.println("\n엔터로 뒤로가기");
+            sc.nextLine();
+        }
+
+        return resultGpa;
     }
 
     private void subjectDelete() {
@@ -347,6 +369,10 @@ public class StudentView {
             System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
             String messageMenu = sc.nextLine();
 
+            if (messageMenu.trim().isEmpty()) {
+                continue;
+            }
+
             if (messageMenu.equals("0")) {
                 return;
             } else if (messageMenu.equals("1")) {
@@ -364,39 +390,21 @@ public class StudentView {
     public void messageCheck() {
         System.out.println("======= 내 메시지함 =======");
         String myId = loginUser.getUserId();
-        int count = 0;
-        for (String[] m : Application.totalMessages) {
-            if (m[1].equals(myId)) {
-                count++;
-            }
-        }
+
+        List<MessageDTO> myMessages = controller.messageCheck(myId);
 
         // 2. 개수 출력
-        System.out.println("📢 전체 메시지: " + count + "건");
+        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
         System.out.println("-----------------------------");
 
-        if (count == 0) {
+        if (myMessages.isEmpty()) {
             System.out.println("도착한 메시지가 없습니다.");
         } else {
-            List<StudentDTO> memberList = controller.messageMember();
             // 3. 메시지 내용들 출력
-            for (String[] m : Application.totalMessages) {
-                if (m[1].equals(myId)) {
-                    String senderId = m[0];
-                    String senderName = senderId; // 못 찾을 경우를 대비해 초기값은 ID로!
-
-                    // 🔎 이중 for문: 전체 명단에서 발신자 ID와 같은 사람 찾기
-                    for (StudentDTO s : memberList) {
-                        if (s.getStudentId().equals(senderId)) {
-                            senderName = s.getStudentName(); // 찾았다! "이름 (구분)"
-                            break; // 찾았으니 안쪽 for문은 탈출
-                        }
-                    }
-
-                    System.out.println("발신자: " + senderName + " | 제목: " + m[2]);
-                    System.out.println("내용: " + m[3]);
-                    System.out.println("-----------------------------");
-                }
+            for (MessageDTO m : myMessages) {
+                System.out.println("발신자: " + m.getUserName());
+                System.out.println("내용: " + m.getContent());
+                System.out.println("-----------------------------");
             }
         }
         System.out.print("엔터로 뒤로가기");
@@ -409,18 +417,30 @@ public class StudentView {
         messageMember();
         System.out.print("받는 사람 ID: ");
         String acceptSend = sc.nextLine();
-        System.out.print("제목: ");
-        String messageTitle = sc.nextLine();
         System.out.print("내용: ");
         String messageContent = sc.nextLine();
 
-        // 순서: [0]발신자ID, [1]수신자ID, [2]제목, [3]내용
-        String[] newMsg = {loginUser.getUserId(), acceptSend, messageTitle, messageContent};
-        Application.totalMessages.add(newMsg);
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+        String now = sdf.format(new java.util.Date());
 
-        System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
-        System.out.print("엔터로 뒤로가기");
-        sc.nextLine();
+        MessageDTO newMsg = new MessageDTO();
+        newMsg.setUserId(loginUser.getUserId());
+        newMsg.setStudentId(loginUser.getUserId());
+        newMsg.setReceiverId(acceptSend);
+        newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
+        newMsg.setUserName(loginUser.getUserName());
+
+        int result = controller.messageSend(newMsg);
+
+        if (result > 0) {
+            System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
+            System.out.print("엔터로 뒤로가기");
+            sc.nextLine();
+        } else {
+            System.out.println("메시지 전송에 실패했습니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+        }
     }
 
     public void messageMember() {

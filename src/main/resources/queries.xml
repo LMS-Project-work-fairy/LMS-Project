@@ -90,7 +90,8 @@
         pr.professor_name,
         en.enroll_date,
         (select count(*) from 수강 where class_no = en.class_no) as current_count,
-        c.class_capacity
+        c.class_capacity,
+        c.class_point
         from 수강 en
         join 학생 st on en.student_id = st.student_id
         join 강의 c on en.class_no = c.class_no

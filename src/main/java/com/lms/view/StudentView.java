@@ -75,6 +75,7 @@ public class StudentView {
     public void subjectApply() {
         List<CourseDTO> allClass = controller.findClass();
 
+
         while (true) {
             System.out.println("======= 수강 가능 강의 목록 ======");
             if (allClass == null || allClass.isEmpty()) {
@@ -84,8 +85,8 @@ public class StudentView {
                     courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
                 }
             }
-            double myGpa = totalScoreView(false);
-            maxClassApply(myGpa);
+            double[] gpaPoint = totalScoreView(false);
+            maxClassApply(gpaPoint, 0);
 
             System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
             String applyClassNo = sc.nextLine();
@@ -100,6 +101,28 @@ public class StudentView {
             String confirm = sc.nextLine();
 
             if (confirm.equals("1")) {
+
+                List<EnrollmentDTO> myEnrollList = controller.enrollView(loginUser.getUserId());
+
+                // [추가 2] 입력한 강의 번호(applyClassNo)가 이미 내 목록에 있는지 확인
+                boolean isAlreadyEnrolled = false;
+                if (myEnrollList != null) {
+                    for (EnrollmentDTO e : myEnrollList) {
+                        if (e.getClassNo().equals(applyClassNo)) {
+                            isAlreadyEnrolled = true;
+                            break;
+                        }
+                    }
+                }
+
+                // [추가 3] 이미 신청한 과목이면 컷!
+                if (isAlreadyEnrolled) {
+                    System.out.println("❌ 이미 수강 신청한 과목입니다! (중복 신청 불가)");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue; // 다시 강의 선택 화면으로 점프
+                }
+
                 // [추가] 리스트에서 내가 입력한 번호(applyClassNo)와 똑같은 강의 객체 하나를 찾음
                 CourseDTO applyCourse = null;
                 for (CourseDTO c : allClass) {
@@ -108,6 +131,32 @@ public class StudentView {
                         break;
                     }
                 }
+
+                if (applyCourse == null) {
+                    System.out.println("❌ 잘못된 강의 번호입니다. 다시 입력해주세요.");
+                    continue; // 다시 위로 올라가서 번호 입력받게 만듦
+                }
+
+                double newCoursePoint = Double.parseDouble(applyCourse.getClassPoint());
+                //신청 시 총 평점에 따른 수강 가능 학점 확인
+                if (!maxClassApply(gpaPoint, newCoursePoint)) {
+                    System.out.println("학점 관리가 필요합니다.");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue;
+                }
+
+                int currentCount = Integer.parseInt(applyCourse.getClassTask()); // 님의 출력 로직 참고
+                int maxCapacity = (int) applyCourse.getClassCapacity();
+
+                if (currentCount >= maxCapacity) {
+                    System.out.println("🚨 [신청 불가] 수강 정원이 초과되었습니다!");
+                    System.out.println("현재 인원: " + currentCount + "명 / 정원: " + maxCapacity + "명");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue; // ❌ 더 이상 진행하지 않고 위로 보냄
+                }
+
                 CourseDTO timeEqualClass = controller.timeEqual(applyClassNo, loginUser.getUserId());
                 if (timeEqualClass != null) {
                     System.out.println("🚨시간표가 중복됩니다.");
@@ -117,18 +166,23 @@ public class StudentView {
                     System.out.println("---------------------------------------------");
                     System.out.println("신청 시도한 강의: " + applyCourse.getClassName());
                     System.out.println("신청 시도한 강의 시간: " + applyCourse.getClassTime());
+
+                    System.out.println("엔터로 뒤로가기");
+                    sc.nextLine();
                 } else {
                     int result = controller.addClass(applyClassNo, loginUser.getUserId());
                     if (result > 0) {
                         //addClass(추가) 성공 시
                         System.out.println("✅ " + applyClassNo + " 강의가 신청됐습니다.");
+                        System.out.print("엔터로 뒤로가기");
+                        sc.nextLine();
                     } else {
                         //addClass 실패 시(이 기능 발전 시켜서 인원 초과 상황도 가능?)
                         System.out.println("🚨 실패했습니다. 다시 시도해주세요.");
+                        System.out.print("엔터로 뒤로가기");
+                        sc.nextLine();
                     }
                 }
-                System.out.print("엔터로 뒤로가기");
-                sc.nextLine();
 
             } else {
                 System.out.println("취소합니다.");
@@ -137,18 +191,34 @@ public class StudentView {
         }
     }
 
-    public void maxClassApply(double gpa) {
-        int limit = 20; //기본 학점
+    public boolean maxClassApply(double[] gpaPoint, double newPoint) {
 
-        if (gpa >= 4.0) {
-            limit = 25;
-            System.out.println("우수 성적자로 이번 학기 " + limit + "학점 신청 가능합니다.");
-        } else if (gpa < 2.0) {
+        double gpa = gpaPoint[0];
+        int points = (int)gpaPoint[1];
+
+        int limit = 20; //기본 학점
+        if (gpa < 2.0) {
             limit = 10;
-            System.out.println("성적 경고로 이번 학기 " + limit + "학점까지만 신청 가능합니다.");
-        } else {
-            System.out.println("이번 학기 " + limit + "학점 신청 가능합니다.");
+        } else if (gpa >= 4.0) {
+            limit = 25;
         }
+
+        if (newPoint == 0) {
+            // 목록 조회 시 안내용
+            if (limit == 10) System.out.println("📢 성적 경고로 이번 학기 10학점까지만 신청 가능합니다.");
+            else if (limit == 25) System.out.println("📢 우수 성적자로 이번 학기 25학점 신청 가능합니다.");
+            else System.out.println("📢 이번 학기 20학점 신청 가능합니다.");
+        }
+
+        // 3. 실제 학점 초과 체크
+        if (points + newPoint > limit) {
+            System.out.println("❌ 학점 초과로 신청 불가능합니다.");
+            System.out.println("현재: " + points + " / 신청 과목: " + newPoint
+                    + " \n합계: " + (points + newPoint) + "/" + limit);
+            return false;
+        }
+        return true;
+
     }
 
     private CourseDTO timeEqual(String applyClassNo) {
@@ -194,8 +264,10 @@ public class StudentView {
                 }
                 if (scoreMenu.equals("1")) {
                     totalScoreView(true);
+                    return;
                 } else if (scoreMenu.equals("2")) {
                     scoreView(myEnrollList);
+                    return;
                 } else {
                     System.out.println("옵션 번호를 확인해주세요.");
                 }
@@ -294,7 +366,7 @@ public class StudentView {
         }
     }
 
-    public double totalScoreView(boolean showFlag) {
+    public double[] totalScoreView(boolean showFlag) {
         String studentId = loginUser.getUserId();
         List<EnrollmentDTO> totalScoreList = controller.totalScoreView(studentId);
 
@@ -307,14 +379,23 @@ public class StudentView {
         double resultGpa = 0.0;//이수 학점
 
         for (EnrollmentDTO e : totalScoreList) {
+
+            double point = Double.parseDouble(e.getScore().substring(10, 13));
+            totalPoints += (int) point;
+
+            if (e.getScore() == null || e.getScore().toLowerCase().contains("null")) {
+                if (showFlag) {
+                    System.out.println("강의명: " + e.getClassNo() + " | 성적 미입력");
+                }
+                continue; // 다음 과목으로 넘어감!
+            }
+
             if (showFlag) {
                 System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
             }
             double score = Double.parseDouble(e.getScore().substring(4, 8));
-            double point = Double.parseDouble(e.getScore().substring(10, 13));
 
             totalScoreSum += (score * point);
-            totalPoints += (int) point;
         }
 
         System.out.println("---------------------------");
@@ -330,7 +411,9 @@ public class StudentView {
             sc.nextLine();
         }
 
-        return resultGpa;
+        double[] gpaPoint = {resultGpa, totalPoints};
+
+        return gpaPoint;
     }
 
     private void subjectDelete() {
@@ -340,7 +423,7 @@ public class StudentView {
         displayMyEnrollList(myEnrollList);
 
         System.out.println("위 목록에서 취소할 강의 번호를 입력해주세요.");
-        System.out.print("수강 취소할 강의 번호: ");
+        System.out.print("수강 취소할 강의 번호(돌아가기는 0): ");
         String deleteClassNo = sc.nextLine();
 
         if (deleteClassNo.equals("0")) return; //취소 방지용

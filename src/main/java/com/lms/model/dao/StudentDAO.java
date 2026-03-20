@@ -154,6 +154,7 @@ public class StudentDAO {
                 String detailInfo = (("학생명: " + rset.getString("student_name") +
                         ("\n강의명: " + rset.getString("class_name") + " (" + rset.getString("class_type") + ")")+
                         ("\n강의실: " + rset.getString("class_room") + " (" + rset.getString("class_time") + ")") +
+                        ("\n학점: " + rset.getInt("class_point")) +
                         ("\n교수명: " + rset.getString("professor_name")) +
                         ("\n신청일: " + rset.getString("enroll_date")) +
                         ("\n수강신청 인원: " + rset.getString("current_count")) + "/" + (int) rset.getFloat("class_capacity")));

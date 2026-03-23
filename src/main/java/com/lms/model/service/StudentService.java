@@ -2,10 +2,7 @@ package com.lms.model.service;
 
 import com.lms.controller.StudentController;
 import com.lms.model.dao.StudentDAO;
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.EnrollmentDTO;
-import com.lms.model.dto.LoginUserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class StudentService {
+
 
 
     public class StudentView {
@@ -133,6 +131,22 @@ public class StudentService {
     public int editMyInfo(StudentDTO myInfo) {
         try {
             return studentDAO.editMyInfo(myInfo);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int messageSend(MessageDTO msg) {
+        try {
+            return studentDAO.sendMessage(msg);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<MessageDTO> messageCheck(String myId) {
+        try {
+            return studentDAO.messageCheck(myId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

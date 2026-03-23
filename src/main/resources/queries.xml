@@ -65,7 +65,9 @@
         c.class_type,
         c.class_room,
         c.class_point,
-        pr.professor_name
+        pr.professor_name,
+        c.class_capacity,
+        (select count(*) from 수강 en where en.class_no = c.class_no) as current_count
         from 강의 c
         join 교수 pr on c.professor_id = pr.professor_id
     </query>
@@ -87,7 +89,9 @@
         c.class_room,
         pr.professor_name,
         en.enroll_date,
-        (select count(*) from 수강 where class_no = en.class_no) as current_count
+        (select count(*) from 수강 where class_no = en.class_no) as current_count,
+        c.class_capacity,
+        c.class_point
         from 수강 en
         join 학생 st on en.student_id = st.student_id
         join 강의 c on en.class_no = c.class_no
@@ -197,6 +201,25 @@
                 student_phone = ?,
                 student_pw = ?
         where student_id = ?
+    </query>
+
+    <query key="message.newMessage">
+        update 메시지
+            set user_id = ?,
+            student_id = ?,
+            receiver_id = ?,
+            content = ?,
+            user_name = ?
+        where student_id = ?
+    </query>
+
+    <query key="message.contentView">
+        select
+            user_id,
+            user_name,
+            content
+        from 메시지
+        where receiver_id = ?
     </query>
 
 </properties>

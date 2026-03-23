@@ -274,11 +274,6 @@ public class MainView {
         }
     }
 
-//    public ProfessorDTO inputProfessorInfo() {
-//        System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
-//        ProfessorDTO professorDTO = new ProfessorDTO();
-//
-//    }
     public String inputProfessorId () {
         System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
         System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
@@ -289,7 +284,7 @@ public class MainView {
 
 
 
-        public ProfessorDTO inputRestOfProfessorInfo(String inputId) {
+        public ProfessorDTO inputRestOfProfessorInfo(String inputId, AuthService authService) {
             System.out.println("\n✅ 번호 확인 완료.");
             ProfessorDTO professorDTO = new ProfessorDTO();
             professorDTO.setProfessorId(inputId);
@@ -301,24 +296,6 @@ public class MainView {
 
         while (step <= 7) {
             switch (step) {
-//                case 1 :
-//                    System.out.print("교수 번호(P0000) \n");
-//                    String id = sc.nextLine().trim();
-//                    if ("0".equalsIgnoreCase(id)) {
-//                        return null;
-//                    }
-//                    if (authService.isDuplicateId(id)) {
-//                        System.out.println("🚨 [중복] 이미 사용 중인 번호입니다. 처음으로 돌아갑니다.");
-//                        return null;
-//                    }
-//                    if (id.matches("^P\\d{4}$")) {
-//                        professorDTO.setProfessorId(id);
-//                        System.out.println("✅ 교수 번호가 일치합니다.");
-//                        step++;
-//                    } else {
-//                        System.out.println("🚨 [입력 오류] 교수 번호는 'P'로 시작하는 숫자 4자리여야 합니다.");
-//                    }
-//                    break;
 
                 case 2 :
                     System.out.print("이름을 입력해주세요 \n");
@@ -346,6 +323,11 @@ public class MainView {
                     if (inputNo.length() == 13) {
                         String formattedNo = inputNo.substring(0,6) + "-" + inputNo.substring(6);
                         professorDTO.setProfessorNo(formattedNo);
+
+                        if (authService.isDuplicateNo(formattedNo)) {
+                            System.out.println("🚨 [중복 오류] 이미 등록된 주민번호입니다. 다시 입력해주세요.");
+                            continue;
+                        }
 
                         System.out.println("➡️ 입력 확인: " + formattedNo);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
@@ -386,6 +368,11 @@ public class MainView {
                         continue;
                     }
 
+                    if (authService.isDuplicateEmail(email)) {
+                        System.out.println("🚨 [중복 오류] 이미 등록된 이메일입니다. 다시 입력해주세요.");
+                        continue;
+                    }
+
                     if (email.matches(emailRegex)) {
                         professorDTO.setProfessorEmail(email);
                         System.out.println("✅ 이메일 형식이 일치합니다.");
@@ -405,13 +392,14 @@ public class MainView {
                         continue;
                     }
 
-                    if (inputPhone.matches("^01\\d{8,9}$")) {
-                        String formattedPhone;
-                        if (inputPhone.length() == 11) {
-                            formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 7) + "-" + inputPhone.substring(7);
-                        } else {
-                            formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 6) + "-" + inputPhone.substring(6);
+                    if (inputPhone.matches("^010\\d{8}$")) {
+                        String formattedPhone = "010-" + inputPhone.substring(3, 7) + "-" + inputPhone.substring(7);
+
+                        if (authService.isDuplicatePhone(formattedPhone)) {
+                            System.out.println("🚨 [중복 오류] 이미 등록된 전화번호입니다. 다시 입력해주세요.");
+                            continue;
                         }
+
                         professorDTO.setProfessorPhone(formattedPhone);
                         System.out.println("➡️ 변환된 형식: " + formattedPhone);
                         System.out.print("이 정보가 맞습니까? (y/n): ");

@@ -108,7 +108,7 @@ public class AuthService {
                 throw new RuntimeException("\n주민번호 형식이 올바르지 않습니다. (######-#######)");
             }
 
-            if (!professorDTO.getProfessorPhone().matches("^\\d{3}-\\d{3,4}-\\d{4}$")) {
+            if (!professorDTO.getProfessorPhone().matches("^\\d{3}-\\d{4}-\\d{4}$")) {
                 throw new RuntimeException("\n전화번호 형식이 올바르지 않습니다. (010-####-####)");
             }
 
@@ -160,22 +160,37 @@ public class AuthService {
         }
     }
 
-//    public boolean registerProfessor(ProfessorDTO professorDTO) {
-//        Connection con = JDBCTemplate.getConnection();
-//
-//        try {
-//            int result = ProfessorDTO.insertProfessor(con, professorDTO);
-//            MessageDTO.professorMsg = new MessageDTO();
-//            professorMSG.setReceiverId(professorDTO.getProfessorId());
-//            professorMSG.setReceiverName(professorDTO.setProfessorName());
-//
-//            JDBCTemplate.commit(con);
-//            return true;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            JDBCTemplate.close(con);
-//        }
-//    } return false;
+    public boolean isDuplicateNo(String professorNo) {
+        Connection con = JDBCTemplate.getConnection();
+        try {
+            return professorDAO.existByNo(con, professorNo);
+        } catch (SQLException e) {
+            throw new RuntimeException("중복 체크 중 DB 오류 발생");
+        } finally {
+            JDBCTemplate.close(con);
+        }
+    }
+
+    public boolean isDuplicatePhone(String professorPhone) {
+        Connection con = JDBCTemplate.getConnection();
+        try {
+            return professorDAO.existByPhone(con, professorPhone);
+        } catch (SQLException e) {
+            throw new RuntimeException("중복 체크 중 DB 오류 발생");
+        } finally {
+            JDBCTemplate.close(con);
+        }
+    }
+
+    public boolean isDuplicateEmail(String professorEmail) {
+        Connection con = JDBCTemplate.getConnection();
+        try {
+            return professorDAO.existByEmail(con, professorEmail);
+        } catch (SQLException e) {
+            throw new RuntimeException("중복 체크 중 DB 오류 발생");
+        } finally {
+            JDBCTemplate.close(con);
+        }
+    }
 
 }

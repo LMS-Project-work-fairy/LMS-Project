@@ -4,6 +4,7 @@ import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
 import com.lms.model.dto.UserDTO;
 import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.UserMessageDTO;
 
 
 import java.sql.Connection;

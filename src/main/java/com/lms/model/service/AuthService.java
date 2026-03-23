@@ -9,15 +9,20 @@ import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
 import com.lms.model.dto.*;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class AuthService {
 
     private final ProfessorDAO professorDAO;
-    private final StudentDAO studentDAO;
+    private final StudentDAO studentDAO;   // 현재는 거의 안 쓰지만 생성자 호환 때문에 유지
+    private int deviceFailCount = 0;
+    private long deviceLockUntil = 0L;
+    private int deviceLockLevel = 0;
 
     public AuthService(StudentDAO studentDAO, ProfessorDAO professorDAO) {
         this.studentDAO = studentDAO;
@@ -31,11 +36,11 @@ public class AuthService {
         }
 
         Connection con = JDBCTemplate.getConnection();
-        StudentDAO studentDAO = new StudentDAO(con);
+        StudentDAO loginStudentDAO = new StudentDAO(con);
 
         try {
             if ("STUDENT".equalsIgnoreCase(request.getRole())) {
-                return studentDAO.loginStudent(request);
+                return loginStudentDAO.loginStudent(request);
             } else if ("PROFESSOR".equalsIgnoreCase(request.getRole())) {
                 return professorDAO.loginProfessor(con, request);
             }
@@ -44,6 +49,8 @@ public class AuthService {
             JDBCTemplate.close(con);
         }
     }
+
+
 
     public int registerStudent(StudentDTO student) {
 
@@ -57,13 +64,13 @@ public class AuthService {
         Connection connection = JDBCTemplate.getConnection();
 
         try {
-            StudentDAO studentDAO = new StudentDAO(connection);
+            StudentDAO registerStudentDAO = new StudentDAO(connection);
 
-            if (studentDAO.existsByStudentId(student.getStudentId())) {
+            if (registerStudentDAO.existsByStudentId(student.getStudentId())) {
                 throw new RuntimeException("이미 사용 중인 학번입니다.");
             }
 
-            int result = studentDAO.save(student);
+            int result = registerStudentDAO.save(student);
 
             if (result > 0) {
 

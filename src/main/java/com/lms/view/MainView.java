@@ -22,10 +22,10 @@ public class MainView {
     public int displayMainMenu() {
         while (true) {
             System.out.println("\n========== LMS 메인 ==========");
-            System.out.println("1. 로그인");
-            System.out.println("2. 학생 회원가입");
-            System.out.println("3. 교수 회원가입");
-            System.out.println("0. 종료");
+            System.out.println("🛂로그인(1)");
+            System.out.println("🧑‍🎓학생 회원가입(2)");
+            System.out.println("🧑‍🏫교수 회원가입(3)");
+            System.out.println("💤종료(0)");
             System.out.print("메뉴 선택: ");
 
             try {
@@ -42,8 +42,9 @@ public class MainView {
 
     public LoginRequestDTO inputLoginInfo() {
         System.out.println("\n========== 로그인 ==========");
-        System.out.println("1. 학생");
-        System.out.println("2. 교수");
+        System.out.println("🧑‍🎓학생(1)");
+        System.out.println("🧑‍🏫교수(2)");
+        System.out.println("🔙뒤로가기(0)");
         System.out.print("로그인 유형 선택: ");
 
         int roleMenu;
@@ -51,8 +52,13 @@ public class MainView {
         try {
             roleMenu = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
-            displayMessage("로그인 유형은 숫자로 입력해주세요.");
-            return null;
+            displayMessage("로그인 유형은 숫자로 입력해주세요.🚨");
+            continue;
+        }
+
+        if(roleMenu == 0) {
+            return new LoginRequestDTO("BACK", "", "");
+
         }
 
         String role;

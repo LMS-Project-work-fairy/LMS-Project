@@ -10,6 +10,8 @@ import com.lms.model.service.AuthService;
 import com.lms.model.service.StudentService;
 import com.lms.view.MainView;
 import com.lms.view.StudentView;
+import java.util.Random;
+import java.util.Scanner;
 
 import java.sql.Connection;
 
@@ -20,7 +22,8 @@ public class AuthController {
 
     private final MainView mainView;
     private final AuthService authService;
-
+    private final Scanner scanner = new Scanner(System.in);
+    private final Random random = new Random();
 
     public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
@@ -29,55 +32,167 @@ public class AuthController {
     }
 
     // 로그인 기능 로직
-
     public void login() {
+
         while (true) {
+
             LoginRequestDTO request = mainView.inputLoginInfo();
 
             if (request == null) {
-                mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.");
+                mainView.displayMessage("로그인 정보 입력이 올바르지 않습니다.‼️");
                 return;
             }
-            if ("BACK".equals(request.getRole())) {
+
+            if ("BACK".equalsIgnoreCase(request.getRole())) {
                 mainView.displayMessage("메인 화면으로 돌아갑니다.");
                 return;
             }
 
-            LoginUserDTO loginUser = authService.login(request);
+            // 1. 잠금 여부 확인
+            if (authService.isDeviceLocked()) {
+                long remain = authService.getRemainingDeviceLockSeconds();
+                int lockLevel = authService.getCurrentDeviceLockLevel();
 
-            if (loginUser == null) {
-                mainView.displayMessage("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+                mainView.displayMessage(
+                        "현재 기기에서 로그인 시도가 잠겨 있습니다. "
+                                + formatSeconds(remain)
+                                + " 후 다시 시도해주세요. "
+                                + "(잠금 단계: " + lockLevel + "😢)"
+                );
                 continue;
             }
 
-            if ("STUDENT".equals(loginUser.getRole())) {
-                System.out.println("학생 계정으로 로그인 성공했습니다.");
-                // 나중에 학생 기능 연결
-                // new StudentController().openStudentMain();
+            // 2. 일정 횟수 이상 실패 시 사람 확인
+            if (authService.needHumanCheck(request.getRole())) {
+                mainView.displayMessage("로봇확인 🚨 보안숫자를 입력해주세요.🤖");
+
+                boolean passHumanCheck = runHumanCheck();
+
+                if (!passHumanCheck) {
+                    mainView.displayMessage("사람 확인에 실패했습니다. 다시 로그인해주세요.⛔");
+                    continue;
+                }
+
+                mainView.displayMessage("사람 확인에 성공했습니다.✅");
+            }
+
+            // 3. 실제 로그인 시도
+            LoginUserDTO loginUser = authService.login(request);
+
+            if (loginUser == null) {
+                int failCount = authService.recordLoginFailure(request.getRole());
+
+                if (authService.isDeviceLocked()) {
+                    long remain = authService.getRemainingDeviceLockSeconds();
+                    int lockLevel = authService.getCurrentDeviceLockLevel();
+
+                    mainView.displayMessage(
+                            "로그인 실패가 누적되어 현재 기기에서 로그인이 잠겼습니다. ⚠️"
+                                    + formatSeconds(remain)
+                                    + " 후 다시 시도해주세요. "
+                                    + "(잠금 단계: " + lockLevel + ")"
+                    );
+                } else {
+                    printFailureMessage(request, failCount);
+                }
+                continue;
+            }
+            authService.recordLoginSuccess();
+
+            // 성공 시 환영 메시지 출력
+            if ("STUDENT".equalsIgnoreCase(loginUser.getRole())) {
+
+                printSuccessMessage(loginUser);
 
                 Connection con = JDBCTemplate.getConnection();
                 StudentService studentService = new StudentService(new StudentDAO(con));
                 StudentController studentController = new StudentController(studentService);
                 StudentView studentView = new StudentView(studentController, loginUser);
+
                 studentView.displayStudentMenu();
                 break;
 
-                //여기에 학생 기능
-//            Connection con = JDBCTemplate.getConnection();
-//            StudentDAO studentDAO = new StudentDAO(con);
-//            StudentService studentService = new StudentService(new StudentDAO(JDBCTemplate.getConnection()));
-//            StudentController studentController = new StudentController(studentService);
-//            com.lms.view.StudentView studentView = new com.lms.view.StudentView(studentController, loginUser);
+            } else if ("PROFESSOR".equalsIgnoreCase(loginUser.getRole())) {
 
-            } else if ("PROFESSOR".equals(loginUser.getRole())) {
-                System.out.println("교수 계정으로 로그인 성공했습니다.");
+                printSuccessMessage(loginUser);
                 new ProfessorController().startProfessorMenu(loginUser.getUserId());
                 break;
+
             } else {
                 mainView.displayMessage("알 수 없는 사용자 권한입니다.");
             }
         }
     }
+
+    private String formatSeconds(long seconds) {
+        long minutes = seconds / 60;
+        long remainSeconds = seconds % 60;
+
+        if (minutes > 0) {
+            return minutes + "분 " + remainSeconds + "초";
+        }
+        return seconds + "초";
+    }
+
+    private String getRoleName(String role) {
+        return "PROFESSOR".equalsIgnoreCase(role) ? "교수" : "학생";
+    }
+
+    private boolean runHumanCheck() {
+        int first = random.nextInt(9) + 1;
+        int second = random.nextInt(9) + 1;
+        boolean plus = random.nextBoolean();
+
+        if (!plus && first < second) {
+            int temp = first;
+            first = second;
+            second = temp;
+        }
+
+        int answer = plus ? first + second : first - second;
+        String operator = plus ? "+" : "-";
+
+        System.out.println("\n[사람 확인 문제]");
+        System.out.println("아래 계산 결과를 입력하세요.");
+        System.out.print(first + " " + operator + " " + second + " = ");
+
+        String input = scanner.nextLine().trim();
+
+        try {
+            return Integer.parseInt(input) == answer;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void printSuccessMessage(LoginUserDTO loginUser) {
+        String roleName = getRoleName(loginUser.getRole());
+        mainView.displayMessage("[" + roleName + " 로그인 성공] " + loginUser.getUserName() + "님, 환영합니다.");
+    }
+
+    private void printFailureMessage(LoginRequestDTO request, int failCount) {
+        int lockThreshold = authService.getLockThreshold(request.getRole());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+        sb.append(" (전체 실패 누적: ").append(failCount).append("/").append(lockThreshold).append(")");
+
+        if (failCount == 1) {
+            sb.append("\nCaps Lock 상태를 확인해주세요.");
+        }
+
+        if (failCount % lockThreshold == lockThreshold - 1) {
+            sb.append("\n한 번 더 실패하면 현재 기기에서 로그인이 제한됩니다.");
+        }
+
+        mainView.displayMessage(sb.toString());
+    }
+
+
+
+
+
+
 
     public void registerStudent () {
         try {

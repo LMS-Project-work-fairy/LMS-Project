@@ -78,6 +78,8 @@ public class ProfessorDTO {
         ProfessorPw = professorPw;
     }
 
+
+
     @Override
     public String toString() {
         return "ProfessorDTO{" +

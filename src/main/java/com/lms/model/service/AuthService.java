@@ -151,4 +151,44 @@ public class AuthService {
             }
         }
     }
+
+    public boolean existsStudentId(String studentId) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByStudentId(studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("학번 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
+    public boolean existsStudentEmail(String email) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByEmail(email);
+        } catch (SQLException e) {
+            throw new RuntimeException("이메일 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
+    public boolean existsStudentNo(String studentNo) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByStudentNo(studentNo);
+        } catch (SQLException e) {
+            throw new RuntimeException("주민번호 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
 }

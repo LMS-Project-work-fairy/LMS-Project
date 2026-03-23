@@ -31,6 +31,16 @@
         where student_id = ?
     </query>
 
+    <query key="students.existsByEmail">
+        SELECT COUNT(*)
+        FROM 학생
+        WHERE student_email = ?
+    </query>
+
+    <query key="students.existsByStudentNo">
+        SELECT COUNT(*) FROM 학생 WHERE student_no = ?
+    </query>
+
     <query key="loginStudent">
         SELECT student_id, student_name
         FROM 학생

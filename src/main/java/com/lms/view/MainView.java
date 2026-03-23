@@ -76,14 +76,8 @@ public class MainView {
 
                 case 0: { // 학번
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 메인으로 돌아가기: 0 *");
                     System.out.print("학번 (* 숫자 8자리를 입력해주세요 *) : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("\\d{8}")) {
                         student.setStudentId(input);
@@ -96,18 +90,8 @@ public class MainView {
 
                 case 1: { // 이름
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("이름 : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("^[가-힣a-zA-Z]+$")) {
                         student.setStudentName(input);
@@ -120,18 +104,8 @@ public class MainView {
 
                 case 2: { // 주민등록번호
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("주민등록번호 (* 123456-1234567 형식으로 입력해주세요 *) : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("\\d{6}-\\d{7}")) {
                         student.setStudentNo(input);
@@ -144,19 +118,9 @@ public class MainView {
 
                 case 3: { // 주소
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("주소 : ");
                     System.out.println("* 정확한 주소를 모르시는 경우, 시/군/구 까지만 입력해주세요 *");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches(".*[가-힣a-zA-Z]+.*")) {
                         student.setStudentAddress(input);
@@ -169,18 +133,8 @@ public class MainView {
 
                 case 4: { // 이메일
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("이메일 (* 이메일 형식을 준수해 주세요 *) : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                         student.setStudentEmail(input);
@@ -193,18 +147,8 @@ public class MainView {
 
                 case 5: { // 전화번호
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("전화번호 (* 번호 중간에 '-'도 입력해주세요 *) : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("^010-\\d{4}-\\d{4}$")) {
                         student.setStudentPhone(input);
@@ -217,18 +161,8 @@ public class MainView {
 
                 case 6: { // 비밀번호
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("비밀번호 (* 비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상이어야 합니다 *) : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$")) {
                         student.setStudentPw(input);
@@ -241,18 +175,8 @@ public class MainView {
 
                 case 7: { // 비밀번호 확인
                     System.out.println("[학생 회원가입]");
-                    System.out.println("* 이전 단계: 1 | 메인으로: 0 *");
                     System.out.print("확인을 위해 비밀번호를 다시 입력해주세요 : ");
                     String input = sc.nextLine();
-
-                    if (input.equals("1")) {
-                        step--;
-                        continue;
-                    }
-                    if (input.equals("0")) {
-                        System.out.println("메인 화면으로 돌아갑니다.\n");
-                        return null;
-                    }
 
                     if (input.equals(student.getStudentPw())) {
                         return student;

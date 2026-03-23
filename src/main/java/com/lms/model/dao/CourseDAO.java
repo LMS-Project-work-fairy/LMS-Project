@@ -1,7 +1,11 @@
 package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
-import com.lms.model.dto.*;
+import com.lms.model.dto.EnrollmentCourseDTO;
+import com.lms.model.dto.MessageDTO;
+import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.UserDTO;
+import com.lms.model.dto.UserMessageDTO;
 
 
 import java.sql.Connection;
@@ -302,7 +306,7 @@ public class CourseDAO {
                 UserMessageDTO msg = new UserMessageDTO();
                 msg.setUserId(rset.getString("user_id"));
                 msg.setUserName(rset.getString("user_name"));
-                msg.setContent(rset.getString("content")+ " \n(발신일: " + now + ")");
+                msg.setContent(rset.getString("content"));
                 list.add(msg);
             }
         } catch (SQLException e) { e.printStackTrace(); }

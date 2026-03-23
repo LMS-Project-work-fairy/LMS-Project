@@ -607,9 +607,10 @@ public class StudentView {
                 String lastDate = "";
                 for (MessageDTO m : chatHistory) {
                     String fullContent = m.getContent();
-                    String pureContent = fullContent;
-                    String timePart = "";
-                    String datePart = "";
+                    String senderId = extractOnlyId(m.getUserId());
+                    String pureContent = extractPureContent(m.getContent());
+                    String datePart = extractDatePart(m.getContent());
+                    String timePart = extractTimePart(m.getContent());
 
                     // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
                     if (fullContent.contains("(발신일: ")) {
@@ -630,10 +631,14 @@ public class StudentView {
                         lastDate = datePart; // 방금 출력한 날짜를 기억!
                     }
 
-                    // 🚩 4. 발신자 이름 결정
-                    String senderDisplay = m.getUserId().contains(myId) ? "[나]" : "[" + m.getUserId() + "]";
 
-                    // 🚩 5. 최종 예쁜 출력: [나] 내용 (15:40:48)
+
+                    if (!datePart.equals(lastDate)) {
+                        System.out.println("\n ------- " + datePart + " -------");
+                        lastDate = datePart;
+                    }
+
+                    String senderDisplay = senderId.equals(myId) ? "[나]" : "[" + m.getUserId() + "]";
                     System.out.println(senderDisplay + "(" + timePart.substring(0, 5) + ") " + pureContent);
 
                 }
@@ -673,7 +678,55 @@ public class StudentView {
             }
         }
     }
+    private String extractOnlyId(String display) {
+        if (display == null || display.isBlank()) return "";
+        int start = display.lastIndexOf('(');
+        int end = display.lastIndexOf(')');
+        if (start >= 0 && end > start) {
+            return display.substring(start + 1, end).trim();
+        }
+        return display.trim();
+    }
 
+    private String extractPureContent(String content) {
+        if (content == null || content.isBlank()) return "(내용 없음)";
+
+        String marker = "(발신일:";
+        int idx = content.lastIndexOf(marker);
+
+        if (idx < 0) return content.trim();
+        return content.substring(0, idx).trim();
+    }
+
+    private String extractDatePart(String content) {
+        if (content == null) return "날짜 미상";
+
+        String marker = "(발신일:";
+        int start = content.lastIndexOf(marker);
+        int end = content.lastIndexOf(")");
+
+        if (start < 0 || end <= start) return "날짜 미상";
+
+        String raw = content.substring(start + marker.length(), end).trim();
+        return raw.length() >= 10 ? raw.substring(0, 10) : "날짜 미상";
+    }
+
+    private String extractTimePart(String content) {
+        if (content == null) return "--:--";
+
+        String marker = "(발신일:";
+        int start = content.lastIndexOf(marker);
+        int end = content.lastIndexOf(")");
+
+        if (start < 0 || end <= start) return "--:--";
+
+        String raw = content.substring(start + marker.length(), end).trim();
+
+        if (raw.length() >= 16) {
+            return raw.substring(11, 16); // yyyy-MM-dd HH:mm:ss 기준
+        }
+        return "--:--";
+    }
 
     public void messageSend() {
         System.out.println("======= 메시지 전송 ========");

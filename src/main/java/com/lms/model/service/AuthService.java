@@ -155,14 +155,14 @@ public class AuthService {
             if (result > 0) {
 
                 String messageQuery = """
-                    insert into 메시지 (user_id, student_id, professor_id, receiver_id, content, user_name)
-                    values (?, ?, null, null, null, ?)
+                    insert into 메시지 (user_id, student_id, professor_id,user_name)
+                    values (?, ?, null,?)
                     """;
 
                 try (PreparedStatement pstmt = connection.prepareStatement(messageQuery)) {
                     pstmt.setString(1, student.getStudentId());   // user_id
                     pstmt.setString(2, student.getStudentId());   // student_id
-                    pstmt.setString(3, student.getStudentName()); // user_name
+                    pstmt.setString(4, student.getStudentName()); // user_name
 
                     pstmt.executeUpdate();
                 }

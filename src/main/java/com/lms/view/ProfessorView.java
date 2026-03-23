@@ -322,7 +322,10 @@ public class ProfessorView {
             MessageDTO newMsg = new MessageDTO();
             newMsg.setUserId(myUserId);
             newMsg.setReceiverId(targetUserId);
-            newMsg.setContent(content);
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+            String now = sdf.format(new java.util.Date());
+
+            newMsg.setContent(content + " \n(발신일: " + now + ")");
 
             int result = controller.sendChatMessage(newMsg);
             if (result <= 0) {

@@ -28,6 +28,7 @@ public class AuthController {
     public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
         this.authService = authService;
+        this.mainView.setAuthService(authService);
     }
 
     // 로그인 기능 로직
@@ -192,47 +193,83 @@ public class AuthController {
 
 
 
-        public void registerStudent () {
-            try {
-                StudentDTO newStudent = mainView.inputStudentInfo();
 
-                int result = authService.registerStudent(newStudent);
+    public void registerStudent () {
+        try {
+            StudentDTO newStudent = mainView.inputStudentInfo(
+                    studentId -> authService.existsStudentId(studentId)
+            );
 
-                if (result > 0) {
-                    mainView.displayMessage("회원가입에 성공하였습니다!");
-                } else {
-                    mainView.displayMessage("회원가입에 실패하였습니다!");
-                }
-            } catch (RuntimeException e) {
-                mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            if (newStudent == null) {
+                return; // 메인으로 돌아간 경우
             }
-        }
 
+            int result = authService.registerStudent(newStudent);
+
+            if (result > 0) {
+                mainView.displayMessage("회원가입에 성공하였습니다!");
+            } else {
+                mainView.displayMessage("회원가입에 실패하였습니다!");
+            }
+        } catch (RuntimeException e) {
+            mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 
         public void registerProfessor () {
 
             String secretKey = "LMS-ADMIN-777";
+            String inputId = null;
+
             while (true) {
-                System.out.println("\n 🔐교수 가입 인증 코드를 입력하세요 (취소:q)");
+                System.out.println("\n 🔐교수 가입 인증 코드를 입력하세요 (취소:0)");
                 System.out.println("\n 인증코드 \n");
                 String inputKey = new java.util.Scanner(System.in).nextLine().trim();
 
-                if ("q".equalsIgnoreCase(inputKey)) {
+                if ("0".equalsIgnoreCase(inputKey)) {
                     System.out.println("🚫 가입 절차를 중단합니다.");
                     return;
                 }
+
                 if (secretKey.equalsIgnoreCase(inputKey)) {
                     System.out.println("✅ 인증 성공! 가입 창으로 이동합니다.");
-                    break;
+                    break; 
                 } else {
                     System.out.println("🚨 인증 코드가 일치하지 않습니다. 다시 입력해주세요.");
                 }
             }
 
-            ProfessorDTO professorDTO = mainView.inputProfessorInfo();
+
+
+            while(true) {
+                inputId = mainView.inputProfessorId();
+
+                if (inputId == null) {
+                    System.out.println("🚫 아이디 입력을 취소하셨습니다. 메인으로 돌아갑니다.");
+                    return;
+                }
+
+                if (authService.isDuplicateId(inputId)) {
+                    mainView.displayMessage("🚨 [중복] 이미 가입된 교수 번호입니다. 가입이 불가능합니다.");
+                    continue;
+                }
+                break;
+            }
+
+//            ProfessorDTO professorDTO = mainView.inputProfessorInfo();
+            ProfessorDTO professorDTO = mainView.inputRestOfProfessorInfo(inputId);
+//
+//            professorDTO.setProfessorId(profId);
+//
+//            authService.insertProfessor(professorDTO);
 
             if (professorDTO == null) {
                 System.out.println("🚫입력을 취소하셨습니다.");
+                return;
+            }
+
+            if (authService.isDuplicateId(professorDTO.getProfessorId())) {
+                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorId() + "'은(는) 이미 사용 중입니다.");
                 return;
             }
 

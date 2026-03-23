@@ -3,12 +3,21 @@ package com.lms.view;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
+import com.lms.model.service.AuthService;
+import java.util.function.Predicate;
 
 import java.util.Scanner;
 
 public class MainView {
 
     private final Scanner sc = new Scanner(System.in);
+    private AuthService authService;
+
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
+
 
     public int displayMainMenu() {
         while (true) {
@@ -32,7 +41,6 @@ public class MainView {
     }
 
     public LoginRequestDTO inputLoginInfo() {
-        while(true) {
         System.out.println("\n========== 로그인 ==========");
         System.out.println("🧑‍🎓학생(1)");
         System.out.println("🧑‍🏫교수(2)");
@@ -50,6 +58,7 @@ public class MainView {
 
         if(roleMenu == 0) {
             return new LoginRequestDTO("BACK", "", "");
+
         }
 
         String role;
@@ -59,7 +68,7 @@ public class MainView {
             role = "PROFESSOR";
         } else {
             displayMessage("잘못된 로그인 유형입니다.");
-            continue;
+            return null;
         }
 
         System.out.print("아이디 입력: ");
@@ -68,11 +77,10 @@ public class MainView {
         System.out.print("비밀번호 입력: ");
         String password = sc.nextLine();
 
-        return new LoginRequestDTO(role,userId,password);
-        }
+        return new LoginRequestDTO(role, userId, password);
     }
 
-    public StudentDTO inputStudentInfo() {
+    public StudentDTO inputStudentInfo(Predicate<String> isDuplicateStudentId) {
         System.out.println("========== 학생 회원가입 ==========\n");
 
         StudentDTO student = new StudentDTO();
@@ -92,13 +100,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("\\d{8}")) {
-                        student.setStudentId(input);
-                        step++;
-                    } else {
+                    if (!input.matches("\\d{8}")) {
                         System.out.println("❌ 학번은 숫자 8자리입니다. 다시 입력해주세요.\n");
+                        break;
                     }
-                    break;
+
+                    if (isDuplicateStudentId.test(input)) {
+                        System.out.println("❌ 이미 존재하는 아이디입니다. 다시 입력해주세요.\n");
+                        break;
+                    }
+
+                    student.setStudentId(input);
+                    step++;
                 }
 
                 case 1: { // 이름
@@ -140,13 +153,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("\\d{6}-\\d{7}")) {
-                        student.setStudentNo(input);
-                        step++;
-                    } else {
-                        System.out.println("❌ 주민등록번호는 123456-1234567 형식입니다.\n");
+                    if (!input.matches("\\d{6}-\\d{7}")) {
+                        System.out.println("❌ 주민등록번호 형식이 올바르지 않습니다.\n");
+                        break;
                     }
-                    break;
+
+                    if (authService.existsStudentNo(input)) {
+                        System.out.println("❌ 이미 등록된 주민등록번호입니다.\n");
+                        break;
+                    }
+
+                    student.setStudentNo(input);
+                    step++;
                 }
 
                 case 3: { // 주소
@@ -189,13 +207,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-                        student.setStudentEmail(input);
-                        step++;
-                    } else {
+                    if (!input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                         System.out.println("❌ 올바른 이메일 형식이 아닙니다.\n");
+                        break;
                     }
-                    break;
+
+                    if (isDuplicateStudentId != null && authService.existsStudentEmail(input)) {
+                        System.out.println("❌ 이미 사용 중인 이메일입니다.\n");
+                        break;
+                    }
+
+                    student.setStudentEmail(input);
+                    step++;
                 }
 
                 case 5: { // 전화번호
@@ -272,34 +295,33 @@ public class MainView {
         }
     }
 
-    public ProfessorDTO inputProfessorInfo() {
-        System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 'b', 취소는 'q' 입니다.)");
-        ProfessorDTO professorDTO = new ProfessorDTO();
 
-        int step = 1;
+    public String inputProfessorId () {
+        System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
+        System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
+        String id = sc.nextLine().trim();
+        if ("0".equalsIgnoreCase(id)) return null;
+        return id;
+    }
+
+
+
+        public ProfessorDTO inputRestOfProfessorInfo(String inputId) {
+            System.out.println("\n✅ 번호 확인 완료.");
+            ProfessorDTO professorDTO = new ProfessorDTO();
+            professorDTO.setProfessorId(inputId);
+
+
+        int step = 2;
 
         while (step <= 7) {
             switch (step) {
-                case 1 :
-                    System.out.print("교수 번호(P0000) \n");
-                    String id = sc.nextLine().trim();
-                    if ("q".equalsIgnoreCase(id)) {
-                        return null;
-                    }
-                    if (id.matches("^P\\d{4}$")) {
-                        professorDTO.setProfessorId(id);
-                        System.out.println("✅ 교수 번호가 일치합니다.");
-                        step++;
-                    } else {
-                        System.out.println("🚨 [입력 오류] 교수 번호는 'P'로 시작하는 숫자 4자리여야 합니다.");
-                    }
-                    break;
 
                 case 2 :
                     System.out.print("이름을 입력해주세요 \n");
                     String name = sc.nextLine().trim();
-                    if ("q".equalsIgnoreCase(name)) return null;
-                    if ("b".equalsIgnoreCase(name)) {
+                    if ("0".equalsIgnoreCase(name)) return null;
+                    if ("1".equalsIgnoreCase(name)) {
                         step--;
                         continue;
                     }
@@ -308,26 +330,25 @@ public class MainView {
                     break;
 
                 case 3 :
-                    System.out.print("주민등록번호(숫자만 입력)를 입력해주세요 \n ");
-                    String inputNo = sc.nextLine().trim();
+                    System.out.print("주민등록번호를 입력해주세요 \n ");
+                    String rawInput = sc.nextLine().trim();
+                    String inputNo = rawInput.replaceAll("[^0-9]", "");
 
-                    if ("q".equalsIgnoreCase(inputNo)) return null;
-                    if ("b".equalsIgnoreCase(inputNo)) {
+                    if ("0".equalsIgnoreCase(inputNo)) return null;
+                    if ("1".equalsIgnoreCase(inputNo)) {
                         step--;
                         continue;
                     }
 
-                    if (inputNo.matches("^\\d{13}$")) {
+                    if (inputNo.length() == 13) {
                         String formattedNo = inputNo.substring(0,6) + "-" + inputNo.substring(6);
-
                         professorDTO.setProfessorNo(formattedNo);
+
                         System.out.println("➡️ 입력 확인: " + formattedNo);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
                         if (sc.nextLine().equalsIgnoreCase("y")) {
                             System.out.println("✅ 주민번호 형식이 일치합니다.");
                             step++;
-                        } else {
-                            System.out.println("🔄 다시 입력해 주세요.");
                         }
                     } else {
                         System.out.println("🚨 [입력 오류] 숫자 13자리를 정확히 입력해주세요.");
@@ -343,8 +364,8 @@ public class MainView {
                             "\n ------------------------------ \n"
                     );
                     String adress = sc.nextLine().trim();
-                    if ("q".equalsIgnoreCase(adress)) return null;
-                    if ("b".equalsIgnoreCase(adress)) {
+                    if ("0".equalsIgnoreCase(adress)) return null;
+                    if ("1".equalsIgnoreCase(adress)) {
                         step--;
                         continue;
                     }
@@ -356,46 +377,35 @@ public class MainView {
                     System.out.print("이메일 주소(example@lms.com)를 입력해주세요 \n ");
                     String email = sc.nextLine().trim();
                     String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
-                    if ("q".equalsIgnoreCase(email)) return null;
-                    if ("b".equalsIgnoreCase(email)) {
+                    if ("0".equalsIgnoreCase(email)) return null;
+                    if ("1".equalsIgnoreCase(email)) {
                         step--;
                         continue;
                     }
-
-                    if (email.matches(emailRegex)) {
-                        professorDTO.setProfessorEmail(email);
-                        System.out.println("✅ 이메일 형식이 일치합니다.");
-                        step++;
-                    } else {
-                        System.out.println("🚨 이메일 형식이 올바르지 않습니다. '@'를 포함한 정확한 주소를 입력해주세요.");
-                    }
-                    break;
 
                 case 6:
-                    System.out.print("전화번호(숫자만 입력)를 입력해주세요 \n");
-                    String inputPhone = sc.nextLine().trim().replace("-", "");
+                    System.out.print("전화번호를 입력해주세요 \n");
+                    String inputPhone = sc.nextLine().trim().replaceAll("[^0-9]", "");
 
-                    if ("q".equalsIgnoreCase(inputPhone)) return null;
-                    if ("b".equalsIgnoreCase(inputPhone)) {
+                    if ("0".equalsIgnoreCase(inputPhone)) return null;
+                    if ("1".equalsIgnoreCase(inputPhone)) {
                         step--;
                         continue;
                     }
 
-                    if (inputPhone.matches("^010\\d{7,8}$")) {
+                    if (inputPhone.matches("^01\\d{8,9}$")) {
                         String formattedPhone;
                         if (inputPhone.length() == 11) {
                             formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 7) + "-" + inputPhone.substring(7);
                         } else {
                             formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 6) + "-" + inputPhone.substring(6);
                         }
-                        System.out.println("➡️ 변환된 형식: " + formattedPhone);
                         professorDTO.setProfessorPhone(formattedPhone);
+                        System.out.println("➡️ 변환된 형식: " + formattedPhone);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
                         if (sc.nextLine().equalsIgnoreCase("y")) {
                             System.out.println("✅ 전화번호 형식이 일치합니다.");
                             step++;
-                        } else {
-                            System.out.println("🔄 다시 입력해 주세요.");
                         }
                     } else {
                         System.out.println("🚨 [입력 오류] 올바른 전화번호 형식이 아닙니다.");
@@ -406,8 +416,8 @@ public class MainView {
                     System.out.print("비밀번호를 입력해주세요 \n");
                     String pw = sc.nextLine().trim();
 
-                    if ("q".equalsIgnoreCase(pw)) return null;
-                    if ("b".equalsIgnoreCase(pw)) {
+                    if ("0".equalsIgnoreCase(pw)) return null;
+                    if ("1".equalsIgnoreCase(pw)) {
                         step--;
                         continue;
                     }
@@ -420,8 +430,8 @@ public class MainView {
                     System.out.print("비밀번호를 다시 입력해주세요 \n");
                     String pwCheck = sc.nextLine().trim();
 
-                    if ("q".equalsIgnoreCase(pwCheck)) return null;
-                    if ("b".equalsIgnoreCase(pwCheck)) {
+                    if ("0".equalsIgnoreCase(pwCheck)) return null;
+                    if ("1".equalsIgnoreCase(pwCheck)) {
                         System.out.println("🔄 비밀번호 입력부터 다시 시작합니다.");
                         continue;
                     }
@@ -439,5 +449,4 @@ public class MainView {
 
         return professorDTO;
     }
-
 }

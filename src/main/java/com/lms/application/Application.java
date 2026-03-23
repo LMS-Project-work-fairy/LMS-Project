@@ -15,8 +15,6 @@ import java.util.List;
 public class Application {
 
 
-    // 공용 메시지함 (프로그램 꺼질 때까지 유지됨)
-    public static List<String[]> totalMessages = new ArrayList<>();
 
 //    private static MainView mainView;
 

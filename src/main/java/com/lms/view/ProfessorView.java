@@ -60,19 +60,17 @@ public class ProfessorView {
 
 
             System.out.println("=================================");
-            System.out.print("상세 옵션을 확인할 [과목명]을 입력해주세요 (이전 메뉴로: 0) : ");
-            String selectedCourseName = inputString();
+            System.out.print("상세 옵션을 확인할 [강의번호]를 입력해주세요 (이전 메뉴로: 0) : ");
+            String selectedClassNo = inputString();
 
-            if (selectedCourseName.equals("0")) return;
+            if (selectedClassNo.equals("0")) return;
 
+            EnrollmentCourseDTO targetCourse = getCourseById(courseList, selectedClassNo);
 
-            String targetCourseId = getCourseIdByName(courseList, selectedCourseName);
-
-            if (targetCourseId == null) {
-                printError("일치하는 과목명이 없습니다. 띄어쓰기를 확인해주세요.");
+            if (targetCourse == null) {
+                printError("일치하는 강의번호가 없습니다. 다시 확인해주세요.");
             } else {
-
-                showCourseDetailMenu(profId, targetCourseId, selectedCourseName);
+                showCourseDetailMenu(profId, targetCourse.getClassNo(), targetCourse.getClassName());
             }
         }
     }
@@ -151,6 +149,18 @@ public class ProfessorView {
         }
         return null;
     }
+
+    private EnrollmentCourseDTO getCourseById(List<EnrollmentCourseDTO> list, String classNo) {
+        for (EnrollmentCourseDTO c : list) {
+            if (c.getClassNo().equals(classNo)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+
+
 
     // 강좌 등록
     private void registerNewCourse(String profId) {
@@ -343,16 +353,26 @@ public class ProfessorView {
             System.out.println("\n=== [" + courseName + "] 과목 상세 옵션 ===");
             System.out.println("1. 수강 학생 확인 및 성적 관리");
             System.out.println("2. 과제 등록");
+            System.out.println("3. 등록 강좌 정보 수정");
             System.out.println("0. 과목 목록으로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
 
             int menu = inputInt();
 
-            switch (menu){
-                case 1: findEnrolledStudents(courseId); break;
-                case 2: createAssignment(profId, courseId); break;
-                case 0: return;
-                default: printError("다시 선택해주세요.");
+            switch (menu) {
+                case 1:
+                    findEnrolledStudents(courseId);
+                    break;
+                case 2:
+                    createAssignment(profId, courseId);
+                    break;
+                case 3:
+                    updateCourseInfoMenu(profId, courseId);
+                    break;
+                case 0:
+                    return;
+                default:
+                    printError("다시 선택해주세요.");
             }
         }
     }
@@ -481,6 +501,114 @@ public class ProfessorView {
         }
     }
 
+    private void updateCourseInfoMenu(String profId, String courseId) {
+
+        while (true) {
+            List<EnrollmentCourseDTO> courseList = controller.findCoursesByProfId(profId);
+            EnrollmentCourseDTO targetCourse = getCourseById(courseList, courseId);
+
+            if (targetCourse == null) {
+                printError("수정 대상 강의를 다시 찾지 못했습니다.");
+                return;
+            }
+
+            System.out.println("\n=== [" + targetCourse.getClassName() + "] 강좌 정보 수정 ===");
+            System.out.println("현재 강의번호 : " + targetCourse.getClassNo());
+            System.out.println("1. 강의명 수정");
+            System.out.println("2. 학점 수정");
+            System.out.println("3. 시간표 수정");
+            System.out.println("4. 강의실 수정");
+            System.out.println("5. 수용 인원 수정");
+            System.out.println("0. 이전 메뉴");
+            System.out.print("수정할 항목을 선택해주세요 : ");
+
+            int menu = inputInt();
+
+            if (menu == 0) {
+                return;
+            }
+
+            EnrollmentCourseDTO updateCourse = new EnrollmentCourseDTO();
+            updateCourse.setClassNo(targetCourse.getClassNo());
+            updateCourse.setProfessorId(profId);
+            updateCourse.setClassName(targetCourse.getClassName());
+            updateCourse.setClassPoint(targetCourse.getClassPoint());
+            updateCourse.setClassTime(targetCourse.getClassTime());
+            updateCourse.setClassRoom(targetCourse.getClassRoom());
+            updateCourse.setClassCapacity(targetCourse.getClassCapacity());
+
+            String itemName = "";
+            String previewValue = "";
+
+            switch (menu) {
+                case 1:
+                    System.out.print("새 강의명을 입력해주세요 : ");
+                    String newClassName = inputString();
+                    updateCourse.setClassName(newClassName);
+                    itemName = "강의명";
+                    previewValue = newClassName;
+                    break;
+
+                case 2:
+                    System.out.print("새 학점을 입력해주세요 (예: 3.0) : ");
+                    double newPoint = inputDouble();
+                    updateCourse.setClassPoint(newPoint);
+                    itemName = "학점";
+                    previewValue = String.valueOf(newPoint);
+                    break;
+
+                case 3:
+                    System.out.print("새 시간표를 입력해주세요 (예: 월1-3) : ");
+                    String newTime = inputString();
+                    updateCourse.setClassTime(newTime);
+                    itemName = "시간표";
+                    previewValue = newTime;
+                    break;
+
+                case 4:
+                    System.out.print("새 강의실을 입력해주세요 : ");
+                    String newRoom = inputString();
+                    updateCourse.setClassRoom(newRoom);
+                    itemName = "강의실";
+                    previewValue = newRoom;
+                    break;
+
+                case 5:
+                    System.out.print("새 수용 인원을 입력해주세요 : ");
+                    float newCapacity = (float) inputDouble();
+                    updateCourse.setClassCapacity(newCapacity);
+                    itemName = "수용 인원";
+                    previewValue = String.valueOf((int) newCapacity);
+                    break;
+
+                default:
+                    printError("잘못된 메뉴 번호입니다.");
+                    continue;
+            }
+
+            System.out.print("[" + itemName + "]을(를) [" + previewValue + "]로 수정하시겠습니까? (1. 수정 / 0. 취소) : ");
+            int confirm = inputInt();
+
+            if (confirm == 0) {
+                printMessage("수정을 취소했습니다.");
+                continue;
+            }
+
+            if (confirm != 1) {
+                printError("잘못된 입력입니다.");
+                continue;
+            }
+
+            int result = controller.updateCourseInfo(updateCourse);
+
+            if (result > 0) {
+                printSuccess("강좌 정보가 성공적으로 수정되었습니다.");
+            } else {
+                printError("강좌 정보 수정에 실패했습니다.");
+            }
+        }
+    }
+
 
 
     private double inputDouble() {while (true) {
@@ -524,9 +652,12 @@ public class ProfessorView {
         System.out.println("===============담당 과목 조회 결과==================");
         for (EnrollmentCourseDTO course : courseList) {
 
-            System.out.println("▶ " + course.getClassName() +
-                    " (강의실: " + course.getClassRoom() + ", 시간: " + course.getClassTime() +
-                    ", 수용인원: " + (int)course.getClassCapacity() + "명)");
+            System.out.println("▶ [강의번호: " + course.getClassNo() + "] "
+                    + course.getClassName()
+                    + " (강의실: " + course.getClassRoom()
+                    + ", 시간: " + course.getClassTime()
+                    + ", 학점: " + course.getClassPoint()
+                    + ", 수용인원: " + (int) course.getClassCapacity() + "명)");
         }
     }
 

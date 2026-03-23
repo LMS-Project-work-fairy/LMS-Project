@@ -318,4 +318,14 @@
         order by m.id ASC
     </query>
 
+    <query key="updateCourseInfo">
+        UPDATE 강의
+        SET class_name = ?,
+        class_point = ?,
+        class_time = ?,
+        class_room = ?,
+        class_capacity = ?
+        WHERE class_no = ? AND professor_id = ?
+    </query>
+
 </properties>

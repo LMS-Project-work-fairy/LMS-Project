@@ -11,13 +11,6 @@ import java.util.Scanner;
 public class MainView {
 
     private final Scanner sc = new Scanner(System.in);
-    private AuthService authService;
-
-
-    public void setAuthService(AuthService authService) {
-        this.authService = authService;
-    }
-
 
     public int displayMainMenu() {
         while (true) {
@@ -41,43 +34,44 @@ public class MainView {
     }
 
     public LoginRequestDTO inputLoginInfo() {
-        System.out.println("\n========== 로그인 ==========");
-        System.out.println("🧑‍🎓학생(1)");
-        System.out.println("🧑‍🏫교수(2)");
-        System.out.println("🔙뒤로가기(0)");
-        System.out.print("로그인 유형 선택: ");
+        while(true) {
+            System.out.println("\n========== 로그인 ==========");
+            System.out.println("🧑‍🎓학생(1)");
+            System.out.println("🧑‍🏫교수(2)");
+            System.out.println("🔙뒤로가기(0)");
+            System.out.print("로그인 유형 선택: ");
 
-        int roleMenu;
+            int roleMenu;
 
-        try {
-            roleMenu = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            displayMessage("로그인 유형은 숫자로 입력해주세요.🚨");
-            continue;
+            try {
+                roleMenu = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                displayMessage("로그인 유형은 숫자로 입력해주세요.🚨");
+                continue;
+            }
+
+            if(roleMenu == 0) {
+                return new LoginRequestDTO("BACK", "", "");
+            }
+
+            String role;
+            if (roleMenu == 1) {
+                role = "STUDENT";
+            } else if (roleMenu == 2) {
+                role = "PROFESSOR";
+            } else {
+                displayMessage("잘못된 로그인 유형입니다.");
+                continue;
+            }
+
+            System.out.print("아이디 입력: ");
+            String userId = sc.nextLine();
+
+            System.out.print("비밀번호 입력: ");
+            String password = sc.nextLine();
+
+            return new LoginRequestDTO(role,userId,password);
         }
-
-        if(roleMenu == 0) {
-            return new LoginRequestDTO("BACK", "", "");
-
-        }
-
-        String role;
-        if (roleMenu == 1) {
-            role = "STUDENT";
-        } else if (roleMenu == 2) {
-            role = "PROFESSOR";
-        } else {
-            displayMessage("잘못된 로그인 유형입니다.");
-            return null;
-        }
-
-        System.out.print("아이디 입력: ");
-        String userId = sc.nextLine();
-
-        System.out.print("비밀번호 입력: ");
-        String password = sc.nextLine();
-
-        return new LoginRequestDTO(role, userId, password);
     }
 
 

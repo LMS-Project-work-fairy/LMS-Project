@@ -2,6 +2,7 @@ package com.lms.model.dao;
 
 
 import com.lms.common.QueryUtil;
+import com.lms.model.dto.MessageDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.mysql.cj.util.DnsSrv;
 import com.lms.common.JDBCTemplate;
@@ -12,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfessorDAO {
   
@@ -138,6 +141,8 @@ public class ProfessorDAO {
 
         return loginUser;
     }
+
+
 
 
 }

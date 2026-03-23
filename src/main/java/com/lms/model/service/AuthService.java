@@ -20,6 +20,7 @@ public class AuthService {
 
     private final ProfessorDAO professorDAO;
     private final StudentDAO studentDAO;   // 현재는 거의 안 쓰지만 생성자 호환 때문에 유지
+
     private int deviceFailCount = 0;
     private long deviceLockUntil = 0L;
     private int deviceLockLevel = 0;
@@ -28,7 +29,88 @@ public class AuthService {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
     }
-  
+
+
+    private boolean isProfessorRole(String role) {
+        return "PROFESSOR".equalsIgnoreCase(role);
+    }
+
+    public int getCaptchaThreshold(String role) {
+        return isProfessorRole(role) ? 2 : 3;
+    }
+
+    public int getLockThreshold(String role) {
+        return 5;
+    }
+
+    private int getLockMinutes(String role, int lockLevel) {
+        if (isProfessorRole(role)) {
+            if (lockLevel == 1) return 5;
+            if (lockLevel == 2) return 10;
+            return 30;
+        }
+
+        if (lockLevel == 1) return 3;
+        if (lockLevel == 2) return 5;
+        if (lockLevel == 3) return 10;
+        return 30;
+    }
+
+    public int getDeviceFailCount() {
+        return deviceFailCount;
+    }
+
+    public boolean needHumanCheck(String role) {
+        return deviceFailCount >= getCaptchaThreshold(role);
+    }
+
+    public boolean isDeviceLocked() {
+        if (deviceLockUntil == 0L) {
+            return false;
+        }
+
+        if (System.currentTimeMillis() >= deviceLockUntil) {
+            deviceLockUntil = 0L;
+            return false;
+        }
+
+        return true;
+    }
+
+    public long getRemainingDeviceLockSeconds() {
+        if (deviceLockUntil == 0L) {
+            return 0;
+        }
+
+        long remain = (deviceLockUntil - System.currentTimeMillis()) / 1000;
+        return Math.max(remain, 0);
+    }
+
+    public int getCurrentDeviceLockLevel() {
+        return deviceLockLevel;
+    }
+
+    public int recordLoginFailure(String role) {
+        deviceFailCount++;
+
+        int lockThreshold = getLockThreshold(role);
+
+        if (deviceFailCount % lockThreshold == 0) {
+            deviceLockLevel++;
+
+            int lockMinutes = getLockMinutes(role, deviceLockLevel);
+            deviceLockUntil = System.currentTimeMillis() + lockMinutes * 60_000L;
+        }
+
+        return deviceFailCount;
+    }
+
+    public void recordLoginSuccess() {
+        deviceFailCount = 0;
+        deviceLockUntil = 0L;
+        deviceLockLevel = 0;
+    }
+
     public LoginUserDTO login(LoginRequestDTO request) {
 
         if (request == null) {

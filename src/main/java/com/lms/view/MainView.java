@@ -80,6 +80,11 @@ public class MainView {
         return new LoginRequestDTO(role, userId, password);
     }
 
+
+
+
+
+
     public StudentDTO inputStudentInfo(Predicate<String> isDuplicateStudentId) {
         System.out.println("========== 학생 회원가입 ==========\n");
 

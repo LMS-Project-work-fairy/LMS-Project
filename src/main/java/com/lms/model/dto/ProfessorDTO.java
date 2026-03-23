@@ -1,5 +1,7 @@
 package com.lms.model.dto;
 
+import java.sql.Connection;
+
 public class ProfessorDTO {
 
     private String ProfessorId;
@@ -21,6 +23,9 @@ public class ProfessorDTO {
         ProfessorPhone = professorPhone;
         ProfessorPw = professorPw;
     }
+
+//    public static int insertProfessor(Connection con, ProfessorDTO professorDTO) {
+//    }
 
     public String getProfessorId() {
         return ProfessorId;

@@ -373,45 +373,45 @@ public class StudentDAO {
         return result;
     }
 
-    public int sendMessage(UserDTO msg) throws SQLException {
-        String query = QueryUtil.getQuery("message.newMessage");
-        int result= 0;
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, msg.getUserId());
-            pstmt.setString(2, msg.getStudentId());
-            pstmt.setString(3, msg.getReceiverId());
-            pstmt.setString(4, msg.getContent());
-            pstmt.setString(5, msg.getUserName());
-
-            pstmt.setString(6, msg.getStudentId());
-
-            result = pstmt.executeUpdate();
-            if (result > 0) {
-                JDBCTemplate.commit(connection);
-                System.out.println("DB에 반영되었습니다.");
-            } else {
-                JDBCTemplate.rollback(connection);
-            }
-
-        }
-        return result;
-    }
-
-    public List<UserDTO> messageCheck(String myId) throws SQLException {
-        List<UserDTO> list = new ArrayList<>();
-        String query = QueryUtil.getQuery("message.contentView");
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, myId);
-            ResultSet rset = pstmt.executeQuery();
-            while (rset.next()) {
-                UserDTO m = new UserDTO();
-                m.setUserId(rset.getString("user_id"));
-                m.setUserName(rset.getString("user_name"));
-                m.setContent(rset.getString("content"));
-                list.add(m);
-            }
-        }
-        return list;
-    }
+//    public int sendMessage(UserDTO msg) throws SQLException {
+//        String query = QueryUtil.getQuery("message.newMessage");
+//        int result= 0;
+//        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+//            pstmt.setString(1, msg.getUserId());
+//            pstmt.setString(2, msg.getStudentId());
+//            pstmt.setString(3, msg.getReceiverId());
+//            pstmt.setString(4, msg.getContent());
+//            pstmt.setString(5, msg.getUserName());
+//
+//            pstmt.setString(6, msg.getStudentId());
+//
+//            result = pstmt.executeUpdate();
+//            if (result > 0) {
+//                JDBCTemplate.commit(connection);
+//                System.out.println("DB에 반영되었습니다.");
+//            } else {
+//                JDBCTemplate.rollback(connection);
+//            }
+//
+//        }
+//        return result;
+//    }
+//
+//    public List<UserDTO> messageCheck(String myId) throws SQLException {
+//        List<UserDTO> list = new ArrayList<>();
+//        String query = QueryUtil.getQuery("message.contentView");
+//        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+//            pstmt.setString(1, myId);
+//            ResultSet rset = pstmt.executeQuery();
+//            while (rset.next()) {
+//                UserDTO m = new UserDTO();
+//                m.setUserId(rset.getString("user_id"));
+//                m.setUserName(rset.getString("user_name"));
+//                m.setContent(rset.getString("content"));
+//                list.add(m);
+//            }
+//        }
+//        return list;
+//    }
 }
 

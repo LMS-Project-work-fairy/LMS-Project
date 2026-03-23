@@ -2,8 +2,7 @@ package com.lms.view;
 import com.lms.controller.ProfessorController;
 
 import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.MessageDTO;
-import com.lms.model.dto.ProfessorDTO;
+import com.lms.model.dto.UserDTO;
 import com.lms.model.dto.StudentDTO;
 
 import java.util.Scanner;
@@ -213,12 +212,12 @@ public class ProfessorView {
 
             if (menu == 1) {
                 // 받은 메시지 조회
-                List<MessageDTO> msgList = controller.checkMessages(profId);
+                List<UserDTO> msgList = controller.checkMessages(profId);
                 printMessage("\n--- [받은 메시지 목록] ---");
                 if (msgList.isEmpty()) {
                     System.out.println("도착한 메시지가 없습니다.");
                 } else {
-                    for (MessageDTO msg : msgList) {
+                    for (UserDTO msg : msgList) {
                         System.out.println("💌 보낸사람: " + msg.getUserName() + " (" + msg.getUserId() + ")");
                         System.out.println("   내용: " + msg.getContent());
                         System.out.println("-------------------------");
@@ -241,7 +240,7 @@ public class ProfessorView {
                 System.out.print("보낼 내용을 입력하세요: ");
                 String content = inputString();
 
-                MessageDTO newMsg = new MessageDTO();
+                UserDTO newMsg = new UserDTO();
                 newMsg.setUserId(profId);
                 newMsg.setProfessorId(profId);
                 newMsg.setReceiverId(receiverId);

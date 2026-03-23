@@ -2,7 +2,6 @@ package com.lms.model.dao;
 
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
-import com.lms.controller.StudentController;
 import com.lms.model.dto.*;
 
 import java.sql.Connection;
@@ -10,16 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.lms.common.QueryUtil;
 import com.lms.model.dto.StudentDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 public class StudentDAO {
@@ -380,7 +373,7 @@ public class StudentDAO {
         return result;
     }
 
-    public int sendMessage(MessageDTO msg) throws SQLException {
+    public int sendMessage(UserDTO msg) throws SQLException {
         String query = QueryUtil.getQuery("message.newMessage");
         int result= 0;
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -404,14 +397,14 @@ public class StudentDAO {
         return result;
     }
 
-    public List<MessageDTO> messageCheck(String myId) throws SQLException {
-        List<MessageDTO> list = new ArrayList<>();
+    public List<UserDTO> messageCheck(String myId) throws SQLException {
+        List<UserDTO> list = new ArrayList<>();
         String query = QueryUtil.getQuery("message.contentView");
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, myId);
             ResultSet rset = pstmt.executeQuery();
             while (rset.next()) {
-                MessageDTO m = new MessageDTO();
+                UserDTO m = new UserDTO();
                 m.setUserId(rset.getString("user_id"));
                 m.setUserName(rset.getString("user_name"));
                 m.setContent(rset.getString("content"));

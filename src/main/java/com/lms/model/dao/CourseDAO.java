@@ -2,8 +2,7 @@ package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.ProfessorDTO;
-import com.lms.model.dto.MessageDTO;
+import com.lms.model.dto.UserDTO;
 import com.lms.model.dto.StudentDTO;
 
 
@@ -244,7 +243,7 @@ public class CourseDAO {
     }
 
     // 1. 메시지 보내기
-    public int sendMessage(Connection con, MessageDTO msg) {
+    public int sendMessage(Connection con, UserDTO msg) {
         PreparedStatement pstmt = null;
         int result = 0;
 
@@ -270,10 +269,10 @@ public class CourseDAO {
     }
 
     // 2. 내 메시지함 확인
-    public List<MessageDTO> checkMessages(Connection con, String profId) {
+    public List<UserDTO> checkMessages(Connection con, String profId) {
         PreparedStatement pstmt = null;
         ResultSet rset = null;
-        List<MessageDTO> list = new ArrayList<>();
+        List<UserDTO> list = new ArrayList<>();
 
 
         String query = QueryUtil.getQuery("message.profContentView");
@@ -284,7 +283,7 @@ public class CourseDAO {
             rset = pstmt.executeQuery();
 
             while (rset.next()) {
-                MessageDTO m = new MessageDTO();
+                UserDTO m = new UserDTO();
                 m.setUserId(rset.getString("user_id"));
                 m.setUserName(rset.getString("user_name"));
                 m.setContent(rset.getString("content"));

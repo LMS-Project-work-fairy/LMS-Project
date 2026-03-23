@@ -189,11 +189,6 @@ public class AuthController {
     }
 
 
-
-
-
-
-
     public void registerStudent () {
         try {
             StudentDTO newStudent = mainView.inputStudentInfo(

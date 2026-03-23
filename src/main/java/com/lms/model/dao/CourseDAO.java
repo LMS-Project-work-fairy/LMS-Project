@@ -1,9 +1,7 @@
 package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
-import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.UserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 
 
 import java.sql.Connection;
@@ -11,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CourseDAO {
 
@@ -242,60 +242,84 @@ public class CourseDAO {
         return result;
     }
 
-    // 1. 메시지 보내기
-    public int sendMessage(Connection con, UserDTO msg) {
-        PreparedStatement pstmt = null;
-        int result = 0;
 
 
-        String query = QueryUtil.getQuery("message.newProfMessage");
-
-        try {
-            pstmt = con.prepareStatement(query);
-            pstmt.setString(1, msg.getUserId());     // user_id
-            pstmt.setString(2, msg.getProfessorId()); // professor_id
-            pstmt.setString(3, msg.getReceiverId()); // receiver_id
-            pstmt.setString(4, msg.getContent());    // content
-            pstmt.setString(5, msg.getProfessorId());
-
-
-            result = pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCTemplate.close(pstmt);
-        }
-        return result;
-    }
-
-    // 2. 내 메시지함 확인
-    public List<UserDTO> checkMessages(Connection con, String profId) {
+    // 1. 내 통합 User ID 찾기
+    public String findUserIdByProfId(Connection con, String profId) {
         PreparedStatement pstmt = null;
         ResultSet rset = null;
-        List<UserDTO> list = new ArrayList<>();
-
-
-        String query = QueryUtil.getQuery("message.profContentView");
-
+        String userId = null;
+        String query = QueryUtil.getQuery("message.findUserId");
         try {
             pstmt = con.prepareStatement(query);
             pstmt.setString(1, profId);
             rset = pstmt.executeQuery();
+            if (rset.next()) userId = rset.getString("user_id");
+        } catch (SQLException e) { e.printStackTrace(); }
+        finally { JDBCTemplate.close(rset); JDBCTemplate.close(pstmt); }
+        return userId;
+    }
 
+    // 2. 나를 제외한 모든 사용자 조회
+    public List<UserDTO> getAllUsers(Connection con, String myUserId) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        List<UserDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("message.getAllUsers");
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, myUserId);
+            rset = pstmt.executeQuery();
             while (rset.next()) {
-                UserDTO m = new UserDTO();
-                m.setUserId(rset.getString("user_id"));
-                m.setUserName(rset.getString("user_name"));
-                m.setContent(rset.getString("content"));
-                list.add(m);
+                UserDTO user = new UserDTO();
+                user.setUserId(rset.getString("user_id"));
+                user.setUserName(rset.getString("user_name"));
+                user.setProfessorId(rset.getString("professor_id"));
+                user.setStudentId(rset.getString("student_id"));
+                list.add(user);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            JDBCTemplate.close(rset);
-            JDBCTemplate.close(pstmt);
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
+        finally { JDBCTemplate.close(rset); JDBCTemplate.close(pstmt); }
         return list;
+    }
+
+    // 3. 1:1 대화 기록 불러오기
+    public List<UserMessageDTO> getChatHistory(Connection con, String myUserId, String targetUserId) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        List<UserMessageDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("message.getChatHistory");
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, myUserId); pstmt.setString(2, targetUserId);
+            pstmt.setString(3, targetUserId); pstmt.setString(4, myUserId);
+            rset = pstmt.executeQuery();
+            while (rset.next()) {
+                UserMessageDTO msg = new UserMessageDTO();
+                msg.setUserId(rset.getString("user_id"));
+                msg.setUserName(rset.getString("user_name"));
+                msg.setContent(rset.getString("content"));
+                list.add(msg);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        finally { JDBCTemplate.close(rset); JDBCTemplate.close(pstmt); }
+        return list;
+    }
+
+    // 4. 메시지 전송하기
+    public int sendChatMessage(Connection con, MessageDTO msg) {
+        PreparedStatement pstmt = null;
+        int result = 0;
+        String query = QueryUtil.getQuery("message.sendChatMessage");
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, msg.getUserId());
+            pstmt.setString(2, msg.getReceiverId());
+            pstmt.setString(3, msg.getContent());
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+        finally { JDBCTemplate.close(pstmt); }
+        return result;
     }
 
 
@@ -353,5 +377,7 @@ public class CourseDAO {
         }
         return result;
     }
+
+
 }
 

@@ -80,12 +80,12 @@ public class StudentController {
         return service.editMyInfo(myInfo);
     }
 
-    public int messageSend(UserDTO msg) {
-        return service.messageSend(msg);
-    }
-
-    public List<UserDTO> messageCheck(String myId) {
-        return service.messageCheck(myId);
-    }
+//    public int messageSend(UserDTO msg) {
+//        return service.messageSend(msg);
+//    }
+//
+//    public List<UserDTO> messageCheck(String myId) {
+//        return service.messageCheck(myId);
+//    }
 }
 

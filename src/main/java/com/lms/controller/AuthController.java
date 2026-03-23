@@ -25,6 +25,7 @@ public class AuthController {
     public AuthController(MainView mainView, AuthService authService) {
         this.mainView = mainView;
         this.authService = authService;
+        this.mainView.setAuthService(authService);
     }
 
     // 로그인 기능 로직
@@ -78,22 +79,27 @@ public class AuthController {
         }
     }
 
-        public void registerStudent () {
-            try {
-                StudentDTO newStudent = mainView.inputStudentInfo();
+    public void registerStudent () {
+        try {
+            StudentDTO newStudent = mainView.inputStudentInfo(
+                    studentId -> authService.existsStudentId(studentId)
+            );
 
-                int result = authService.registerStudent(newStudent);
-
-                if (result > 0) {
-                    mainView.displayMessage("회원가입에 성공하였습니다!");
-                } else {
-                    mainView.displayMessage("회원가입에 실패하였습니다!");
-                }
-            } catch (RuntimeException e) {
-                mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+            if (newStudent == null) {
+                return; // 메인으로 돌아간 경우
             }
-        }
 
+            int result = authService.registerStudent(newStudent);
+
+            if (result > 0) {
+                mainView.displayMessage("회원가입에 성공하였습니다!");
+            } else {
+                mainView.displayMessage("회원가입에 실패하였습니다!");
+            }
+        } catch (RuntimeException e) {
+            mainView.displayMessage("학생 회원가입 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
 
         public void registerProfessor () {
 

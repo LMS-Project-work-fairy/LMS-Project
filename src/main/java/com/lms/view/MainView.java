@@ -4,6 +4,7 @@ import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
 import com.lms.model.service.AuthService;
+import java.util.function.Predicate;
 
 import java.util.Scanner;
 
@@ -11,6 +12,12 @@ public class MainView {
 
     private final Scanner sc = new Scanner(System.in);
     private AuthService authService;
+
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
+
 
     public int displayMainMenu() {
         while (true) {
@@ -34,11 +41,9 @@ public class MainView {
     }
 
     public LoginRequestDTO inputLoginInfo() {
-        while(true) {
         System.out.println("\n========== 로그인 ==========");
         System.out.println("1. 학생");
         System.out.println("2. 교수");
-        System.out.println("0. 뒤로가기");
         System.out.print("로그인 유형 선택: ");
 
         int roleMenu;
@@ -47,11 +52,7 @@ public class MainView {
             roleMenu = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
             displayMessage("로그인 유형은 숫자로 입력해주세요.");
-            continue;
-        }
-
-        if(roleMenu == 0) {
-            return new LoginRequestDTO("BACK", "", "");
+            return null;
         }
 
         String role;
@@ -61,7 +62,7 @@ public class MainView {
             role = "PROFESSOR";
         } else {
             displayMessage("잘못된 로그인 유형입니다.");
-            continue;
+            return null;
         }
 
         System.out.print("아이디 입력: ");
@@ -70,11 +71,10 @@ public class MainView {
         System.out.print("비밀번호 입력: ");
         String password = sc.nextLine();
 
-        return new LoginRequestDTO(role,userId,password);
-        }
+        return new LoginRequestDTO(role, userId, password);
     }
 
-    public StudentDTO inputStudentInfo() {
+    public StudentDTO inputStudentInfo(Predicate<String> isDuplicateStudentId) {
         System.out.println("========== 학생 회원가입 ==========\n");
 
         StudentDTO student = new StudentDTO();
@@ -94,13 +94,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("\\d{8}")) {
-                        student.setStudentId(input);
-                        step++;
-                    } else {
+                    if (!input.matches("\\d{8}")) {
                         System.out.println("❌ 학번은 숫자 8자리입니다. 다시 입력해주세요.\n");
+                        break;
                     }
-                    break;
+
+                    if (isDuplicateStudentId.test(input)) {
+                        System.out.println("❌ 이미 존재하는 아이디입니다. 다시 입력해주세요.\n");
+                        break;
+                    }
+
+                    student.setStudentId(input);
+                    step++;
                 }
 
                 case 1: { // 이름
@@ -142,13 +147,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("\\d{6}-\\d{7}")) {
-                        student.setStudentNo(input);
-                        step++;
-                    } else {
-                        System.out.println("❌ 주민등록번호는 123456-1234567 형식입니다.\n");
+                    if (!input.matches("\\d{6}-\\d{7}")) {
+                        System.out.println("❌ 주민등록번호 형식이 올바르지 않습니다.\n");
+                        break;
                     }
-                    break;
+
+                    if (authService.existsStudentNo(input)) {
+                        System.out.println("❌ 이미 등록된 주민등록번호입니다.\n");
+                        break;
+                    }
+
+                    student.setStudentNo(input);
+                    step++;
                 }
 
                 case 3: { // 주소
@@ -191,13 +201,18 @@ public class MainView {
                         return null;
                     }
 
-                    if (input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-                        student.setStudentEmail(input);
-                        step++;
-                    } else {
+                    if (!input.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                         System.out.println("❌ 올바른 이메일 형식이 아닙니다.\n");
+                        break;
                     }
-                    break;
+
+                    if (isDuplicateStudentId != null && authService.existsStudentEmail(input)) {
+                        System.out.println("❌ 이미 사용 중인 이메일입니다.\n");
+                        break;
+                    }
+
+                    student.setStudentEmail(input);
+                    step++;
                 }
 
                 case 5: { // 전화번호
@@ -274,11 +289,7 @@ public class MainView {
         }
     }
 
-//    public ProfessorDTO inputProfessorInfo() {
-//        System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
-//        ProfessorDTO professorDTO = new ProfessorDTO();
-//
-//    }
+
     public String inputProfessorId () {
         System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
         System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
@@ -295,30 +306,10 @@ public class MainView {
             professorDTO.setProfessorId(inputId);
 
 
-
-
         int step = 2;
 
         while (step <= 7) {
             switch (step) {
-//                case 1 :
-//                    System.out.print("교수 번호(P0000) \n");
-//                    String id = sc.nextLine().trim();
-//                    if ("0".equalsIgnoreCase(id)) {
-//                        return null;
-//                    }
-//                    if (authService.isDuplicateId(id)) {
-//                        System.out.println("🚨 [중복] 이미 사용 중인 번호입니다. 처음으로 돌아갑니다.");
-//                        return null;
-//                    }
-//                    if (id.matches("^P\\d{4}$")) {
-//                        professorDTO.setProfessorId(id);
-//                        System.out.println("✅ 교수 번호가 일치합니다.");
-//                        step++;
-//                    } else {
-//                        System.out.println("🚨 [입력 오류] 교수 번호는 'P'로 시작하는 숫자 4자리여야 합니다.");
-//                    }
-//                    break;
 
                 case 2 :
                     System.out.print("이름을 입력해주세요 \n");
@@ -386,15 +377,6 @@ public class MainView {
                         continue;
                     }
 
-                    if (email.matches(emailRegex)) {
-                        professorDTO.setProfessorEmail(email);
-                        System.out.println("✅ 이메일 형식이 일치합니다.");
-                        step++;
-                    } else {
-                        System.out.println("🚨 이메일 형식이 올바르지 않습니다. '@'를 포함한 정확한 주소를 입력해주세요.");
-                    }
-                    break;
-
                 case 6:
                     System.out.print("전화번호를 입력해주세요 \n");
                     String inputPhone = sc.nextLine().trim().replaceAll("[^0-9]", "");
@@ -461,5 +443,4 @@ public class MainView {
 
         return professorDTO;
     }
-
 }

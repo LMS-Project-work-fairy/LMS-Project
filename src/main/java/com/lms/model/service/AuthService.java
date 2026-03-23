@@ -3,11 +3,16 @@ package com.lms.model.service;
 import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.ProfessorDAO;
 import com.lms.model.dao.StudentDAO;
+import com.lms.model.dto.LoginRequestDTO;
+import com.lms.model.dto.LoginUserDTO;
+import com.lms.model.dto.ProfessorDTO;
+import com.lms.model.dto.StudentDTO;
 import com.lms.model.dto.*;
 
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 public class AuthService {
 
@@ -18,8 +23,7 @@ public class AuthService {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
     }
-
-
+  
     public LoginUserDTO login(LoginRequestDTO request) {
 
         if (request == null) {
@@ -62,6 +66,20 @@ public class AuthService {
             int result = studentDAO.save(student);
 
             if (result > 0) {
+
+                String messageQuery = """
+                    insert into 메시지 (user_id, student_id, professor_id, receiver_id, content, user_name)
+                    values (?, ?, null, null, null, ?)
+                    """;
+
+                try (PreparedStatement pstmt = connection.prepareStatement(messageQuery)) {
+                    pstmt.setString(1, student.getStudentId());   // user_id
+                    pstmt.setString(2, student.getStudentId());   // student_id
+                    pstmt.setString(3, student.getStudentName()); // user_name
+
+                    pstmt.executeUpdate();
+                }
+
                 connection.commit();
                 return result;
             } else {
@@ -86,9 +104,47 @@ public class AuthService {
         }
     }
 
+    public boolean existsStudentId(String studentId) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByStudentId(studentId);
+        } catch (SQLException e) {
+            throw new RuntimeException("학번 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
+    public boolean existsStudentEmail(String email) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByEmail(email);
+        } catch (SQLException e) {
+            throw new RuntimeException("이메일 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
+    public boolean existsStudentNo(String studentNo) {
+        Connection connection = JDBCTemplate.getConnection();
+
+        try {
+            StudentDAO studentDAO = new StudentDAO(connection);
+            return studentDAO.existsByStudentNo(studentNo);
+        } catch (SQLException e) {
+            throw new RuntimeException("주민번호 중복 확인 중 오류 발생", e);
+        } finally {
+            JDBCTemplate.close(connection);
+        }
+    }
+
+  
     public boolean insertProfessor(ProfessorDTO professorDTO) throws SQLException {
-
-
         Connection con = JDBCTemplate.getConnection();
 
         try {
@@ -160,22 +216,5 @@ public class AuthService {
         }
     }
 
-//    public boolean registerProfessor(ProfessorDTO professorDTO) {
-//        Connection con = JDBCTemplate.getConnection();
-//
-//        try {
-//            int result = ProfessorDTO.insertProfessor(con, professorDTO);
-//            MessageDTO.professorMsg = new MessageDTO();
-//            professorMSG.setReceiverId(professorDTO.getProfessorId());
-//            professorMSG.setReceiverName(professorDTO.setProfessorName());
-//
-//            JDBCTemplate.commit(con);
-//            return true;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        } finally {
-//            JDBCTemplate.close(con);
-//        }
-//    } return false;
 
 }

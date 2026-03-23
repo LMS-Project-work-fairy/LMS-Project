@@ -86,6 +86,36 @@ public class StudentDAO {
         return false;
     }
 
+    public boolean existsByEmail(String email) throws SQLException {
+        String query = QueryUtil.getQuery("students.existsByEmail");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existsByStudentNo(String studentNo) throws SQLException {
+        String query = QueryUtil.getQuery("students.existsByStudentNo");
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, studentNo);
+
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
     private final Connection connection;
 
     public StudentDAO(Connection connection) {

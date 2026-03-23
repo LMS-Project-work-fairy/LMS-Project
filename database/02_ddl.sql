@@ -36,13 +36,6 @@ CREATE TABLE `강의`
 )
  COMMENT = '강의';
 
-
-
-
-
-
-
-
 CREATE TABLE `학생`
 (
     `student_id`        VARCHAR(10) NOT NULL COMMENT '학번',
@@ -57,9 +50,6 @@ CREATE TABLE `학생`
     CONSTRAINT `fk_student_professor`
         FOREIGN KEY (`professor_id`) REFERENCES `교수` (`professor_id`)
 ) COMMENT='학생';
-
-
-
 
 CREATE TABLE `메시지`
 (
@@ -93,13 +83,3 @@ CREATE TABLE `수강`
     CONSTRAINT `fk_enroll_class`
         FOREIGN KEY (`class_no`) REFERENCES `강의` (`class_no`)
 ) COMMENT='수강';
-
-
-
-
-
-
-
-
-
-

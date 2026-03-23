@@ -2,6 +2,8 @@ package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
+import com.lms.model.dto.UserDTO;
+import com.lms.model.dto.StudentDTO;
 
 
 import java.sql.Connection;
@@ -17,6 +19,91 @@ public class CourseDAO {
 
     public CourseDAO(Connection connection) {
         this.connection = connection;
+    }
+
+    // 1. 강의실 & 시간표 중복 검사
+    public boolean checkTimeRoomConflict(Connection con, String time, String room) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        boolean isConflict = false;
+
+        String query = QueryUtil.getQuery("checkTimeRoomConflict");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, time);
+            pstmt.setString(2, room);
+            rset = pstmt.executeQuery();
+
+
+            if (rset.next()) {
+                int count = rset.getInt(1); //
+                if (count > 0) {
+                    isConflict = true; //
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+        return isConflict;
+    }
+
+    // 2. 가장 마지막 강의 번호 조회
+    public String getLastClassNo(Connection con) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        String lastNo = null;
+
+
+        String query = QueryUtil.getQuery("getLastClassNo");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            rset = pstmt.executeQuery();
+
+            if (rset.next()) {
+                lastNo = rset.getString("class_no"); //
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+        return lastNo; //
+    }
+
+    // 3. 신규 강좌 최종 등록 (INSERT)
+    public int insertCourse(Connection con, EnrollmentCourseDTO course) {
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+
+        String query = QueryUtil.getQuery("insertCourse");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, course.getClassNo());
+            pstmt.setString(2, course.getClassName());
+            pstmt.setDouble(3, course.getClassPoint());
+            pstmt.setString(4, course.getClassTime());
+            pstmt.setString(5, course.getClassRoom());
+            pstmt.setString(6, course.getClassType());
+            pstmt.setString(7, course.getProfessorId());
+            pstmt.setString(8, course.getClassTask());
+            pstmt.setFloat(9, course.getClassCapacity());
+
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+        return result;
     }
 
     // ==============================================================
@@ -43,6 +130,7 @@ public class CourseDAO {
                 course.setClassType(rset.getString("class_type"));
                 course.setClassTask(rset.getString("class_task"));
                 course.setProfessorId(rset.getString("professor_id"));
+                course.setClassCapacity(rset.getFloat("class_capacity"));
                 courseList.add(course);
             }
         } catch (SQLException e) {
@@ -122,6 +210,141 @@ public class CourseDAO {
             pstmt.setString(2, classNo);
             pstmt.setString(3, studentId);
 
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+        return result;
+    }
+
+
+    public int updateSingleInfo(Connection con, String profId, String columnName, String newValue) {
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+
+        String query = "UPDATE 교수 SET " + columnName + " = ? WHERE professor_id = ?";
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, newValue);
+            pstmt.setString(2, profId);
+
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+        return result;
+    }
+
+    // 1. 메시지 보내기
+    public int sendMessage(Connection con, UserDTO msg) {
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+
+        String query = QueryUtil.getQuery("message.newProfMessage");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, msg.getUserId());     // user_id
+            pstmt.setString(2, msg.getProfessorId()); // professor_id
+            pstmt.setString(3, msg.getReceiverId()); // receiver_id
+            pstmt.setString(4, msg.getContent());    // content
+            pstmt.setString(5, msg.getProfessorId());
+
+
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+        return result;
+    }
+
+    // 2. 내 메시지함 확인
+    public List<UserDTO> checkMessages(Connection con, String profId) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        List<UserDTO> list = new ArrayList<>();
+
+
+        String query = QueryUtil.getQuery("message.profContentView");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, profId);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                UserDTO m = new UserDTO();
+                m.setUserId(rset.getString("user_id"));
+                m.setUserName(rset.getString("user_name"));
+                m.setContent(rset.getString("content"));
+                list.add(m);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+        return list;
+    }
+
+
+    public List<StudentDTO> getAllMembers(Connection con) {
+        PreparedStatement pstmt = null;
+        ResultSet rset = null;
+        List<StudentDTO> list = new ArrayList<>();
+
+
+        String query = QueryUtil.getQuery("student.allMemberView");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            rset = pstmt.executeQuery();
+
+            while (rset.next()) {
+                StudentDTO person = new StudentDTO();
+                person.setStudentId(rset.getString("ID"));
+
+                String name = rset.getString("NAME");
+                String type = rset.getString("TYPE");
+
+
+                if (type.equals("교수")) {
+                    person.setStudentName(name + " (교수)");
+                } else {
+                    person.setStudentName(name + " (학생)");
+                }
+                list.add(person);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(rset);
+            JDBCTemplate.close(pstmt);
+        }
+        return list;
+    }
+
+    // 강좌 삭제
+    public int deleteCourse(Connection con, String courseId) {
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+        String query = QueryUtil.getQuery("deleteCourse");
+
+        try {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, courseId);
             result = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

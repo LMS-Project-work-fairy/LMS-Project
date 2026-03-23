@@ -3,9 +3,7 @@ package com.lms.model.dao;
 
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.ProfessorDTO;
-import com.mysql.cj.util.DnsSrv;
 import com.lms.common.JDBCTemplate;
-import com.lms.common.QueryUtil;
 import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import java.sql.Connection;

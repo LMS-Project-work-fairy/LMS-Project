@@ -2,6 +2,8 @@ package com.lms.model.service;
 import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.CourseDAO;
 import com.lms.model.dto.EnrollmentCourseDTO;
+import com.lms.model.dto.UserDTO;
+import com.lms.model.dto.StudentDTO;
 
 
 import java.sql.Connection;
@@ -69,6 +71,97 @@ public class ProfessorService {
         } else {
             JDBCTemplate.rollback(conn);
         }
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+    public int registerCourse(EnrollmentCourseDTO course) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO courseDAO = new CourseDAO(conn);
+
+        // 1. 방어 로직
+        boolean isConflict = courseDAO.checkTimeRoomConflict(conn, course.getClassTime(), course.getClassRoom());
+        if(isConflict) {
+            JDBCTemplate.close(conn);
+            return -1; // -1을 리턴해서 View에게 '중복 에러'임을 알림!
+        }
+
+        // 2. PK 자동 채번: 가장 마지막 강의 번호 가져와서 +1 하기
+        String lastClassNo = courseDAO.getLastClassNo(conn); // 예: "C104"
+        String nextClassNo = generateNextClassNo(lastClassNo); // 예: "C104" -> "C105"
+
+        course.setClassNo(nextClassNo);
+        course.setClassTask(null); //
+
+        int result = courseDAO.insertCourse(conn, course);
+
+        if(result > 0) JDBCTemplate.commit(conn);
+        else JDBCTemplate.rollback(conn);
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    // "C104" 같은 문자를 받아서 "C105"로 만들어주는 마법의 헬퍼 메서드
+    private String generateNextClassNo(String lastNo) {
+        if(lastNo == null || lastNo.isEmpty()) return "C101"; // 데이터가 하나도 없을 때
+
+        // "C104"에서 'C'를 떼어내고 "104"만 숫자로 바꾼 뒤 +1
+        int numPart = Integer.parseInt(lastNo.substring(1)) + 1;
+        return "C" + numPart; // 다시 'C'를 붙여서 리턴!
+    }
+
+    public int updateSingleInfo(String profId, String columnName, String newValue) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+
+        int result = dao.updateSingleInfo(conn, profId, columnName, newValue);
+
+        if(result > 0) JDBCTemplate.commit(conn);
+        else JDBCTemplate.rollback(conn);
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    public int sendMessage(UserDTO msg) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+
+        int result = dao.sendMessage(conn, msg);
+        if(result > 0) JDBCTemplate.commit(conn);
+        else JDBCTemplate.rollback(conn);
+
+        JDBCTemplate.close(conn);
+        return result;
+    }
+
+    public List<UserDTO> checkMessages(String profId) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+
+        List<UserDTO> list = dao.checkMessages(conn, profId);
+        JDBCTemplate.close(conn);
+        return list;
+    }
+
+    // 주소록 가져오기
+    public List<StudentDTO> getAllMembers() {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+
+        List<StudentDTO> list = dao.getAllMembers(conn);
+        JDBCTemplate.close(conn);
+        return list;
+    }
+
+    public int deleteCourse(String courseId) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+
+        int result = dao.deleteCourse(conn, courseId);
+        if(result > 0) JDBCTemplate.commit(conn);
+        else JDBCTemplate.rollback(conn);
 
         JDBCTemplate.close(conn);
         return result;

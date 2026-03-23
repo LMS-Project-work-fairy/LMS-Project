@@ -1,5 +1,7 @@
 package com.lms.controller;
 import com.lms.model.dto.EnrollmentCourseDTO;
+import com.lms.model.dto.UserDTO;
+import com.lms.model.dto.StudentDTO;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;
 
@@ -33,6 +35,32 @@ public class ProfessorController {
     }
     public int updateGrade(String courseId, String studentId, double score) {
         return service.updateStudentScore(courseId, studentId, score);
+    }
+
+    // 신규 강좌 등록 요청
+    public int registerCourse(EnrollmentCourseDTO course) {
+        return service.registerCourse(course);
+    }
+
+    public int updateSingleInfo(String profId, String columnName, String newValue) {
+        return service.updateSingleInfo(profId, columnName, newValue);
+    }
+
+    public int sendMessage(UserDTO msg) {
+        return service.sendMessage(msg);
+    }
+
+    public List<UserDTO> checkMessages(String profId) {
+        return service.checkMessages(profId);
+    }
+
+    // 주소록 가져오기
+    public List<StudentDTO> getAllMembers() {
+        return service.getAllMembers();
+    }
+
+    public int deleteCourse(String courseId) {
+        return service.deleteCourse(courseId);
     }
 
 }

@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS 교수;
 DROP TABLE IF EXISTS 사용자;
 
 
-
 CREATE TABLE `교수`
 (
     `professor_id`      VARCHAR(10) NOT NULL COMMENT '교수번호',
@@ -36,13 +35,6 @@ CREATE TABLE `강의`
 )
  COMMENT = '강의';
 
-
-
-
-
-
-
-
 CREATE TABLE `학생`
 (
     `student_id`        VARCHAR(10) NOT NULL COMMENT '학번',
@@ -58,27 +50,18 @@ CREATE TABLE `학생`
         FOREIGN KEY (`professor_id`) REFERENCES `교수` (`professor_id`)
 ) COMMENT='학생';
 
-
-
-
-CREATE TABLE `메시지`
+CREATE TABLE `사용자`
 (
-    `user_id`    VARCHAR(30) NOT NULL COMMENT '사용자_정보',
+    `user_id` VARCHAR(10) NOT NULL COMMENT '사용자',
+    `user_name` VARCHAR(20) NOT NULL COMMENT '사용자이름',
     `student_id`    VARCHAR(10) COMMENT '학번',
     `professor_id`    VARCHAR(10) COMMENT '교수번호',
-    `receiver_id`    VARCHAR(30) COMMENT '받는 사람',
-    `content`    VARCHAR(6000) COMMENT '내용',
-    `user_name`    VARCHAR(10) NOT NULL COMMENT '사용자_이름',
-    PRIMARY KEY ( `user_id` ),
+ PRIMARY KEY ( `user_id` ),
     CONSTRAINT `fk_student`
         FOREIGN KEY (`student_id`) REFERENCES `학생` (`student_id`),
     CONSTRAINT `fk_professor`
         FOREIGN KEY (`professor_id`) REFERENCES `교수` (`professor_id`)
-) COMMENT = '메시지';
-
-
-
-
+) COMMENT = '사용자';
 
 CREATE TABLE `수강`
 (
@@ -95,11 +78,15 @@ CREATE TABLE `수강`
 ) COMMENT='수강';
 
 
-
-
-
-
-
-
-
-
+CREATE TABLE `메시지`
+(
+    `user_id` VARCHAR(10) NOT NULL COMMENT '사용자',
+    `content`    VARCHAR(10000) COMMENT '메시지내용',
+    `receiver_id`    VARCHAR(10) NOT NULL COMMENT '받는사람',
+    `id` BIGINT NOT NULL COMMENT '메시지번호',
+ PRIMARY KEY ( `id` ),
+ CONSTRAINT `fk_user_id`
+ FOREIGN KEY(`user_id`) REFERENCES `사용자`(`user_id`),
+ CONSTRAINT `fk_receiver_id`
+ FOREIGN KEY(`receiver_id`) REFERENCES `사용자`(`user_id`)
+ ) COMMENT = '메시지';

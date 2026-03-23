@@ -1,6 +1,6 @@
 package com.lms.controller;
 import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.MessageDTO;
+import com.lms.model.dto.UserDTO;
 import com.lms.model.dto.StudentDTO;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;
@@ -46,11 +46,11 @@ public class ProfessorController {
         return service.updateSingleInfo(profId, columnName, newValue);
     }
 
-    public int sendMessage(MessageDTO msg) {
+    public int sendMessage(UserDTO msg) {
         return service.sendMessage(msg);
     }
 
-    public List<MessageDTO> checkMessages(String profId) {
+    public List<UserDTO> checkMessages(String profId) {
         return service.checkMessages(profId);
     }
 

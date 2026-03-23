@@ -470,7 +470,7 @@ public class StudentView {
         System.out.println("======= 내 메시지함 =======");
         String myId = loginUser.getUserId();
 
-        List<MessageDTO> myMessages = controller.messageCheck(myId);
+        List<UserDTO> myMessages = controller.messageCheck(myId);
 
         // 2. 개수 출력
         System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
@@ -480,7 +480,7 @@ public class StudentView {
             System.out.println("도착한 메시지가 없습니다.");
         } else {
             // 3. 메시지 내용들 출력
-            for (MessageDTO m : myMessages) {
+            for (UserDTO m : myMessages) {
                 System.out.println("발신자: " + m.getUserName());
                 System.out.println("내용: " + m.getContent());
                 System.out.println("-----------------------------");
@@ -502,7 +502,7 @@ public class StudentView {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
         String now = sdf.format(new java.util.Date());
 
-        MessageDTO newMsg = new MessageDTO();
+        UserDTO newMsg = new UserDTO();
         newMsg.setUserId(loginUser.getUserId());
         newMsg.setStudentId(loginUser.getUserId());
         newMsg.setReceiverId(acceptSend);

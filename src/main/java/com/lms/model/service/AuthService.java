@@ -267,10 +267,10 @@ public class AuthService {
 
             if ("SUCCESS".equals(result)) {
 
-                MessageDTO messageDTO = new MessageDTO();
-                messageDTO.setUserId(professorDTO.getProfessorId());
-                messageDTO.setProfessorId(professorDTO.getProfessorId());
-                messageDTO.setUserName(professorDTO.getProfessorName());
+                UserDTO userDTO = new UserDTO();
+                userDTO.setUserId(professorDTO.getProfessorId());
+                userDTO.setProfessorId(professorDTO.getProfessorId());
+                userDTO.setUserName(professorDTO.getProfessorName());
 
                 ProfessorDAO.insertMessage(con, professorDTO.getProfessorId(), professorDTO.getProfessorName());
 

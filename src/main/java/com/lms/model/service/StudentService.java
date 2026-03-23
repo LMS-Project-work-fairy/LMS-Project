@@ -135,7 +135,7 @@ public class StudentService {
         }
     }
 
-    public int messageSend(MessageDTO msg) {
+    public int messageSend(UserDTO msg) {
         try {
             return studentDAO.sendMessage(msg);
         } catch (SQLException e) {
@@ -143,7 +143,7 @@ public class StudentService {
         }
     }
 
-    public List<MessageDTO> messageCheck(String myId) {
+    public List<UserDTO> messageCheck(String myId) {
         try {
             return studentDAO.messageCheck(myId);
         } catch (SQLException e) {

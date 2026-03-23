@@ -2,7 +2,7 @@ package com.lms.model.service;
 import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.CourseDAO;
 import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.MessageDTO;
+import com.lms.model.dto.UserDTO;
 import com.lms.model.dto.StudentDTO;
 
 
@@ -124,7 +124,7 @@ public class ProfessorService {
         return result;
     }
 
-    public int sendMessage(MessageDTO msg) {
+    public int sendMessage(UserDTO msg) {
         Connection conn = JDBCTemplate.getConnection();
         CourseDAO dao = new CourseDAO(conn);
 
@@ -136,11 +136,11 @@ public class ProfessorService {
         return result;
     }
 
-    public List<MessageDTO> checkMessages(String profId) {
+    public List<UserDTO> checkMessages(String profId) {
         Connection conn = JDBCTemplate.getConnection();
         CourseDAO dao = new CourseDAO(conn);
 
-        List<MessageDTO> list = dao.checkMessages(conn, profId);
+        List<UserDTO> list = dao.checkMessages(conn, profId);
         JDBCTemplate.close(conn);
         return list;
     }

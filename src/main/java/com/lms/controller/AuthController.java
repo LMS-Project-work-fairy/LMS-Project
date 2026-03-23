@@ -118,8 +118,8 @@ public class AuthController {
             while(true) {
                 inputId = mainView.inputProfessorId();
 
-                if (inputId == null) {
-                    System.out.println("🚫 아이디 입력을 취소하셨습니다. 메인으로 돌아갑니다.");
+                if(inputId == null || "BACK".equals(inputId)) {
+                    System.out.println("🚫 가입 절차를 중단합니다.  메인으로 돌아갑니다.");
                     return;
                 }
 
@@ -127,46 +127,28 @@ public class AuthController {
                     mainView.displayMessage("🚨 [중복] 이미 가입된 교수 번호입니다. 가입이 불가능합니다.");
                     continue;
                 }
-                break;
-            }
 
-            ProfessorDTO professorDTO = mainView.inputRestOfProfessorInfo(inputId, authService);
+                ProfessorDTO professorDTO = mainView.inputRestOfProfessorInfo(inputId, authService);
 
 
-            if (professorDTO == null) {
-                System.out.println("🚫입력을 취소하셨습니다.");
-                return;
-            }
-
-//            if (authService.isDuplicateId(professorDTO.getProfessorId())) {
-//                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorId() + "'은(는) 이미 사용 중입니다.");
-//                return;
-//            }
-//
-//            if (authService.isDuplicateNo(professorDTO.getProfessorNo())) {
-//                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorNo() + "'은(는) 이미 사용 중입니다.");
-//                return;
-//            }
-//
-//            if (authService.isDuplicatePhone(professorDTO.getProfessorPhone())) {
-//                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorPhone() + "'은(는) 이미 사용 중입니다.");
-//                return;
-//            }
-//
-//            if (authService.isDuplicateEmail(professorDTO.getProfessorEmail())) {
-//                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorEmail() + "'은(는) 이미 사용 중입니다.");
-//                return;
-//            }
-
-            try {
-                if (authService.insertProfessor(professorDTO)) {
-                    mainView.displayMessage("🌟 교수 회원가입 성공");
+                if (professorDTO == null) {
+                    System.out.println("🔄️ 이전 단계로 돌아갑니다.");
+                    continue;
                 }
-            } catch (RuntimeException e) {
-                mainView.displayMessage("🚨 가입 실패: " + e.getMessage());
-            } catch (SQLException e) {
-                mainView.displayMessage("🚨 DB 오류 발생: " + e.getMessage());
+
+                try {
+                    if (authService.insertProfessor(professorDTO)) {
+                        mainView.displayMessage("🌟 교수 회원가입 성공");
+                    } break;
+                } catch (RuntimeException e) {
+                    mainView.displayMessage("🚨 가입 실패: " + e.getMessage());
+                    break;
+                } catch (SQLException e) {
+                    mainView.displayMessage("🚨 DB 오류 발생: " + e.getMessage());
+                    break;
+                }
             }
+
         }
     }
 

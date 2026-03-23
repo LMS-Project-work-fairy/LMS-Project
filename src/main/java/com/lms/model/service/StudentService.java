@@ -135,20 +135,30 @@ public class StudentService {
         }
     }
 
-//    public int messageSend(UserDTO msg) {
-//        try {
-//            return studentDAO.sendMessage(msg);
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public List<UserDTO> messageCheck(String myId) {
-//        try {
-//            return studentDAO.messageCheck(myId);
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
+
+    public int messageSend(MessageDTO msg) {
+        try {
+            return studentDAO.sendMessage(msg);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    public List<MessageDTO> messageCheck(String myId) {
+        try {
+            return studentDAO.messageCheck(myId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<MessageDTO> getChatHistory(String myId, String targetId) {
+        try {
+            return studentDAO.getChatHistory(myId, targetId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
 
 

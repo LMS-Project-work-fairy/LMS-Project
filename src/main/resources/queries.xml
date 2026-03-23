@@ -280,26 +280,42 @@
         where student_id = ?
     </query>
 
-
+    <query key="message.ensureUser">
+        INSERT IGNORE INTO 사용자 (user_id, user_name)
+        SELECT ?, IFNULL(
+        (SELECT student_name FROM 학생 WHERE student_id = ?),
+        IFNULL((SELECT professor_name FROM 교수 WHERE professor_id = ?), '미등록사용자')
+        )
+    </query>
 
     <query key="message.newMessage">
-        update 메시지
-            set user_id = ?,
-            student_id = ?,
-            receiver_id = ?,
-            content = ?,
-            user_name = ?
-        where student_id = ?
+        INSERT INTO 메시지 (id, user_id, receiver_id, content) -- user_name 삭제
+        VALUES ((SELECT IFNULL(MAX(id), 0) + 1 FROM 메시지 alias), ?, ?, ?) -- 단순 INSERT로 변경
     </query>
 
     <query key="message.contentView">
         select
-            user_id,
-            user_name,
-            content
-        from 메시지
+            m.user_id,
+            u.user_name,
+            m.content,
+            m.receiver_id
+        from 메시지 m
+        join 사용자 u on m.user_id = u.user_id
         where receiver_id = ?
     </query>
 
+    <query key="message.chatHistory">
+        select
+            m.user_id,
+            m.content,
+            m.receiver_id,
+            m.id,
+            u.user_name
+        from 메시지 m
+        join 사용자 u on m.user_id = u.user_id
+        where (m.user_id = ? and m.receiver_id = ?)
+            or (m.user_id = ? and m.receiver_id = ?)
+        order by m.id ASC
+    </query>
 
 </properties>

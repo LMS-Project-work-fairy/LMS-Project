@@ -1,5 +1,6 @@
 package com.lms.model.dao;
 
+import com.google.protobuf.Message;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.*;
@@ -373,45 +374,71 @@ public class StudentDAO {
         return result;
     }
 
-//    public int sendMessage(UserDTO msg) throws SQLException {
-//        String query = QueryUtil.getQuery("message.newMessage");
-//        int result= 0;
-//        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-//            pstmt.setString(1, msg.getUserId());
-//            pstmt.setString(2, msg.getStudentId());
-//            pstmt.setString(3, msg.getReceiverId());
-//            pstmt.setString(4, msg.getContent());
-//            pstmt.setString(5, msg.getUserName());
-//
-//            pstmt.setString(6, msg.getStudentId());
-//
-//            result = pstmt.executeUpdate();
-//            if (result > 0) {
-//                JDBCTemplate.commit(connection);
-//                System.out.println("DB에 반영되었습니다.");
-//            } else {
-//                JDBCTemplate.rollback(connection);
-//            }
-//
-//        }
-//        return result;
-//    }
-//
-//    public List<UserDTO> messageCheck(String myId) throws SQLException {
-//        List<UserDTO> list = new ArrayList<>();
-//        String query = QueryUtil.getQuery("message.contentView");
-//        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-//            pstmt.setString(1, myId);
-//            ResultSet rset = pstmt.executeQuery();
-//            while (rset.next()) {
-//                UserDTO m = new UserDTO();
-//                m.setUserId(rset.getString("user_id"));
-//                m.setUserName(rset.getString("user_name"));
-//                m.setContent(rset.getString("content"));
-//                list.add(m);
-//            }
-//        }
-//        return list;
-//    }
+    public int sendMessage(MessageDTO msg) throws SQLException {
+        String ensureUserQuery = QueryUtil.getQuery("message.ensureUser");
+        String messageQuery = QueryUtil.getQuery("message.newMessage");
+        int result= 0;
+        try (PreparedStatement pstmtUser = connection.prepareStatement(ensureUserQuery);
+             PreparedStatement pstmtMsg = connection.prepareStatement(messageQuery)) {
+            pstmtUser.setString(1, msg.getReceiverId());
+            pstmtUser.setString(2, msg.getReceiverId());
+            pstmtUser.setString(3, msg.getReceiverId());
+            pstmtUser.executeUpdate();
+
+            pstmtMsg.setString(1, msg.getUserId());
+            pstmtMsg.setString(2, msg.getReceiverId());
+            pstmtMsg.setString(3, msg.getContent());
+
+            result = pstmtMsg.executeUpdate();
+            if (result > 0) {
+                JDBCTemplate.commit(connection);
+            } else {
+                JDBCTemplate.rollback(connection);
+            }
+
+        }
+        return result;
+    }
+
+    public List<MessageDTO> messageCheck(String myId) throws SQLException {
+        List<MessageDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("message.contentView");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, myId);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                MessageDTO m = new MessageDTO();
+                m.setUserId(rset.getString("user_name") +
+                        " (" + rset.getString("user_id") + ")");
+                m.setContent(rset.getString("content"));
+                m.setReceiverId((rset.getString("receiver_id")));
+                list.add(m);
+            }
+        }
+        return list;
+    }
+
+    public List<MessageDTO> getChatHistory(String myId, String targetId) throws SQLException {
+        List<MessageDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("message.chatHistory");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, myId);
+            pstmt.setString(2, targetId);
+            pstmt.setString(3, targetId);
+            pstmt.setString(4, myId);
+
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                MessageDTO m = new MessageDTO();
+                m.setUserId(rset.getString("user_name") +
+                        " (" + rset.getString("user_id") + ")");
+                m.setContent(rset.getString("content"));
+
+                list.add(m);
+            }
+        }
+        return list;
+    }
+
 }
 

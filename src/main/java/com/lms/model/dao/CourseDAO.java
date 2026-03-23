@@ -2,7 +2,6 @@ package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.MessageDTO;
 import com.lms.model.dto.StudentDTO;
 

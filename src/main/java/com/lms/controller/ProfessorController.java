@@ -1,7 +1,6 @@
 package com.lms.controller;
 import com.lms.model.dto.EnrollmentCourseDTO;
 import com.lms.model.dto.MessageDTO;
-import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;

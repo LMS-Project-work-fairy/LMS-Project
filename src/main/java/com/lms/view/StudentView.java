@@ -1,12 +1,8 @@
 package com.lms.view;
 
-import com.lms.application.Application;
-import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
 import com.lms.model.dto.*;
-import com.lms.model.service.StudentService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 

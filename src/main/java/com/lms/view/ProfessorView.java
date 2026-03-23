@@ -3,7 +3,6 @@ import com.lms.controller.ProfessorController;
 
 import com.lms.model.dto.EnrollmentCourseDTO;
 import com.lms.model.dto.MessageDTO;
-import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
 
 import java.util.Scanner;

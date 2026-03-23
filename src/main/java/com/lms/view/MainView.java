@@ -12,6 +12,12 @@ public class MainView {
 
     private final Scanner sc = new Scanner(System.in);
 
+
+    private AuthService authService;
+
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
+    }
     public int displayMainMenu() {
         while (true) {
             System.out.println("\n========== LMS 메인 ==========");

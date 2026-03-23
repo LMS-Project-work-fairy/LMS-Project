@@ -4,7 +4,6 @@ import com.lms.controller.StudentController;
 import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.*;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;

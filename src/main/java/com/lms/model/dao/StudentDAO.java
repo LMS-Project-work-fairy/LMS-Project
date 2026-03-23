@@ -2,7 +2,6 @@ package com.lms.model.dao;
 
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
-import com.lms.controller.StudentController;
 import com.lms.model.dto.*;
 
 import java.sql.Connection;
@@ -10,16 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.lms.common.QueryUtil;
 import com.lms.model.dto.StudentDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 public class StudentDAO {

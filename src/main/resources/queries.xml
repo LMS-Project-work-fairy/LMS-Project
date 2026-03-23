@@ -161,6 +161,28 @@
         WHERE professor_id = ?
     </query>
 
+    <query key="message.findUserId">
+        SELECT
+        user_id
+        FROM 사용자 WHERE professor_id = ?
+    </query>
+
+    <query key ="message.getAllUsers">
+        SELECT
+        user_id, user_name, student_id, professor_id
+        FROM 사용자 WHERE user_id != ?
+    </query>
+
+    <query key="message.getChatHistory">
+        SELECT
+        m.id, m.user_id, u.user_name, m.receiver_id, m.content
+        FROM 메시지 m JOIN 사용자 u ON m.user_id = u.user_id WHERE (m.user_id = ? AND m.receiver_id = ?) OR (m.user_id = ? AND m.receiver_id = ?) ORDER BY m.id ASC
+    </query>
+
+    <query key="message.sendChatMessage">
+        INSERT INTO 메시지 (user_id, receiver_id, content, id) VALUES (?, ?, ?, (SELECT new_id FROM (SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM 메시지) t))
+    </query>
+
     <query key="message.newProfMessage">
         INSERT INTO 메시지 (user_id, professor_id, receiver_id, content, user_name) VALUES (?, ?, ?, ?, (SELECT professor_name FROM 교수 WHERE professor_id = ?))
 
@@ -169,6 +191,10 @@
     <query key="message.profContentView">
         SELECT user_id, user_name, content FROM 메시지 WHERE receiver_id = ?
     </query>
+
+
+
+
 
     <query key="deleteCourse">
 

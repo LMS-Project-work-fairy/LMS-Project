@@ -43,7 +43,7 @@ public class StudentView {
                     subjectView();
                     break;
                 case "4":
-                    messageBox();
+                    //messageBox();
                     break;
                 case "5":
                     editMyInfo();
@@ -442,96 +442,96 @@ public class StudentView {
         sc.nextLine();
     }
 
-    public void messageBox() {
-        while (true) {
-            System.out.println("1. 메시지함 확인, 2. 메시지 보내기");
-            System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
-            String messageMenu = sc.nextLine();
+//    public void messageBox() {
+//        while (true) {
+//            System.out.println("1. 메시지함 확인, 2. 메시지 보내기");
+//            System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
+//            String messageMenu = sc.nextLine();
+//
+//            if (messageMenu.trim().isEmpty()) {
+//                continue;
+//            }
+//
+//            if (messageMenu.equals("0")) {
+//                return;
+//            } else if (messageMenu.equals("1")) {
+//                messageCheck();
+//            } else if (messageMenu.equals("2")) {
+//                messageSend();
+//            } else {
+//                System.out.println("옵션 번호를 확인해주세요.");
+//                System.out.print("엔터로 뒤로가기");
+//                sc.nextLine();
+//            }
+//        }
+//    }
 
-            if (messageMenu.trim().isEmpty()) {
-                continue;
-            }
-
-            if (messageMenu.equals("0")) {
-                return;
-            } else if (messageMenu.equals("1")) {
-                messageCheck();
-            } else if (messageMenu.equals("2")) {
-                messageSend();
-            } else {
-                System.out.println("옵션 번호를 확인해주세요.");
-                System.out.print("엔터로 뒤로가기");
-                sc.nextLine();
-            }
-        }
-    }
-
-    public void messageCheck() {
-        System.out.println("======= 내 메시지함 =======");
-        String myId = loginUser.getUserId();
-
-        List<UserDTO> myMessages = controller.messageCheck(myId);
-
-        // 2. 개수 출력
-        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
-        System.out.println("-----------------------------");
-
-        if (myMessages.isEmpty()) {
-            System.out.println("도착한 메시지가 없습니다.");
-        } else {
-            // 3. 메시지 내용들 출력
-            for (UserDTO m : myMessages) {
-                System.out.println("발신자: " + m.getUserName());
-                System.out.println("내용: " + m.getContent());
-                System.out.println("-----------------------------");
-            }
-        }
-        System.out.print("엔터로 뒤로가기");
-        sc.nextLine();
-    }
-
-    public void messageSend() {
-        System.out.println("======= 메시지 전송 ========");
-        System.out.println("------- 보낼 대상 목록 -------");
-        messageMember();
-        System.out.print("받는 사람 ID: ");
-        String acceptSend = sc.nextLine();
-        System.out.print("내용: ");
-        String messageContent = sc.nextLine();
-
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
-        String now = sdf.format(new java.util.Date());
-
-        UserDTO newMsg = new UserDTO();
-        newMsg.setUserId(loginUser.getUserId());
-        newMsg.setStudentId(loginUser.getUserId());
-        newMsg.setReceiverId(acceptSend);
-        newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
-        newMsg.setUserName(loginUser.getUserName());
-
-        int result = controller.messageSend(newMsg);
-
-        if (result > 0) {
-            System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
-            System.out.print("엔터로 뒤로가기");
-            sc.nextLine();
-        } else {
-            System.out.println("메시지 전송에 실패했습니다.");
-            System.out.println("엔터로 뒤로가기");
-            sc.nextLine();
-        }
-    }
-
-    public void messageMember() {
-        List<StudentDTO> memberList = controller.messageMember();
-        System.out.println("ID | 이름(구분)");
-        System.out.println("-----------------------------------");
-
-        for (StudentDTO s : memberList) {
-            System.out.println(s.getStudentId() + " | " + s.getStudentName());
-        }
-        System.out.println("------------------------------------");
-    }
+//    public void messageCheck() {
+//        System.out.println("======= 내 메시지함 =======");
+//        String myId = loginUser.getUserId();
+//
+//        List<UserDTO> myMessages = controller.messageCheck(myId);
+//
+//        // 2. 개수 출력
+//        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
+//        System.out.println("-----------------------------");
+//
+//        if (myMessages.isEmpty()) {
+//            System.out.println("도착한 메시지가 없습니다.");
+//        } else {
+//            // 3. 메시지 내용들 출력
+//            for (UserDTO m : myMessages) {
+//                System.out.println("발신자: " + m.getUserName());
+//                System.out.println("내용: " + m.getContent());
+//                System.out.println("-----------------------------");
+//            }
+//        }
+//        System.out.print("엔터로 뒤로가기");
+//        sc.nextLine();
+//    }
+//
+//    public void messageSend() {
+//        System.out.println("======= 메시지 전송 ========");
+//        System.out.println("------- 보낼 대상 목록 -------");
+//        messageMember();
+//        System.out.print("받는 사람 ID: ");
+//        String acceptSend = sc.nextLine();
+//        System.out.print("내용: ");
+//        String messageContent = sc.nextLine();
+//
+//        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+//        String now = sdf.format(new java.util.Date());
+//
+//        UserDTO newMsg = new UserDTO();
+//        newMsg.setUserId(loginUser.getUserId());
+//        newMsg.setStudentId(loginUser.getUserId());
+//        newMsg.setReceiverId(acceptSend);
+//        newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
+//        newMsg.setUserName(loginUser.getUserName());
+//
+//        int result = controller.messageSend(newMsg);
+//
+//        if (result > 0) {
+//            System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
+//            System.out.print("엔터로 뒤로가기");
+//            sc.nextLine();
+//        } else {
+//            System.out.println("메시지 전송에 실패했습니다.");
+//            System.out.println("엔터로 뒤로가기");
+//            sc.nextLine();
+//        }
+//    }
+//
+//    public void messageMember() {
+//        List<StudentDTO> memberList = controller.messageMember();
+//        System.out.println("ID | 이름(구분)");
+//        System.out.println("-----------------------------------");
+//
+//        for (StudentDTO s : memberList) {
+//            System.out.println(s.getStudentId() + " | " + s.getStudentName());
+//        }
+//        System.out.println("------------------------------------");
+//    }
 
     private void editMyInfo() {
         while (true) {

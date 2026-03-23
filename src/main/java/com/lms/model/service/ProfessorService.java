@@ -1,13 +1,12 @@
 package com.lms.model.service;
 import com.lms.common.JDBCTemplate;
 import com.lms.model.dao.CourseDAO;
-import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.UserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 
 public class ProfessorService {
 
@@ -124,25 +123,40 @@ public class ProfessorService {
         return result;
     }
 
-    public int sendMessage(UserDTO msg) {
+
+
+    public String findUserIdByProfId(String profId) {
         Connection conn = JDBCTemplate.getConnection();
         CourseDAO dao = new CourseDAO(conn);
-
-        int result = dao.sendMessage(conn, msg);
-        if(result > 0) JDBCTemplate.commit(conn);
-        else JDBCTemplate.rollback(conn);
-
+        String userId = dao.findUserIdByProfId(conn, profId);
         JDBCTemplate.close(conn);
-        return result;
+        return userId;
     }
 
-    public List<UserDTO> checkMessages(String profId) {
+    public List<UserDTO> getAllUsers(String myUserId) {
         Connection conn = JDBCTemplate.getConnection();
         CourseDAO dao = new CourseDAO(conn);
-
-        List<UserDTO> list = dao.checkMessages(conn, profId);
+        List<UserDTO> list = dao.getAllUsers(conn, myUserId);
         JDBCTemplate.close(conn);
         return list;
+    }
+
+    public List<UserMessageDTO> getChatHistory(String myUserId, String targetUserId) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+        List<UserMessageDTO> list = dao.getChatHistory(conn, myUserId, targetUserId);
+        JDBCTemplate.close(conn);
+        return list;
+    }
+
+    public int sendChatMessage(MessageDTO msg) {
+        Connection conn = JDBCTemplate.getConnection();
+        CourseDAO dao = new CourseDAO(conn);
+        int result = dao.sendChatMessage(conn, msg);
+        if(result > 0) JDBCTemplate.commit(conn);
+        else JDBCTemplate.rollback(conn);
+        JDBCTemplate.close(conn);
+        return result;
     }
 
     // 주소록 가져오기
@@ -166,5 +180,9 @@ public class ProfessorService {
         JDBCTemplate.close(conn);
         return result;
     }
+
+
+
+
 }
 

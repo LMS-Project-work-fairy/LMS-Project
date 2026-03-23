@@ -285,6 +285,10 @@ public class CourseDAO {
 
     // 3. 1:1 대화 기록 불러오기
     public List<UserMessageDTO> getChatHistory(Connection con, String myUserId, String targetUserId) {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+        String now = sdf.format(new java.util.Date());
+
+
         PreparedStatement pstmt = null;
         ResultSet rset = null;
         List<UserMessageDTO> list = new ArrayList<>();
@@ -298,7 +302,7 @@ public class CourseDAO {
                 UserMessageDTO msg = new UserMessageDTO();
                 msg.setUserId(rset.getString("user_id"));
                 msg.setUserName(rset.getString("user_name"));
-                msg.setContent(rset.getString("content"));
+                msg.setContent(rset.getString("content")+ " \n(발신일: " + now + ")");
                 list.add(msg);
             }
         } catch (SQLException e) { e.printStackTrace(); }

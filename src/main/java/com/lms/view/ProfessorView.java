@@ -266,13 +266,45 @@ public class ProfessorView {
             if (history.isEmpty()) {
                 System.out.println(" (대화 기록이 없습니다. 첫 인사를 건네보세요!)");
             } else {
+                String lastDate = "";
                 for (UserMessageDTO msg : history) {
+                    String fullContent = msg.getContent();
+                    String pureContent = fullContent;
+                    String timePart = "";
+                    String datePart = "";
 
-                    if (msg.getUserId().equals(myUserId)) {
-                        System.out.println("[나] : " + msg.getContent());
-                    } else {
-                        System.out.println("[" + msg.getUserName() + "] : " + msg.getContent());
+                    // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
+                    if (fullContent.contains("(발신일: ")) {
+                        int splitIdx = fullContent.lastIndexOf("(발신일: ");
+                        pureContent = fullContent.substring(0, splitIdx).trim();
+
+                        // "(발신일: 2026-03-23 (월) 15:40:48)" 괄호 안의 데이터 추출
+                        String dateTime = fullContent.substring(splitIdx + 6, fullContent.length() - 1);
+
+                        // 날짜(0~14인덱스)와 시간(15인덱스 이후) 오려내기
+                        datePart = dateTime.substring(0, 14).trim(); // 2026-03-23 (월)
+                        timePart = dateTime.substring(15).trim();    // 15:40:48
                     }
+
+                    // 🚩 3. 날짜가 바뀌었을 때만 날짜 구분선 출력
+                    if (!datePart.equals(lastDate)) {
+                        System.out.println("\n      ------- " + datePart + " -------");
+                        lastDate = datePart; // 방금 출력한 날짜를 기억!
+                    }
+
+// 🚩 4. 발신자 이름 결정
+                    String senderDisplay = msg.getUserId().contains(myUserId) ? "[나]" : "[" + msg.getUserId() + "]";
+
+                    // 🚩 5. 최종 예쁜 출력: [나] 내용 (15:40:48)
+                    System.out.println(senderDisplay + "(" + timePart.substring(0, 5) + ") " + pureContent);
+
+
+
+//                    if (msg.getUserId().equals(myUserId)) {
+//                        System.out.println("[나] : " + msg.getContent());
+//                    } else {
+//                        System.out.println("[" + msg.getUserName() + "] : " + msg.getContent());
+//                    }
                 }
             }
             System.out.println("---------------------------------");

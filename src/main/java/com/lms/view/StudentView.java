@@ -49,7 +49,7 @@ public class StudentView {
                     subjectView();
                     break;
                 case "4":
-                    //messageBox();
+                    messageBox();
                     break;
                 case "5":
                     editMyInfo();
@@ -58,7 +58,7 @@ public class StudentView {
                     return;
                 default:
                     System.out.println("⚠️ 잘못된 번호입니다. 1~4번을 입력해주세요.");
-                    ;
+                    continue;
             }
         }
     }
@@ -196,7 +196,7 @@ public class StudentView {
     public boolean maxClassApply(double[] gpaPoint, double newPoint) {
 
         double gpa = gpaPoint[0];
-        int points = (int)gpaPoint[1];
+        int points = (int) gpaPoint[1];
 
         int limit = 20; //기본 학점
         if (gpa < 2.0) {
@@ -506,16 +506,16 @@ public class StudentView {
                     senderHakbun = currentSender.substring(currentSender.indexOf("(") + 1, currentSender.indexOf(")"));
                 }
 
-            boolean isReplied = false;
-            // 🚩 [수정] 내가 아닐 때만 답장 여부를 체크해서 사라지게 함
-            if (!isMe) {
-                for (String repliedId : repliedList) {
-                    if (senderHakbun.trim().equals(repliedId.trim())) {
-                        isReplied = true;
-                        break;
+                boolean isReplied = false;
+                // 🚩 [수정] 내가 아닐 때만 답장 여부를 체크해서 사라지게 함
+                if (!isMe) {
+                    for (String repliedId : repliedList) {
+                        if (senderHakbun.trim().equals(repliedId.trim())) {
+                            isReplied = true;
+                            break;
+                        }
                     }
                 }
-            }
 
 
                 // 2. 이 사람이 전체 메시지함에 몇 개나 있는지 직접 셉니다.
@@ -611,7 +611,7 @@ public class StudentView {
                     String timePart = "";
                     String datePart = "";
 
-                        // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
+                    // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
                     if (fullContent.contains("(발신일: ")) {
                         int splitIdx = fullContent.lastIndexOf("(발신일: ");
                         pureContent = fullContent.substring(0, splitIdx).trim();
@@ -649,7 +649,7 @@ public class StudentView {
                 String replyContent = sc.nextLine();
 
                 if (replyContent.equals("0")) {
-                        break;
+                    break;
                 }
 
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
@@ -735,6 +735,12 @@ public class StudentView {
         System.out.println("ID | 이름(구분)");
         System.out.println("-----------------------------------");
 
+        if (memberList != null) {
+            for (StudentDTO member : memberList) {
+                System.out.println(member.getStudentId() + " | " + member.getStudentName());
+            }
+        }
+    }
 
     private void editMyInfo() {
         while (true) {
@@ -778,6 +784,7 @@ public class StudentView {
                     String phonPull = (phone.substring(0, 3) + "-" +
                             phone.substring(3, 7) + "-" +
                             phone.substring(7, 11));
+
                     myInfo.setStudentPhone(phonPull);
                 }
             } else if (infoMenu.equals("5")) {
@@ -797,6 +804,7 @@ public class StudentView {
                 System.out.print("엔터로 뒤로가기");
                 sc.nextLine();
             }
+
             int result = controller.editMyInfo(myInfo);
 
             if (result > 0) {
@@ -830,3 +838,5 @@ public class StudentView {
         return myInfoView;
     }
 }
+
+

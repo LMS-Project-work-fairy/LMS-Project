@@ -24,23 +24,6 @@ public class MainView {
         System.out.println(message);
     }
 
-    public LoginRequestDTO inputLoginInfo() {
-        System.out.println("\n========== 로그인 ==========");
-        System.out.println("1. 학생");
-        System.out.println("2. 교수");
-        System.out.print("로그인 유형 선택: ");
-        int roleMenu = Integer.parseInt(sc.nextLine());
-
-        String role = (roleMenu == 1) ? "STUDENT" : "PROFESSOR";
-
-        System.out.print("아이디 입력: ");
-        String userId = sc.nextLine();
-
-        System.out.print("비밀번호 입력: ");
-        String password = sc.nextLine();
-
-        return new LoginRequestDTO(role, userId, password);
-    }
 
     public StudentDTO inputStudentInfo() {
         System.out.println("\n========== 학생 회원가입 ==========");

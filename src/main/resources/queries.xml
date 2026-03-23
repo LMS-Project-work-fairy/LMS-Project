@@ -14,7 +14,7 @@
 
     <query key="students.existsByStudentId">
         select count(*)
-        from student
+        from 학생
         where student_id = ?
     </query>
 </properties>

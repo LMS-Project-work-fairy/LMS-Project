@@ -7,21 +7,24 @@ import com.lms.model.dto.LoginRequestDTO;
 import com.lms.model.dto.LoginUserDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.lms.model.dto.StudentDTO;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthService {
 
     private final ProfessorDAO professorDAO;
-    private final StudentDAO studentDAO;
+    private final StudentDAO studentDAO;   // 현재는 거의 안 쓰지만 생성자 호환 때문에 유지
+    private int deviceFailCount = 0;
+    private long deviceLockUntil = 0L;
+    private int deviceLockLevel = 0;
 
     public AuthService(StudentDAO studentDAO, ProfessorDAO professorDAO) {
         this.studentDAO = studentDAO;
         this.professorDAO = professorDAO;
     }
-
-
 
     public boolean insertProfessor(ProfessorDTO professorDTO) throws SQLException {
 
@@ -37,12 +40,11 @@ public class AuthService {
             throw new RuntimeException("\n전화번호 형식이 올바르지 않습니다. (010-####-####)");
         }
 
-
         String pw = professorDTO.getProfessorPw();
         String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
 
         if (!pw.matches(regex)) {
-            throw new RuntimeException("\n비밀번호는 최소 8자 이상 이여야 합니다.");
+            throw new RuntimeException("\n비밀번호는 영문, 숫자, 특수문자를 포함하여 최소 8자 이상이어야 합니다.");
         }
 
         Connection con = JDBCTemplate.getConnection();
@@ -66,14 +68,94 @@ public class AuthService {
                 return false;
             }
 
-            } catch (SQLException e) {
-                JDBCTemplate.rollback(con);
-                throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨" + e);
-            } finally {
-                JDBCTemplate.close(con);
-            }
-
+        } catch (SQLException e) {
+            JDBCTemplate.rollback(con);
+            throw new RuntimeException("교수 데이터 입력 중 Error 발생 🚨 " + e.getMessage(), e);
+        } finally {
+            JDBCTemplate.close(con);
+        }
     }
+
+    private boolean isProfessorRole(String role) {
+        return "PROFESSOR".equalsIgnoreCase(role);
+    }
+
+    public int getCaptchaThreshold(String role) {
+        return isProfessorRole(role) ? 2 : 3;
+    }
+
+    public int getLockThreshold(String role) {
+        return 5;
+    }
+
+    private int getLockMinutes(String role, int lockLevel) {
+        if (isProfessorRole(role)) {
+            if (lockLevel == 1) return 5;
+            if (lockLevel == 2) return 10;
+            return 30;
+        }
+
+        if (lockLevel == 1) return 3;
+        if (lockLevel == 2) return 5;
+        if (lockLevel == 3) return 10;
+        return 30;
+    }
+
+    public int getDeviceFailCount() {
+        return deviceFailCount;
+    }
+
+    public boolean needHumanCheck(String role) {
+        return deviceFailCount >= getCaptchaThreshold(role);
+    }
+
+    public boolean isDeviceLocked() {
+        if (deviceLockUntil == 0L) {
+            return false;
+        }
+
+        if (System.currentTimeMillis() >= deviceLockUntil) {
+            deviceLockUntil = 0L;
+            return false;
+        }
+
+        return true;
+    }
+
+    public long getRemainingDeviceLockSeconds() {
+        if (deviceLockUntil == 0L) {
+            return 0;
+        }
+
+        long remain = (deviceLockUntil - System.currentTimeMillis()) / 1000;
+        return Math.max(remain, 0);
+    }
+
+    public int getCurrentDeviceLockLevel() {
+        return deviceLockLevel;
+    }
+
+    public int recordLoginFailure(String role) {
+        deviceFailCount++;
+
+        int lockThreshold = getLockThreshold(role);
+
+        if (deviceFailCount % lockThreshold == 0) {
+            deviceLockLevel++;
+
+            int lockMinutes = getLockMinutes(role, deviceLockLevel);
+            deviceLockUntil = System.currentTimeMillis() + lockMinutes * 60_000L;
+        }
+
+        return deviceFailCount;
+    }
+
+    public void recordLoginSuccess() {
+        deviceFailCount = 0;
+        deviceLockUntil = 0L;
+        deviceLockLevel = 0;
+    }
+
 
     public LoginUserDTO login(LoginRequestDTO request) {
 
@@ -82,11 +164,11 @@ public class AuthService {
         }
 
         Connection con = JDBCTemplate.getConnection();
-        StudentDAO studentDAO = new StudentDAO(con);
+        StudentDAO loginStudentDAO = new StudentDAO(con);
 
         try {
             if ("STUDENT".equalsIgnoreCase(request.getRole())) {
-                return studentDAO.loginStudent(request);
+                return loginStudentDAO.loginStudent(request);
             } else if ("PROFESSOR".equalsIgnoreCase(request.getRole())) {
                 return professorDAO.loginProfessor(con, request);
             }
@@ -95,6 +177,8 @@ public class AuthService {
             JDBCTemplate.close(con);
         }
     }
+
+
 
     public int registerStudent(StudentDTO student) {
 
@@ -108,13 +192,13 @@ public class AuthService {
         Connection connection = JDBCTemplate.getConnection();
 
         try {
-            StudentDAO studentDAO = new StudentDAO(connection);
+            StudentDAO registerStudentDAO = new StudentDAO(connection);
 
-            if (studentDAO.existsByStudentId(student.getStudentId())) {
+            if (registerStudentDAO.existsByStudentId(student.getStudentId())) {
                 throw new RuntimeException("이미 사용 중인 학번입니다.");
             }
 
-            int result = studentDAO.save(student);
+            int result = registerStudentDAO.save(student);
 
             if (result > 0) {
                 connection.commit();

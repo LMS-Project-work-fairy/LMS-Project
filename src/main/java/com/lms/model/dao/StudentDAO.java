@@ -3,9 +3,7 @@ package com.lms.model.dao;
 import com.lms.common.JDBCTemplate;
 import com.lms.common.QueryUtil;
 import com.lms.controller.StudentController;
-import com.lms.model.dto.LoginRequestDTO;
-import com.lms.model.dto.LoginUserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.lms.common.QueryUtil;
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.EnrollmentDTO;
 import com.lms.model.dto.StudentDTO;
 
 import java.sql.Connection;
@@ -141,6 +137,8 @@ public class StudentDAO {
                 course.setClassRoom(rset.getString("class_room"));
                 course.setClassPoint(rset.getString("class_point"));
                 course.setProfessorId(rset.getString("professor_name"));
+                course.setClassCapacity(rset.getFloat("class_capacity"));
+                course.setClassTask(rset.getString("current_count"));
                 courseList.add(course);
             }
             return courseList;
@@ -186,9 +184,10 @@ public class StudentDAO {
                 String detailInfo = (("학생명: " + rset.getString("student_name") +
                         ("\n강의명: " + rset.getString("class_name") + " (" + rset.getString("class_type") + ")")+
                         ("\n강의실: " + rset.getString("class_room") + " (" + rset.getString("class_time") + ")") +
+                        ("\n학점: " + rset.getInt("class_point")) +
                         ("\n교수명: " + rset.getString("professor_name")) +
                         ("\n신청일: " + rset.getString("enroll_date")) +
-                        ("\n수강신청 인원: " + rset.getString("current_count"))));
+                        ("\n수강신청 인원: " + rset.getString("current_count")) + "/" + (int) rset.getFloat("class_capacity")));
 
                 enroll.setEnrollDate(detailInfo);
 
@@ -379,6 +378,47 @@ public class StudentDAO {
             }
         }
         return result;
+    }
+
+    public int sendMessage(MessageDTO msg) throws SQLException {
+        String query = QueryUtil.getQuery("message.newMessage");
+        int result= 0;
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, msg.getUserId());
+            pstmt.setString(2, msg.getStudentId());
+            pstmt.setString(3, msg.getReceiverId());
+            pstmt.setString(4, msg.getContent());
+            pstmt.setString(5, msg.getUserName());
+
+            pstmt.setString(6, msg.getStudentId());
+
+            result = pstmt.executeUpdate();
+            if (result > 0) {
+                JDBCTemplate.commit(connection);
+                System.out.println("DB에 반영되었습니다.");
+            } else {
+                JDBCTemplate.rollback(connection);
+            }
+
+        }
+        return result;
+    }
+
+    public List<MessageDTO> messageCheck(String myId) throws SQLException {
+        List<MessageDTO> list = new ArrayList<>();
+        String query = QueryUtil.getQuery("message.contentView");
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, myId);
+            ResultSet rset = pstmt.executeQuery();
+            while (rset.next()) {
+                MessageDTO m = new MessageDTO();
+                m.setUserId(rset.getString("user_id"));
+                m.setUserName(rset.getString("user_name"));
+                m.setContent(rset.getString("content"));
+                list.add(m);
+            }
+        }
+        return list;
     }
 }
 

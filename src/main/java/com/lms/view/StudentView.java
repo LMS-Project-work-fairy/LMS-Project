@@ -3,10 +3,7 @@ package com.lms.view;
 import com.lms.application.Application;
 import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.EnrollmentDTO;
-import com.lms.model.dto.LoginUserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 import com.lms.model.service.StudentService;
 
 import java.util.ArrayList;
@@ -37,25 +34,25 @@ public class StudentView {
             System.out.println("0. 로그아웃");
             System.out.print("번호를 입력해주세요: ");
 
-            int menu = sc.nextInt();
+            String menu = sc.nextLine();
 
             switch (menu) {
-                case 1:
+                case "1":
                     subjectApply();
                     break;
-                case 2:
+                case "2":
                     subjectDelete(); //수강 내역 기능 먼저
                     break;
-                case 3:
+                case "3":
                     subjectView();
                     break;
-                case 4:
+                case "4":
                     messageBox();
                     break;
-                case 5:
+                case "5":
                     editMyInfo();
                     break;
-                case 0:
+                case "0":
                     return;
                 default:
                     System.out.println("⚠️ 잘못된 번호입니다. 1~4번을 입력해주세요.");
@@ -71,11 +68,13 @@ public class StudentView {
         System.out.println("강의 종류: " + course.getClassType());
         System.out.println("학점: " + course.getClassPoint());
         System.out.println("교수: " + course.getProfessorId());
+        System.out.println("수강인원: " + course.getClassTask() + "/" + (int) course.getClassCapacity());
         System.out.println("-------------------------------------------");
     }
 
     public void subjectApply() {
         List<CourseDTO> allClass = controller.findClass();
+
 
         while (true) {
             System.out.println("======= 수강 가능 강의 목록 ======");
@@ -86,6 +85,9 @@ public class StudentView {
                     courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
                 }
             }
+            double[] gpaPoint = totalScoreView(false);
+            maxClassApply(gpaPoint, 0);
+
             System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
             String applyClassNo = sc.nextLine();
 
@@ -99,6 +101,28 @@ public class StudentView {
             String confirm = sc.nextLine();
 
             if (confirm.equals("1")) {
+
+                List<EnrollmentDTO> myEnrollList = controller.enrollView(loginUser.getUserId());
+
+                // [추가 2] 입력한 강의 번호(applyClassNo)가 이미 내 목록에 있는지 확인
+                boolean isAlreadyEnrolled = false;
+                if (myEnrollList != null) {
+                    for (EnrollmentDTO e : myEnrollList) {
+                        if (e.getClassNo().equals(applyClassNo)) {
+                            isAlreadyEnrolled = true;
+                            break;
+                        }
+                    }
+                }
+
+                // [추가 3] 이미 신청한 과목이면 컷!
+                if (isAlreadyEnrolled) {
+                    System.out.println("❌ 이미 수강 신청한 과목입니다! (중복 신청 불가)");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue; // 다시 강의 선택 화면으로 점프
+                }
+
                 // [추가] 리스트에서 내가 입력한 번호(applyClassNo)와 똑같은 강의 객체 하나를 찾음
                 CourseDTO applyCourse = null;
                 for (CourseDTO c : allClass) {
@@ -107,6 +131,32 @@ public class StudentView {
                         break;
                     }
                 }
+
+                if (applyCourse == null) {
+                    System.out.println("❌ 잘못된 강의 번호입니다. 다시 입력해주세요.");
+                    continue; // 다시 위로 올라가서 번호 입력받게 만듦
+                }
+
+                double newCoursePoint = Double.parseDouble(applyCourse.getClassPoint());
+                //신청 시 총 평점에 따른 수강 가능 학점 확인
+                if (!maxClassApply(gpaPoint, newCoursePoint)) {
+                    System.out.println("학점 관리가 필요합니다.");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue;
+                }
+
+                int currentCount = Integer.parseInt(applyCourse.getClassTask()); // 님의 출력 로직 참고
+                int maxCapacity = (int) applyCourse.getClassCapacity();
+
+                if (currentCount >= maxCapacity) {
+                    System.out.println("🚨 [신청 불가] 수강 정원이 초과되었습니다!");
+                    System.out.println("현재 인원: " + currentCount + "명 / 정원: " + maxCapacity + "명");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
+                    continue; // ❌ 더 이상 진행하지 않고 위로 보냄
+                }
+
                 CourseDTO timeEqualClass = controller.timeEqual(applyClassNo, loginUser.getUserId());
                 if (timeEqualClass != null) {
                     System.out.println("🚨시간표가 중복됩니다.");
@@ -116,24 +166,59 @@ public class StudentView {
                     System.out.println("---------------------------------------------");
                     System.out.println("신청 시도한 강의: " + applyCourse.getClassName());
                     System.out.println("신청 시도한 강의 시간: " + applyCourse.getClassTime());
+
+                    System.out.println("엔터로 뒤로가기");
+                    sc.nextLine();
                 } else {
                     int result = controller.addClass(applyClassNo, loginUser.getUserId());
                     if (result > 0) {
                         //addClass(추가) 성공 시
                         System.out.println("✅ " + applyClassNo + " 강의가 신청됐습니다.");
+                        System.out.print("엔터로 뒤로가기");
+                        sc.nextLine();
                     } else {
                         //addClass 실패 시(이 기능 발전 시켜서 인원 초과 상황도 가능?)
                         System.out.println("🚨 실패했습니다. 다시 시도해주세요.");
+                        System.out.print("엔터로 뒤로가기");
+                        sc.nextLine();
                     }
                 }
-                System.out.print("엔터로 뒤로가기");
-                sc.nextLine();
 
             } else {
                 System.out.println("취소합니다.");
             }
 
         }
+    }
+
+    public boolean maxClassApply(double[] gpaPoint, double newPoint) {
+
+        double gpa = gpaPoint[0];
+        int points = (int)gpaPoint[1];
+
+        int limit = 20; //기본 학점
+        if (gpa < 2.0) {
+            limit = 10;
+        } else if (gpa >= 4.0) {
+            limit = 25;
+        }
+
+        if (newPoint == 0) {
+            // 목록 조회 시 안내용
+            if (limit == 10) System.out.println("📢 성적 경고로 이번 학기 10학점까지만 신청 가능합니다.");
+            else if (limit == 25) System.out.println("📢 우수 성적자로 이번 학기 25학점 신청 가능합니다.");
+            else System.out.println("📢 이번 학기 20학점 신청 가능합니다.");
+        }
+
+        // 3. 실제 학점 초과 체크
+        if (points + newPoint > limit) {
+            System.out.println("❌ 학점 초과로 신청 불가능합니다.");
+            System.out.println("현재: " + points + " / 신청 과목: " + newPoint
+                    + " \n합계: " + (points + newPoint) + "/" + limit);
+            return false;
+        }
+        return true;
+
     }
 
     private CourseDTO timeEqual(String applyClassNo) {
@@ -178,9 +263,11 @@ public class StudentView {
                     return;
                 }
                 if (scoreMenu.equals("1")) {
-                    totalScoreView();
+                    totalScoreView(true);
+                    return;
                 } else if (scoreMenu.equals("2")) {
                     scoreView(myEnrollList);
+                    return;
                 } else {
                     System.out.println("옵션 번호를 확인해주세요.");
                 }
@@ -279,36 +366,54 @@ public class StudentView {
         }
     }
 
-    public void totalScoreView() {
+    public double[] totalScoreView(boolean showFlag) {
         String studentId = loginUser.getUserId();
         List<EnrollmentDTO> totalScoreList = controller.totalScoreView(studentId);
-        System.out.println("======= 전체 성적 조회 =======");
+
+        if (showFlag) {
+            System.out.println("======= 전체 성적 조회 =======");
+        }
 
         double totalScoreSum = 0; //총 학점
-        int totalPoints = 0; //이수 학점
+        int totalPoints = 0;
+        double resultGpa = 0.0;//이수 학점
 
         for (EnrollmentDTO e : totalScoreList) {
-            System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
-            String scoreStr = e.getScore().substring(4, 8);
-            String pointStr = e.getScore().substring(10, 13);
 
-            double score = Double.parseDouble(scoreStr); //글자를 숫자로 바꾸는 형변환
-            double point = Double.parseDouble(pointStr);
+            double point = Double.parseDouble(e.getScore().substring(10, 13));
+            totalPoints += (int) point;
+
+            if (e.getScore() == null || e.getScore().toLowerCase().contains("null")) {
+                if (showFlag) {
+                    System.out.println("강의명: " + e.getClassNo() + " | 성적 미입력");
+                }
+                continue; // 다음 과목으로 넘어감!
+            }
+
+            if (showFlag) {
+                System.out.println("강의명: " + e.getClassNo() + " | " + e.getScore());
+            }
+            double score = Double.parseDouble(e.getScore().substring(4, 8));
 
             totalScoreSum += (score * point);
-            totalPoints += (int) point;
         }
 
         System.out.println("---------------------------");
         if (totalPoints > 0) {
             double gpa = totalScoreSum / totalPoints;
-            double resultGpa = Math.round(gpa * 100) / 100.0;
+            resultGpa = Math.round(gpa * 100) / 100.0;
             System.out.println("총 이수 학점: " + totalPoints);
             System.out.println("전체 평균 평점: " + resultGpa + "/4.5");
         }
-        System.out.println("============================");
-        System.out.println("\n엔터로 뒤로가기");
-        sc.nextLine();
+        if (showFlag) {
+            System.out.println("============================");
+            System.out.println("\n엔터로 뒤로가기");
+            sc.nextLine();
+        }
+
+        double[] gpaPoint = {resultGpa, totalPoints};
+
+        return gpaPoint;
     }
 
     private void subjectDelete() {
@@ -318,7 +423,7 @@ public class StudentView {
         displayMyEnrollList(myEnrollList);
 
         System.out.println("위 목록에서 취소할 강의 번호를 입력해주세요.");
-        System.out.print("수강 취소할 강의 번호: ");
+        System.out.print("수강 취소할 강의 번호(돌아가기는 0): ");
         String deleteClassNo = sc.nextLine();
 
         if (deleteClassNo.equals("0")) return; //취소 방지용
@@ -347,6 +452,10 @@ public class StudentView {
             System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
             String messageMenu = sc.nextLine();
 
+            if (messageMenu.trim().isEmpty()) {
+                continue;
+            }
+
             if (messageMenu.equals("0")) {
                 return;
             } else if (messageMenu.equals("1")) {
@@ -364,39 +473,21 @@ public class StudentView {
     public void messageCheck() {
         System.out.println("======= 내 메시지함 =======");
         String myId = loginUser.getUserId();
-        int count = 0;
-        for (String[] m : Application.totalMessages) {
-            if (m[1].equals(myId)) {
-                count++;
-            }
-        }
+
+        List<MessageDTO> myMessages = controller.messageCheck(myId);
 
         // 2. 개수 출력
-        System.out.println("📢 전체 메시지: " + count + "건");
+        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
         System.out.println("-----------------------------");
 
-        if (count == 0) {
+        if (myMessages.isEmpty()) {
             System.out.println("도착한 메시지가 없습니다.");
         } else {
-            List<StudentDTO> memberList = controller.messageMember();
             // 3. 메시지 내용들 출력
-            for (String[] m : Application.totalMessages) {
-                if (m[1].equals(myId)) {
-                    String senderId = m[0];
-                    String senderName = senderId; // 못 찾을 경우를 대비해 초기값은 ID로!
-
-                    // 🔎 이중 for문: 전체 명단에서 발신자 ID와 같은 사람 찾기
-                    for (StudentDTO s : memberList) {
-                        if (s.getStudentId().equals(senderId)) {
-                            senderName = s.getStudentName(); // 찾았다! "이름 (구분)"
-                            break; // 찾았으니 안쪽 for문은 탈출
-                        }
-                    }
-
-                    System.out.println("발신자: " + senderName + " | 제목: " + m[2]);
-                    System.out.println("내용: " + m[3]);
-                    System.out.println("-----------------------------");
-                }
+            for (MessageDTO m : myMessages) {
+                System.out.println("발신자: " + m.getUserName());
+                System.out.println("내용: " + m.getContent());
+                System.out.println("-----------------------------");
             }
         }
         System.out.print("엔터로 뒤로가기");
@@ -409,18 +500,30 @@ public class StudentView {
         messageMember();
         System.out.print("받는 사람 ID: ");
         String acceptSend = sc.nextLine();
-        System.out.print("제목: ");
-        String messageTitle = sc.nextLine();
         System.out.print("내용: ");
         String messageContent = sc.nextLine();
 
-        // 순서: [0]발신자ID, [1]수신자ID, [2]제목, [3]내용
-        String[] newMsg = {loginUser.getUserId(), acceptSend, messageTitle, messageContent};
-        Application.totalMessages.add(newMsg);
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+        String now = sdf.format(new java.util.Date());
 
-        System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
-        System.out.print("엔터로 뒤로가기");
-        sc.nextLine();
+        MessageDTO newMsg = new MessageDTO();
+        newMsg.setUserId(loginUser.getUserId());
+        newMsg.setStudentId(loginUser.getUserId());
+        newMsg.setReceiverId(acceptSend);
+        newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
+        newMsg.setUserName(loginUser.getUserName());
+
+        int result = controller.messageSend(newMsg);
+
+        if (result > 0) {
+            System.out.println("✅ 메시지가 성공적으로 전송되었습니다.");
+            System.out.print("엔터로 뒤로가기");
+            sc.nextLine();
+        } else {
+            System.out.println("메시지 전송에 실패했습니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+        }
     }
 
     public void messageMember() {

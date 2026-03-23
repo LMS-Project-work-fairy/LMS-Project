@@ -36,9 +36,9 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "feature/professor-join",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/user/Desktop/프로젝트_1/LMS-Project",
+    "last_opened_file_path": "C:/Users/user/Desktop/clone/LMS-Develop-Copy",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -85,7 +85,7 @@
       <workItem from="1773920663768" duration="4000" />
       <workItem from="1773920933401" duration="7000" />
       <workItem from="1773921087009" duration="9000" />
-      <workItem from="1773973281088" duration="32000" />
+      <workItem from="1773974119403" duration="27000" />
     </task>
     <servers />
   </component>

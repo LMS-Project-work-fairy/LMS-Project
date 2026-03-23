@@ -2,6 +2,7 @@ package com.lms.model.dao;
 
 
 import com.lms.common.QueryUtil;
+import com.lms.model.dto.MessageDTO;
 import com.lms.model.dto.ProfessorDTO;
 import com.mysql.cj.util.DnsSrv;
 import com.lms.common.JDBCTemplate;
@@ -12,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProfessorDAO {
   
@@ -90,7 +93,21 @@ public class ProfessorDAO {
 
     }
 
+    
+    public static int insertMessage(Connection con, String id, String name) throws SQLException{
+        String sql = "INSERT INTO 메시지 (USER_ID, PROFESSOR_ID, USER_NAME) VALUES (?, ?, ?)";
 
+        try ( PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            pstmt.setString(2, id);
+            pstmt.setString(3, name);
+
+            return pstmt.executeUpdate();
+        }
+
+    }
+        
+       
 
     //교수 로그인 메소드
     public LoginUserDTO loginProfessor(Connection con, LoginRequestDTO request) {
@@ -124,6 +141,8 @@ public class ProfessorDAO {
 
         return loginUser;
     }
+
+
 
 
 }

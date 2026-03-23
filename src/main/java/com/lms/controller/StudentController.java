@@ -1,9 +1,6 @@
 package com.lms.controller;
 
-import com.lms.model.dto.CourseDTO;
-import com.lms.model.dto.EnrollmentDTO;
-import com.lms.model.dto.UserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 import com.lms.model.service.StudentService;
 
 import java.util.List;
@@ -80,12 +77,16 @@ public class StudentController {
         return service.editMyInfo(myInfo);
     }
 
-    public int messageSend(UserDTO msg) {
+    public int messageSend(MessageDTO msg) {
         return service.messageSend(msg);
     }
 
-    public List<UserDTO> messageCheck(String myId) {
+    public List<MessageDTO> messageCheck(String myId) {
         return service.messageCheck(myId);
+    }
+
+    public List<MessageDTO> getChatHistory(String myId, String targetId) {
+        return service.getChatHistory(myId, targetId);
     }
 }
 

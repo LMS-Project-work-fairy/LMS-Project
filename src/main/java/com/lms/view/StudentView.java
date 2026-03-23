@@ -1,13 +1,19 @@
 package com.lms.view;
 
+import com.lms.application.Application;
+import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
 import com.lms.model.dto.*;
+import com.lms.model.service.StudentService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class StudentView {
 
+    //읽음 기능을 위한 리스트
+    private List<String> repliedList = new ArrayList<>();
 
     private final StudentController controller;
     private final LoginUserDTO loginUser;
@@ -470,25 +476,238 @@ public class StudentView {
         System.out.println("======= 내 메시지함 =======");
         String myId = loginUser.getUserId();
 
-        List<UserDTO> myMessages = controller.messageCheck(myId);
+        List<MessageDTO> myMessages = controller.messageCheck(myId);
+
+        if (myMessages.isEmpty()) {
+            System.out.println("도착한 메시지가 없습니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
 
         // 2. 개수 출력
         System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
         System.out.println("-----------------------------");
+        System.out.println("📢 나에게 메시지를 보낸 사람들");
 
-        if (myMessages.isEmpty()) {
-            System.out.println("도착한 메시지가 없습니다.");
-        } else {
-            // 3. 메시지 내용들 출력
-            for (UserDTO m : myMessages) {
-                System.out.println("발신자: " + m.getUserName());
-                System.out.println("내용: " + m.getContent());
-                System.out.println("-----------------------------");
+        List<String> senderList = new ArrayList<>();
+        int displayTotalCount = 0;
+
+        for (MessageDTO m : myMessages) {
+            String currentSender = m.getUserId();
+            boolean isMe = currentSender.contains(myId);
+
+            // 1. 이미 출력한 적이 없는 사람일 때만 카운트 시작
+            if (!senderList.contains(currentSender)) {
+                senderList.add(currentSender);
+
+                String senderHakbun = currentSender;
+                if (currentSender.contains("(") && currentSender.contains(")")) {
+                    senderHakbun = currentSender.substring(currentSender.indexOf("(") + 1, currentSender.indexOf(")"));
+                }
+
+            boolean isReplied = false;
+            // 🚩 [수정] 내가 아닐 때만 답장 여부를 체크해서 사라지게 함
+            if (!isMe) {
+                for (String repliedId : repliedList) {
+                    if (senderHakbun.trim().equals(repliedId.trim())) {
+                        isReplied = true;
+                        break;
+                    }
+                }
+            }
+
+
+                // 2. 이 사람이 전체 메시지함에 몇 개나 있는지 직접 셉니다.
+                int count = 0;
+                if (!isReplied && !isMe) {
+                    for (MessageDTO check : myMessages) {
+                        if (check.getUserId().equals(senderHakbun)) {
+                            // 🚩 [추가] 내가 나에게 보낸 건수는 '...건' 표시에서 제외 (선택 사항)
+                            count++;
+                        }
+                    }
+                    if (count > 0) {
+                        displayTotalCount++;
+                    }
+                }
+
+                if (isMe) {
+                    System.out.println("- " + currentSender + " (내게 쓴 메시지)");
+                } else {
+                    System.out.println("- " + currentSender + " - " + count + "건");
+                }
             }
         }
-        System.out.print("엔터로 뒤로가기");
-        sc.nextLine();
+
+        System.out.println("📢 전체 메시지(답장 필요): " + displayTotalCount + "건");
+
+        System.out.println("-----------------------------");
+        System.out.print("상세 확인할 학번 입력 (돌아가기는 0): ");
+        String targetId = sc.nextLine();
+
+        if (targetId.equals("0")) return;
+
+        List<StudentDTO> memberList = controller.messageMember();
+        boolean isExit = false;
+
+        if (memberList != null) {
+            for (StudentDTO m : memberList) {
+                if (m.getStudentId().equals(targetId)) {
+                    isExit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isExit) {
+            System.out.println("존재하지 않는 ID입니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
+
+
+        // 학번만 추출해서 상세 보기로 넘기기 (이름 (S001) 형태에서 S001만 뽑기)
+        if (targetId.contains("(") && targetId.contains(")")) {
+            targetId = targetId.substring(targetId.indexOf("(") + 1, targetId.indexOf(")"));
+        }
+
+        // 2. 상세 보기 호출
+        messageDetailView(targetId);
     }
+
+    public void messageDetailView(String targetId) {
+        while (true) {
+            String myId = loginUser.getUserId();
+
+            // 중요: 나와 상대방이 주고받은 모든 내역을 가져오는 controller/dao 메소드가 필요합니다.
+            // 일단 지금은 받은 메시지만 필터링해서 보여주는 식으로 짜볼게요.
+            List<MessageDTO> chatHistory = controller.getChatHistory(myId, targetId);
+
+            String displayName = targetId; // 기본값은 학번
+
+            // 리스트를 돌면서 내가 아닌 상대방의 이름을 찾습니다.
+            for (MessageDTO m : chatHistory) {
+                if (!m.getUserId().contains(myId)) {
+                    displayName = m.getUserId(); // "최지훈 (S001)" 형태가 저장됨
+                    break;
+                }
+            }
+
+            if (displayName.equals(targetId)) {
+                displayName = loginUser.getUserName() + " (" + targetId + ")";
+            }
+
+            System.out.println("======= 🗨️ [" + displayName + "] 님과의 대화 내역 =======");
+
+            if (chatHistory.isEmpty()) {
+                System.out.println("대화 내역이 없습니다.");
+            } else {
+                String lastDate = "";
+                for (MessageDTO m : chatHistory) {
+                    String fullContent = m.getContent();
+                    String pureContent = fullContent;
+                    String timePart = "";
+                    String datePart = "";
+
+                        // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
+                    if (fullContent.contains("(발신일: ")) {
+                        int splitIdx = fullContent.lastIndexOf("(발신일: ");
+                        pureContent = fullContent.substring(0, splitIdx).trim();
+
+                        // "(발신일: 2026-03-23 (월) 15:40:48)" 괄호 안의 데이터 추출
+                        String dateTime = fullContent.substring(splitIdx + 6, fullContent.length() - 1);
+
+                        // 날짜(0~14인덱스)와 시간(15인덱스 이후) 오려내기
+                        datePart = dateTime.substring(0, 14).trim(); // 2026-03-23 (월)
+                        timePart = dateTime.substring(15).trim();    // 15:40:48
+                    }
+
+                    // 🚩 3. 날짜가 바뀌었을 때만 날짜 구분선 출력
+                    if (!datePart.equals(lastDate)) {
+                        System.out.println("\n      ------- " + datePart + " -------");
+                        lastDate = datePart; // 방금 출력한 날짜를 기억!
+                    }
+
+                    // 🚩 4. 발신자 이름 결정
+                    String senderDisplay = m.getUserId().contains(myId) ? "[나]" : "[" + m.getUserId() + "]";
+
+                    // 🚩 5. 최종 예쁜 출력: [나] 내용 (15:40:48)
+                    System.out.println(senderDisplay + "(" + timePart.substring(0, 5) + ") " + pureContent);
+
+                }
+            }
+
+            System.out.println("-------------------------------------------");
+            System.out.println("1. 답장하기, 0. 뒤로가기");
+            System.out.print("선택: ");
+            String menu = sc.nextLine();
+
+            if (menu.equals("1")) {
+                System.out.print("답장 내용(취소는 0): ");
+                String replyContent = sc.nextLine();
+
+                if (replyContent.equals("0")) {
+                        break;
+                }
+
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+                String now = sdf.format(new java.util.Date());
+
+                MessageDTO newMsg = new MessageDTO();
+                newMsg.setUserId(loginUser.getUserId()); // 내 아이디
+                newMsg.setReceiverId(targetId);          // 🚩 여기가 핵심! 선택했던 그 사람 ID
+                newMsg.setContent(replyContent + " \n(발신일: " + now + ")");
+
+                int result = controller.messageSend(newMsg);
+
+                if (result > 0) {
+                    if (!repliedList.contains(targetId)) {
+                        repliedList.add(targetId);
+                    }
+                }
+
+            } else {
+                return;
+            }
+        }
+    }
+
+//    public List<MessageDTO> getChatHistory(String targetId) {
+//        String myId = loginUser.getUserId();
+//
+//        List<MessageDTO> chatHistory = controller.getChatHistory(myId, targetId);
+//
+//        for (MessageDTO m : chatHistory) {
+//            System.out.println(m.getUserId() + " : " + m.getContent());
+//        }
+//    }
+
+
+//    public void messageCheck() {
+//        System.out.println("======= 내 메시지함 =======");
+//        String myId = loginUser.getUserId();
+//
+//        List<MessageDTO> myMessages = controller.messageCheck(myId);
+//
+//        // 2. 개수 출력
+//        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
+//        System.out.println("-----------------------------");
+//
+//        if (myMessages.isEmpty()) {
+//            System.out.println("도착한 메시지가 없습니다.");
+//        } else {
+//            // 3. 메시지 내용들 출력
+//            for (MessageDTO m : myMessages) {
+//                System.out.println("발신자: " + m.getUserId());
+//                System.out.println("내용: " + m.getContent());
+//                System.out.println("-----------------------------");
+//            }
+//        }
+//        System.out.print("엔터로 뒤로가기");
+//        sc.nextLine();
+//    }
 
     public void messageSend() {
         System.out.println("======= 메시지 전송 ========");
@@ -496,18 +715,41 @@ public class StudentView {
         messageMember();
         System.out.print("받는 사람 ID: ");
         String acceptSend = sc.nextLine();
+
+        if (acceptSend.equals("0")) {
+            System.out.println("메시지 전송 취소");
+            return;
+        }
+
+        List<StudentDTO> memberList = controller.messageMember();
+        boolean isExit = false;
+
+        if (memberList != null) {
+            for (StudentDTO m : memberList) {
+                if (m.getStudentId().equals(acceptSend)) {
+                    isExit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isExit) {
+            System.out.println("존재하지 않는 ID입니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
+
         System.out.print("내용: ");
         String messageContent = sc.nextLine();
 
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
         String now = sdf.format(new java.util.Date());
 
-        UserDTO newMsg = new UserDTO();
+        MessageDTO newMsg = new MessageDTO();
         newMsg.setUserId(loginUser.getUserId());
-        newMsg.setStudentId(loginUser.getUserId());
         newMsg.setReceiverId(acceptSend);
         newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
-        newMsg.setUserName(loginUser.getUserName());
 
         int result = controller.messageSend(newMsg);
 
@@ -555,7 +797,7 @@ public class StudentView {
             } else if (infoMenu.equals("3")) {
                 System.out.print("수정할 이메일 입력: ");
                 String newEmail = sc.nextLine();
-                if (!newEmail.contains("@")) {
+                if (!newEmail.contains("@") || !newEmail.endsWith(".com")) {
                     System.out.println("올바른 이메일 형식이 아닙니다.");
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
@@ -627,27 +869,3 @@ public class StudentView {
         return myInfoView;
     }
 }
-
-//    private int inputInt() {
-//        while (true) {
-//            try {
-//                int value = Integer.parseInt(sc.nextLine());
-//                return value;
-//            } catch (NumberFormatException e) {
-//                System.out.print("숫자만 입력해주세요 : ");
-//            }
-//        }
-//    }
-//
-//    private long inputLong() {
-//        while (true) {
-//            try {
-//                // nextLine으로 받아서 long으로 파싱!
-//                return Long.parseLong(sc.nextLine());
-//            } catch (NumberFormatException e) {
-//                System.out.print("숫자(ID)만 입력해주세요 : ");
-//            }
-//        }
-//    }
-//
-

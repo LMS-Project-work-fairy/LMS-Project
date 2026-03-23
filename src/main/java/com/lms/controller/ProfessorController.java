@@ -1,11 +1,10 @@
 package com.lms.controller;
-import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.UserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 import com.lms.model.service.ProfessorService;
 import com.lms.view.ProfessorView;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProfessorController {
 
@@ -46,13 +45,14 @@ public class ProfessorController {
         return service.updateSingleInfo(profId, columnName, newValue);
     }
 
-    public int sendMessage(UserDTO msg) {
-        return service.sendMessage(msg);
-    }
 
-    public List<UserDTO> checkMessages(String profId) {
-        return service.checkMessages(profId);
-    }
+
+    public String findUserIdByProfId(String profId) { return service.findUserIdByProfId(profId); }
+    public List<UserDTO> getAllUsers(String myUserId) { return service.getAllUsers(myUserId); }
+    public List<UserMessageDTO> getChatHistory(String myUserId, String targetUserId) { return service.getChatHistory(myUserId, targetUserId); }
+    public int sendChatMessage(MessageDTO msg) { return service.sendChatMessage(msg); }
+
+
 
     // 주소록 가져오기
     public List<StudentDTO> getAllMembers() {

@@ -69,13 +69,13 @@ public class ProfessorDAO {
 
     }
 
-    public boolean existByEmail(Connection con, String professorEmail) throws SQLException {
 
+    public boolean existByNo(Connection con, String professorNo) throws SQLException {
         boolean exists = false;
-        String query = QueryUtil.getQuery("professor.existByEmail");
+        String query = "SELECT COUNT(*) FROM `교수` WHERE `professor_no` = ?";
 
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
-            pstmt.setString(1,professorEmail);
+            pstmt.setString(1, professorNo);
 
             try (ResultSet rset = pstmt.executeQuery()) {
                 if (rset.next()) {
@@ -83,14 +83,38 @@ public class ProfessorDAO {
                 }
             }
         }
-
         return exists;
-
     }
 
+
+    public boolean existByEmail(Connection con, String professorEmail) throws SQLException {
+        String query = "SELECT COUNT(*) FROM `교수` WHERE `professor_email` = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, professorEmail);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean existByPhone(Connection con, String professorPhone) throws SQLException {
+        String query = "SELECT COUNT(*) FROM `교수` WHERE `professor_phone` = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, professorPhone);
+            try (ResultSet rset = pstmt.executeQuery()) {
+                if (rset.next()) {
+                    return rset.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
     
     public static int insertMessage(Connection con, String id, String name) throws SQLException{
-        String sql = "INSERT INTO 메시지 (USER_ID, PROFESSOR_ID, USER_NAME) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `메시지` (USER_ID, PROFESSOR_ID, USER_NAME) VALUES (?, ?, ?)";
 
         try ( PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, id);
@@ -136,8 +160,5 @@ public class ProfessorDAO {
 
         return loginUser;
     }
-
-
-
 
 }

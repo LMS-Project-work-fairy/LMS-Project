@@ -88,5 +88,6 @@ public class StudentController {
     public List<MessageDTO> getChatHistory(String myId, String targetId) {
         return service.getChatHistory(myId, targetId);
     }
+
 }
 

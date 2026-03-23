@@ -49,7 +49,7 @@ public class StudentView {
                     subjectView();
                     break;
                 case "4":
-                    messageBox();
+                    //messageBox();
                     break;
                 case "5":
                     editMyInfo();
@@ -674,40 +674,6 @@ public class StudentView {
         }
     }
 
-//    public List<MessageDTO> getChatHistory(String targetId) {
-//        String myId = loginUser.getUserId();
-//
-//        List<MessageDTO> chatHistory = controller.getChatHistory(myId, targetId);
-//
-//        for (MessageDTO m : chatHistory) {
-//            System.out.println(m.getUserId() + " : " + m.getContent());
-//        }
-//    }
-
-
-//    public void messageCheck() {
-//        System.out.println("======= 내 메시지함 =======");
-//        String myId = loginUser.getUserId();
-//
-//        List<MessageDTO> myMessages = controller.messageCheck(myId);
-//
-//        // 2. 개수 출력
-//        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
-//        System.out.println("-----------------------------");
-//
-//        if (myMessages.isEmpty()) {
-//            System.out.println("도착한 메시지가 없습니다.");
-//        } else {
-//            // 3. 메시지 내용들 출력
-//            for (MessageDTO m : myMessages) {
-//                System.out.println("발신자: " + m.getUserId());
-//                System.out.println("내용: " + m.getContent());
-//                System.out.println("-----------------------------");
-//            }
-//        }
-//        System.out.print("엔터로 뒤로가기");
-//        sc.nextLine();
-//    }
 
     public void messageSend() {
         System.out.println("======= 메시지 전송 ========");
@@ -769,11 +735,6 @@ public class StudentView {
         System.out.println("ID | 이름(구분)");
         System.out.println("-----------------------------------");
 
-        for (StudentDTO s : memberList) {
-            System.out.println(s.getStudentId() + " | " + s.getStudentName());
-        }
-        System.out.println("------------------------------------");
-    }
 
     private void editMyInfo() {
         while (true) {

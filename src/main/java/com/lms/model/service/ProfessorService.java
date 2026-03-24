@@ -56,6 +56,28 @@ public class ProfessorService {
         return result;
     }
 
+    public int updateCourseInfo(EnrollmentCourseDTO course) {
+
+        Connection conn = JDBCTemplate.getConnection();
+
+        CourseDAO dao = new CourseDAO(conn);
+
+        int result = dao.updateCourseInfo(conn, course);
+
+        if (result > 0) {
+            JDBCTemplate.commit(conn);
+        } else {
+            JDBCTemplate.rollback(conn);
+        }
+
+        JDBCTemplate.close(conn);
+
+        return result;
+    }
+
+
+
+
     // ==============================================================
     // [교수 기능 4] 성적 관리
     // ==============================================================

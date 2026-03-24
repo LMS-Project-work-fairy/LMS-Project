@@ -387,5 +387,35 @@ public class CourseDAO {
     }
 
 
+    public int updateCourseInfo(Connection con, EnrollmentCourseDTO course) {
+
+        PreparedStatement pstmt = null;
+        int result = 0;
+
+        String query = QueryUtil.getQuery("updateCourseInfo");
+
+        try {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, course.getClassName());
+            pstmt.setDouble(2, course.getClassPoint());
+            pstmt.setString(3, course.getClassTime());
+            pstmt.setString(4, course.getClassRoom());
+            pstmt.setFloat(5, course.getClassCapacity());
+            pstmt.setString(6, course.getClassNo());
+            pstmt.setString(7, course.getProfessorId());
+
+            result = pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCTemplate.close(pstmt);
+        }
+
+        return result;
+    }
+
+
 }
 

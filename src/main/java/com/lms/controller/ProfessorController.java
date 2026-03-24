@@ -63,4 +63,9 @@ public class ProfessorController {
         return service.deleteCourse(courseId);
     }
 
+
+    public int updateCourseInfo(EnrollmentCourseDTO course) {
+        return service.updateCourseInfo(course);
+    }
+
 }

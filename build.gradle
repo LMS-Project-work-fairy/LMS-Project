@@ -19,6 +19,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     testImplementation("org.slf4j:slf4j-simple:2.0.17")
+    implementation 'org.jline:jline:3.21.0'
 }
 
 test {

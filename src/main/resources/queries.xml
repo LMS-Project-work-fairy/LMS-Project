@@ -289,9 +289,10 @@
     </query>
 
     <query key="message.newMessage">
-        INSERT INTO 메시지 (id, user_id, receiver_id, content) -- user_name 삭제
-        VALUES ((SELECT IFNULL(MAX(id), 0) + 1 FROM 메시지 alias), ?, ?, ?) -- 단순 INSERT로 변경
+        INSERT INTO 메시지 (user_id, receiver_id, content)
+        VALUES (?, ?, ?)
     </query>
+
 
     <query key="message.contentView">
         select

@@ -1,15 +1,16 @@
 package com.lms.model.service;
 
+import com.lms.common.JDBCTemplate;
 import com.lms.controller.StudentController;
 import com.lms.model.dao.StudentDAO;
 import com.lms.model.dto.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class StudentService {
-
 
 
     public class StudentView {
@@ -24,7 +25,7 @@ public class StudentService {
         }
 
         private void subjectView() {
-            while(true) {
+            while (true) {
                 // 이제 고정된 학번이 아니라 로그인한 유저의 ID를 사용합니다!
                 String studentId = loginUser.getUserId();
                 List<EnrollmentDTO> myEnrollList = controller.enrollView(studentId);
@@ -95,6 +96,7 @@ public class StudentService {
             throw new RuntimeException(e);
         }
     }
+
     public CourseDTO timeEqual(String applyClassNo, String studentId) {
         try {
             return studentDAO.timeEqual(applyClassNo, studentId);
@@ -137,28 +139,41 @@ public class StudentService {
 
 
     public int messageSend(MessageDTO msg) {
+        Connection conn = JDBCTemplate.getConnection();
         try {
-            return studentDAO.sendMessage(msg);
+            StudentDAO dao = new StudentDAO(conn);
+            return dao.sendMessage(msg);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JDBCTemplate.close(conn);
         }
     }
 
     public List<MessageDTO> messageCheck(String myId) {
+        Connection conn = JDBCTemplate.getConnection();
         try {
-            return studentDAO.messageCheck(myId);
+            StudentDAO dao = new StudentDAO(conn);
+            return dao.messageCheck(myId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JDBCTemplate.close(conn);
         }
     }
 
     public List<MessageDTO> getChatHistory(String myId, String targetId) {
+        Connection conn = JDBCTemplate.getConnection();
         try {
-            return studentDAO.getChatHistory(myId, targetId);
+            StudentDAO dao = new StudentDAO(conn);
+            return dao.getChatHistory(myId, targetId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            JDBCTemplate.close(conn);
         }
     }
 }
+
 
 

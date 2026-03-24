@@ -380,6 +380,11 @@ public class StudentDAO {
         int result= 0;
         try (PreparedStatement pstmtUser = connection.prepareStatement(ensureUserQuery);
              PreparedStatement pstmtMsg = connection.prepareStatement(messageQuery)) {
+            pstmtUser.setString(1, msg.getUserId());
+            pstmtUser.setString(2, msg.getUserId());
+            pstmtUser.setString(3, msg.getUserId());
+            pstmtUser.executeUpdate();
+
             pstmtUser.setString(1, msg.getReceiverId());
             pstmtUser.setString(2, msg.getReceiverId());
             pstmtUser.setString(3, msg.getReceiverId());
@@ -405,6 +410,7 @@ public class StudentDAO {
         String query = QueryUtil.getQuery("message.contentView");
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, myId);
+            pstmt.setString(2, myId);
             ResultSet rset = pstmt.executeQuery();
             while (rset.next()) {
                 MessageDTO m = new MessageDTO();
@@ -441,4 +447,3 @@ public class StudentDAO {
     }
 
 }
-

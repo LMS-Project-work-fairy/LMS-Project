@@ -21,10 +21,10 @@ public class MainView {
     public int displayMainMenu() {
         while (true) {
             System.out.println("\n========== LMS 메인 ==========");
-            System.out.println("🛂로그인(1)");
-            System.out.println("🧑‍🎓학생 회원가입(2)");
-            System.out.println("🧑‍🏫교수 회원가입(3)");
-            System.out.println("💤종료(0)");
+            System.out.println("1. 🛂로그인");
+            System.out.println("2. 🧑‍🎓학생 회원가입");
+            System.out.println("3. 🧑‍🏫교수 회원가입");
+            System.out.println("0. 💤종료");
             System.out.print("메뉴 선택: ");
 
             try {

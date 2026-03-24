@@ -374,7 +374,6 @@ public class StudentDAO {
         return result;
     }
 
-<<<<<<< HEAD
 //    public int sendMessage(UserDTO msg) throws SQLException {
 //        String query = QueryUtil.getQuery("message.newMessage");
 //        int result= 0;
@@ -416,7 +415,7 @@ public class StudentDAO {
 //        return list;
 //    }
 }
-=======
+
     public int sendMessage(MessageDTO msg) throws SQLException {
         String ensureUserQuery = QueryUtil.getQuery("message.ensureUser");
         String messageQuery = QueryUtil.getQuery("message.newMessage");
@@ -466,7 +465,6 @@ public class StudentDAO {
         }
         return list;
     }
->>>>>>> 982c395846594eaed673f4dbcbcdd294c243317b
 
     public List<MessageDTO> getChatHistory(String myId, String targetId) throws SQLException {
         List<MessageDTO> list = new ArrayList<>();

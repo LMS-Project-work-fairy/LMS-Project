@@ -304,7 +304,7 @@ public class MainView {
     public String inputProfessorId () {
         while (true) {
             System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
-            System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
+            System.out.print("\n📌 가입하실 교수 번호를 입력해주세요. (P0000)\n");
             String id = sc.nextLine().trim();
             if ("0".equalsIgnoreCase(id)) return null;
             if ("1".equalsIgnoreCase(id)) return "BACK";
@@ -321,10 +321,10 @@ public class MainView {
 
 
 
-        public ProfessorDTO inputRestOfProfessorInfo(String inputId, AuthService authService) {
-            System.out.println("\n✅ 번호 확인 완료.");
-            ProfessorDTO professorDTO = new ProfessorDTO();
-            professorDTO.setProfessorId(inputId);
+    public ProfessorDTO inputRestOfProfessorInfo(String inputId, AuthService authService) {
+        System.out.println("✅ 번호 확인 완료.");
+        ProfessorDTO professorDTO = new ProfessorDTO();
+        professorDTO.setProfessorId(inputId);
 
 
         int step = 2;
@@ -333,7 +333,7 @@ public class MainView {
             switch (step) {
 
                 case 2 :
-                    System.out.print("이름을 입력해주세요 \n");
+                    System.out.print("\n이름을 입력해주세요.\n");
                     String name = sc.nextLine().trim();
                     if ("0".equalsIgnoreCase(name)) return null;
                     if ("1".equalsIgnoreCase(name)) return null;
@@ -347,7 +347,7 @@ public class MainView {
                     break;
 
                 case 3 :
-                    System.out.print("주민등록번호를 입력해주세요 \n ");
+                    System.out.print("\n주민등록번호를 입력해주세요.\n ");
                     String rawInput = sc.nextLine().trim();
                     String inputNo = rawInput.replaceAll("[^0-9]", "");
 
@@ -366,7 +366,7 @@ public class MainView {
                             continue;
                         }
 
-                        System.out.println("➡️ 입력 확인: " + formattedNo);
+                        System.out.println("\n➡️ 입력 확인: " + formattedNo);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
                         if (sc.nextLine().equalsIgnoreCase("y")) {
                             System.out.println("✅ 주민번호 형식이 일치합니다.");
@@ -378,7 +378,7 @@ public class MainView {
                     break;
 
                 case 4:
-                    System.out.print("주소를 다음과 같은 형식으로 입력해주세요" +
+                    System.out.print("\n주소를 다음과 같은 형식으로 입력해주세요." +
                             "\n ----------------------------- "+
                             "\n|   시·도/시·군·구 + 도로명 주소  | " +
                             "\n|  시·도/시·군·구/읍·면·동 + 지번 | " +
@@ -396,7 +396,7 @@ public class MainView {
                     break;
 
                 case 5:
-                    System.out.print("이메일 주소(example@lms.com)를 입력해주세요 \n ");
+                    System.out.print("\n이메일 주소(example@lms.com)를 입력해주세요. \n ");
                     String email = sc.nextLine().trim();
                     String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
                     if ("0".equalsIgnoreCase(email)) return null;
@@ -420,7 +420,7 @@ public class MainView {
                     break;
 
                 case 6:
-                    System.out.print("전화번호를 입력해주세요 \n");
+                    System.out.print("\n전화번호를 입력해주세요. \n");
                     String inputPhone = sc.nextLine().trim().replaceAll("[^0-9]", "");
 
                     if ("0".equalsIgnoreCase(inputPhone)) return null;
@@ -438,7 +438,7 @@ public class MainView {
                         }
 
                         professorDTO.setProfessorPhone(formattedPhone);
-                        System.out.println("➡️ 변환된 형식: " + formattedPhone);
+                        System.out.println("\n➡️ 변환된 형식: " + formattedPhone);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
                         if (sc.nextLine().equalsIgnoreCase("y")) {
                             System.out.println("✅ 전화번호 형식이 일치합니다.");
@@ -450,7 +450,7 @@ public class MainView {
                     break;
 
                 case 7:
-                    System.out.print("비밀번호를 입력해주세요 \n");
+                    System.out.print("\n비밀번호를 입력해주세요. \n");
                     String pw = sc.nextLine().trim();
 
                     if ("0".equalsIgnoreCase(pw)) return null;
@@ -464,12 +464,12 @@ public class MainView {
                         continue;
                     }
 
-                    System.out.print("비밀번호를 다시 입력해주세요 \n");
+                    System.out.print("\n비밀번호를 다시 입력해주세요. \n");
                     String pwCheck = sc.nextLine().trim();
 
                     if ("0".equalsIgnoreCase(pwCheck)) return null;
                     if ("1".equalsIgnoreCase(pwCheck)) {
-                        System.out.println("🔄 비밀번호 입력부터 다시 시작합니다.");
+                        System.out.println("\n🔄 비밀번호 입력부터 다시 시작합니다.");
                         continue;
                     }
 

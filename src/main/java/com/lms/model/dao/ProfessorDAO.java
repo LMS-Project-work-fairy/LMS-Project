@@ -114,7 +114,7 @@ public class ProfessorDAO {
     }
     
     public static int insertMessage(Connection con, String id, String name) throws SQLException{
-        String sql = "INSERT INTO `메시지` (USER_ID, PROFESSOR_ID, USER_NAME) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO `사용자` (USER_ID, PROFESSOR_ID, USER_NAME) VALUES (?, ?, ?)";
 
         try ( PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, id);

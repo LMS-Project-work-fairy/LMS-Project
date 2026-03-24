@@ -48,4 +48,14 @@ public class UserDTO {
         this.studentId = studentId;
         this.professorId = professorId;
     }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", professorId='" + professorId + '\'' +
+                '}';
+    }
 }

@@ -75,35 +75,34 @@ public class StudentView {
     }
 
     public void subjectApply() {
+        while (true) {
         List<CourseDTO> allClass = controller.findClass();
 
-
-        while (true) {
-            System.out.println("======= 수강 가능 강의 목록 ======");
-            if (allClass == null || allClass.isEmpty()) {
-                System.out.println("현재 개설된 강의가 없습니다.");
-            } else {
-                for (CourseDTO course : allClass) {
-                    courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
-                }
+        System.out.println("======= 수강 가능 강의 목록 ======");
+        if (allClass == null || allClass.isEmpty()) {
+            System.out.println("현재 개설된 강의가 없습니다.");
+        } else {
+            for (CourseDTO course : allClass) {
+                courseDetailView(course); // 여기서 님의 \n이 들어간 toString이 호출됨!
             }
-            double[] gpaPoint = totalScoreView(false);
-            maxClassApply(gpaPoint, 0);
+        }
+        double[] gpaPoint = totalScoreView(false);
+        maxClassApply(gpaPoint, 0);
 
-            System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
-            String applyClassNo = sc.nextLine();
+        System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
+        String applyClassNo = sc.nextLine();
 
-            if (applyClassNo.trim().isEmpty()) {
-                System.out.println("⚠️ 강의 번호를 입력해야 합니다.");
-                System.out.print("엔터로 뒤로가기");
-                sc.nextLine();
-                continue; // 다시 "수강 가능 강의 목록" 루프 처음으로 돌아감
-            }
+        if (applyClassNo.trim().isEmpty()) {
+            System.out.println("⚠️ 강의 번호를 입력해야 합니다.");
+            System.out.print("엔터로 뒤로가기");
+            sc.nextLine();
+            continue; // 다시 "수강 가능 강의 목록" 루프 처음으로 돌아감
+        }
 
-            if (applyClassNo.equals("0")) {
-                System.out.println("이전 화면으로 돌아갑니다.");
-                return;
-            }
+        if (applyClassNo.equals("0")) {
+            System.out.println("이전 화면으로 돌아갑니다.");
+            return;
+        }
 
             System.out.println("입력하신 강의 번호는 " + applyClassNo + " 입니다.");
             System.out.print("신청하시겠습니까? (1. 신청/ 2. 취소): ");
@@ -490,116 +489,117 @@ public class StudentView {
     }
 
     public void messageCheck() {
-        System.out.println("=======📫 내 메시지함 =======");
-        String myId = loginUser.getUserId();
+        while(true) {
+            String myId = loginUser.getUserId();
+            List<MessageDTO> myMessages = controller.messageCheck(myId);
+            List<StudentDTO> allMembers = controller.messageMember();
+            System.out.println("=======📫 내 메시지함 =======");
 
-        List<MessageDTO> myMessages = controller.messageCheck(myId);
-
-        if (myMessages == null || myMessages.isEmpty()) {
-            System.out.println("도착한 메시지가 없습니다.");
-            System.out.print("엔터로 뒤로가기");
-            sc.nextLine();
-            return;
-        }
-
-        List<StudentDTO> allMembers = controller.messageMember();
-
-        // 2. 개수 출력
-        System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
-        System.out.println("-----------------------------");
-        System.out.println("📢 나에게 메시지를 보낸 사람들");
-
-        List<String> processedUsers = new ArrayList<>();
-        int displayTotalCount = 0;
-
-        for (MessageDTO m : myMessages) {
-            String fullSenderInfo = m.getUserId();
-            String senderId = fullSenderInfo;
-            if (fullSenderInfo.contains("(") && fullSenderInfo.contains(")")) {
-                senderId = fullSenderInfo.substring(fullSenderInfo.indexOf("(") + 1, fullSenderInfo.indexOf(")"));
+            if (myMessages == null || myMessages.isEmpty()) {
+                System.out.println("도착한 메시지가 없습니다.");
+                System.out.print("엔터로 뒤로가기");
+                sc.nextLine();
+                return;
             }
 
-            String partnerId = senderId.equals(myId) ? m.getReceiverId() : senderId;
 
-            if (processedUsers.contains(partnerId)) continue;
-            processedUsers.add(partnerId);
+            // 2. 개수 출력
+            System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
+            System.out.println("-----------------------------");
+            System.out.println("📢 나에게 메시지를 보낸 사람들");
 
-            String partnerName = partnerId; // 못 찾을 경우를 대비해 기본값은 학번
-            if (allMembers != null) {
-                for (StudentDTO member : allMembers) {
-                    if (member.getStudentId().equals(partnerId)) {
-                        partnerName = member.getStudentName(); // "이름 (구분)"
+            List<String> processedUsers = new ArrayList<>();
+            int displayTotalCount = 0;
+
+            for (MessageDTO m : myMessages) {
+                String fullSenderInfo = m.getUserId();
+                String senderId = fullSenderInfo;
+                if (fullSenderInfo.contains("(") && fullSenderInfo.contains(")")) {
+                    senderId = fullSenderInfo.substring(fullSenderInfo.indexOf("(") + 1, fullSenderInfo.indexOf(")"));
+                }
+
+                String partnerId = senderId.equals(myId) ? m.getReceiverId() : senderId;
+
+                if (processedUsers.contains(partnerId)) continue;
+                processedUsers.add(partnerId);
+
+                String partnerName = partnerId; // 못 찾을 경우를 대비해 기본값은 학번
+                if (allMembers != null) {
+                    for (StudentDTO member : allMembers) {
+                        if (member.getStudentId().equals(partnerId)) {
+                            partnerName = member.getStudentName(); // "이름 (구분)"
+                            break;
+                        }
+                    }
+                }
+
+                // 4. 이 상대방(partnerId)과 나 사이의 가장 마지막 메시지 찾기
+                MessageDTO lastMsg = null;
+                for (MessageDTO check : myMessages) {
+                    String cSender = check.getUserId();
+                    String cReceiver = check.getReceiverId();
+
+                    if (cSender.contains(partnerId) || (cReceiver != null && cReceiver.equals(partnerId))) {
+                        lastMsg = check;
+                    }
+                }
+
+                // 5. 출력 양식 결정
+                if (partnerId.equals(myId)) {
+                    // 내가 나에게 쓴 경우
+                    System.out.println("- " + fullSenderInfo + " (내게 쓴 메시지)");
+                } else {
+                    // 상대방과의 대화인 경우
+                    int count = 0;
+                    // 마지막 메시지의 발신자가 '나'가 아닐 때만 답장 필요
+                    if (lastMsg != null && !lastMsg.getUserId().contains(myId)) {
+                        count = 1;
+                        displayTotalCount++;
+                    }
+
+                    // 이름이 포함된 fullSenderInfo를 쓰되, 내가 보낸 메시지에서 뽑은 거면 이름이 안 맞을 수 있으니
+                    // 안전하게 표시 (만약 DAO에서 이름을 가져온다면 그 이름을 써도 됨)
+                    System.out.println("- " + partnerName + " (" + partnerId + ") - " + count + "건");
+                }
+            }
+
+
+            System.out.println("📢 전체 메시지(답장 필요): " + displayTotalCount + "건");
+
+            System.out.println("-----------------------------");
+            System.out.print("상세 확인할 학번 입력 (돌아가기는 0): ");
+            String targetId = sc.nextLine();
+
+            if (targetId.equals("0")) return;
+
+            List<StudentDTO> memberList = controller.messageMember();
+            boolean isExit = false;
+
+            if (memberList != null) {
+                for (StudentDTO m : memberList) {
+                    if (m.getStudentId().equals(targetId)) {
+                        isExit = true;
                         break;
                     }
                 }
             }
 
-            // 4. 이 상대방(partnerId)과 나 사이의 가장 마지막 메시지 찾기
-            MessageDTO lastMsg = null;
-            for (MessageDTO check : myMessages) {
-                String cSender = check.getUserId();
-                String cReceiver = check.getReceiverId();
-
-                if (cSender.contains(partnerId) || (cReceiver != null && cReceiver.equals(partnerId))) {
-                    lastMsg = check;
-                }
+            if (!isExit) {
+                System.out.println("⚠️ 존재하지 않는 ID입니다.");
+                System.out.println("엔터로 뒤로가기");
+                sc.nextLine();
+                return;
             }
 
-            // 5. 출력 양식 결정
-            if (partnerId.equals(myId)) {
-                // 내가 나에게 쓴 경우
-                System.out.println("- " + fullSenderInfo + " (내게 쓴 메시지)");
-            } else {
-                // 상대방과의 대화인 경우
-                int count = 0;
-                // 마지막 메시지의 발신자가 '나'가 아닐 때만 답장 필요
-                if (lastMsg != null && !lastMsg.getUserId().contains(myId)) {
-                    count = 1;
-                    displayTotalCount++;
-                }
 
-                // 이름이 포함된 fullSenderInfo를 쓰되, 내가 보낸 메시지에서 뽑은 거면 이름이 안 맞을 수 있으니
-                // 안전하게 표시 (만약 DAO에서 이름을 가져온다면 그 이름을 써도 됨)
-                System.out.println("- " + partnerName + " (" + partnerId + ") - " + count + "건");
+            // 학번만 추출해서 상세 보기로 넘기기 (이름 (S001) 형태에서 S001만 뽑기)
+            if (targetId.contains("(") && targetId.contains(")")) {
+                targetId = targetId.substring(targetId.indexOf("(") + 1, targetId.indexOf(")"));
             }
+
+            // 2. 상세 보기 호출
+            messageDetailView(targetId);
         }
-
-
-        System.out.println("📢 전체 메시지(답장 필요): " + displayTotalCount + "건");
-
-        System.out.println("-----------------------------");
-        System.out.print("상세 확인할 학번 입력 (돌아가기는 0): ");
-        String targetId = sc.nextLine();
-
-        if (targetId.equals("0")) return;
-
-        List<StudentDTO> memberList = controller.messageMember();
-        boolean isExit = false;
-
-        if (memberList != null) {
-            for (StudentDTO m : memberList) {
-                if (m.getStudentId().equals(targetId)) {
-                    isExit = true;
-                    break;
-                }
-            }
-        }
-
-        if (!isExit) {
-            System.out.println("⚠️ 존재하지 않는 ID입니다.");
-            System.out.println("엔터로 뒤로가기");
-            sc.nextLine();
-            return;
-        }
-
-
-        // 학번만 추출해서 상세 보기로 넘기기 (이름 (S001) 형태에서 S001만 뽑기)
-        if (targetId.contains("(") && targetId.contains(")")) {
-            targetId = targetId.substring(targetId.indexOf("(") + 1, targetId.indexOf(")"));
-        }
-
-        // 2. 상세 보기 호출
-        messageDetailView(targetId);
     }
 
     public void messageDetailView(String targetId) {
@@ -672,6 +672,7 @@ public class StudentView {
             if (menu.equals("1")) {
                 System.out.print("답장 내용(취소는 0): ");
                 String replyContent = sc.nextLine();
+
 
                 if (replyContent.equals("0")) {
                     break;

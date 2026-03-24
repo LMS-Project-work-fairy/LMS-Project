@@ -143,6 +143,8 @@ public class StudentView {
 
                 if (applyCourse == null) {
                     System.out.println("❌ 잘못된 강의 번호입니다. 다시 입력해주세요.");
+                    System.out.print("엔터로 뒤로가기");
+                    sc.nextLine();
                     continue; // 다시 위로 올라가서 번호 입력받게 만듦
                 }
 
@@ -161,6 +163,8 @@ public class StudentView {
                 if (currentCount >= maxCapacity) {
                     System.out.println("🚨 [신청 불가] 수강 정원이 초과되었습니다!");
                     System.out.println("현재 인원: " + currentCount + "명 / 정원: " + maxCapacity + "명");
+
+
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
                     continue; // ❌ 더 이상 진행하지 않고 위로 보냄
@@ -206,7 +210,7 @@ public class StudentView {
         int points = (int)gpaPoint[1];
 
         int limit = 20; //기본 학점
-        if (points == 0) {
+        if (points == 0 || gpa == 0.0) {
             limit = 20;
         } else if (gpa < 2.0) {
             limit = 10;
@@ -216,7 +220,7 @@ public class StudentView {
 
         if (newPoint == 0) {
             // 목록 조회 시 안내용
-            if (points == 0) {
+            if (points == 0 || gpa == 0.0) {
                 System.out.println("📢 신규 학기/성적 미보유자로 이번 학기 20학점 신청 가능합니다.");
             } else if (limit == 10) {
                 System.out.println("📢 💣성적 경고💣로 이번 학기 10학점까지만 신청 가능합니다.");

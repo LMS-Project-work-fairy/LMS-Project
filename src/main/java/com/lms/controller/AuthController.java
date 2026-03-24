@@ -111,9 +111,8 @@ public class AuthController {
 
                 studentView.displayStudentMenu();
                 break;
-
+              
             } else if ("PROFESSOR".equalsIgnoreCase(loginUser.getRole())) {
-
                 printSuccessMessage(loginUser);
                 new ProfessorController().startProfessorMenu(loginUser.getUserId());
                 break;
@@ -228,7 +227,7 @@ public class AuthController {
 
                 if (secretKey.equalsIgnoreCase(inputKey)) {
                     System.out.println("✅ 인증 성공! 가입 창으로 이동합니다.");
-                    break; 
+                    break;
                 } else {
                     System.out.println("🚨 인증 코드가 일치하지 않습니다. 다시 입력해주세요.");
                 }
@@ -239,8 +238,8 @@ public class AuthController {
             while(true) {
                 inputId = mainView.inputProfessorId();
 
-                if (inputId == null) {
-                    System.out.println("🚫 아이디 입력을 취소하셨습니다. 메인으로 돌아갑니다.");
+                if(inputId == null || "BACK".equals(inputId)) {
+                    System.out.println("🚫 가입 절차를 중단합니다.  메인으로 돌아갑니다.");
                     return;
                 }
 
@@ -248,41 +247,28 @@ public class AuthController {
                     mainView.displayMessage("🚨 [중복] 이미 가입된 교수 번호입니다. 가입이 불가능합니다.");
                     continue;
                 }
-                break;
-            }
 
-//            ProfessorDTO professorDTO = mainView.inputProfessorInfo();
-            ProfessorDTO professorDTO = mainView.inputRestOfProfessorInfo(inputId);
-//
-//            professorDTO.setProfessorId(profId);
-//
-//            authService.insertProfessor(professorDTO);
+                ProfessorDTO professorDTO = mainView.inputRestOfProfessorInfo(inputId, authService);
 
-            if (professorDTO == null) {
-                System.out.println("🚫입력을 취소하셨습니다.");
-                return;
-            }
 
-            if (authService.isDuplicateId(professorDTO.getProfessorId())) {
-                mainView.displayMessage("🚨 [중복 오류] 입력하신 '" + professorDTO.getProfessorId() + "'은(는) 이미 사용 중입니다.");
-                return;
-            }
+                if (professorDTO == null) {
+                    System.out.println("🔄️ 이전 단계로 돌아갑니다.");
+                    continue;
+                }
 
-            try {
-                boolean success = false;
                 try {
-                    success = authService.insertProfessor(professorDTO);
+                    if (authService.insertProfessor(professorDTO)) {
+                        mainView.displayMessage("🌟 교수 회원가입 성공");
+                    } break;
+                } catch (RuntimeException e) {
+                    mainView.displayMessage("🚨 가입 실패: " + e.getMessage());
+                    break;
                 } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                    mainView.displayMessage("🚨 DB 오류 발생: " + e.getMessage());
+                    break;
                 }
-
-                if (success) {
-                    mainView.displayMessage("🌟 교수 회원가입 성공");
-                }
-
-            } catch (RuntimeException e) {
-                mainView.displayMessage("🚨 교수 회원가입 실패" + e.getMessage());
             }
+
         }
     }
 

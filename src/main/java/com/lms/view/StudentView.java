@@ -1,13 +1,19 @@
 package com.lms.view;
 
+import com.lms.application.Application;
+import com.lms.controller.CourseController;
 import com.lms.controller.StudentController;
 import com.lms.model.dto.*;
+import com.lms.model.service.StudentService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class StudentView {
 
+    //읽음 기능을 위한 리스트
+    private List<String> repliedList = new ArrayList<>();
 
     private final StudentController controller;
     private final LoginUserDTO loginUser;
@@ -22,12 +28,12 @@ public class StudentView {
         while (true) {
             System.out.println();
             System.out.println("======= 학생 옵션 =======");
-            System.out.println("1. 수강신청");
-            System.out.println("2. 수강 취소");
-            System.out.println("3. 수강 신청한 강의 조회");
-            System.out.println("4. 메시지함");
-            System.out.println("5. 내 정보 수정");
-            System.out.println("0. 로그아웃");
+            System.out.println("1. 🛒수강신청");
+            System.out.println("2. 🚮수강 취소");
+            System.out.println("3. 🔎수강 신청한 강의 조회");
+            System.out.println("4. 📫메시지함");
+            System.out.println("5. 🔧내 정보 수정");
+            System.out.println("0. 👻로그아웃");
             System.out.print("번호를 입력해주세요: ");
 
             String menu = sc.nextLine();
@@ -87,6 +93,13 @@ public class StudentView {
             System.out.print("신청할 강의 번호를 입력해주세요(돌아가기는 0): ");
             String applyClassNo = sc.nextLine();
 
+            if (applyClassNo.trim().isEmpty()) {
+                System.out.println("⚠️ 강의 번호를 입력해야 합니다.");
+                System.out.print("엔터로 뒤로가기");
+                sc.nextLine();
+                continue; // 다시 "수강 가능 강의 목록" 루프 처음으로 돌아감
+            }
+
             if (applyClassNo.equals("0")) {
                 System.out.println("이전 화면으로 돌아갑니다.");
                 return;
@@ -136,7 +149,7 @@ public class StudentView {
                 double newCoursePoint = Double.parseDouble(applyCourse.getClassPoint());
                 //신청 시 총 평점에 따른 수강 가능 학점 확인
                 if (!maxClassApply(gpaPoint, newCoursePoint)) {
-                    System.out.println("학점 관리가 필요합니다.");
+                    System.out.println("🚨학점 관리가 필요합니다.");
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
                     continue;
@@ -193,7 +206,9 @@ public class StudentView {
         int points = (int)gpaPoint[1];
 
         int limit = 20; //기본 학점
-        if (gpa < 2.0) {
+        if (points == 0) {
+            limit = 20;
+        } else if (gpa < 2.0) {
             limit = 10;
         } else if (gpa >= 4.0) {
             limit = 25;
@@ -201,9 +216,13 @@ public class StudentView {
 
         if (newPoint == 0) {
             // 목록 조회 시 안내용
-            if (limit == 10) System.out.println("📢 성적 경고로 이번 학기 10학점까지만 신청 가능합니다.");
-            else if (limit == 25) System.out.println("📢 우수 성적자로 이번 학기 25학점 신청 가능합니다.");
-            else System.out.println("📢 이번 학기 20학점 신청 가능합니다.");
+            if (points == 0) {
+                System.out.println("📢 신규 학기/성적 미보유자로 이번 학기 20학점 신청 가능합니다.");
+            } else if (limit == 10) {
+                System.out.println("📢 💣성적 경고💣로 이번 학기 10학점까지만 신청 가능합니다.");
+            } else if (limit == 25) {
+                System.out.println("📢 ✨우수 성적자✨로 이번 학기 25학점 신청 가능합니다.");
+            } else System.out.println("📢 이번 학기 20학점 신청 가능합니다.");
         }
 
         // 3. 실제 학점 초과 체크
@@ -242,7 +261,7 @@ public class StudentView {
 
             displayMyEnrollList(myEnrollList);
 
-            System.out.println("1. 과제 확인, 2. 성적 확인");
+            System.out.println("1. 📌과제 확인, 2. 🎯성적 확인");
             System.out.print("확인할 옵션을 선택해주세요(돌아가기는 0): ");
             String subMenu = sc.nextLine();
 
@@ -306,7 +325,7 @@ public class StudentView {
 
         System.out.println("======= 상세 과제 내용 =======");
         if (myTaskList == null || myTaskList.isEmpty()) {
-            System.out.println("조회된 과제 내용이 없습니다.");
+            System.out.println("⚠️ 조회된 과제 내용이 없습니다.");
         } else {
             for (CourseDTO task : myTaskList) {
                 System.out.println("강의명: " + task.getClassName());
@@ -349,7 +368,7 @@ public class StudentView {
             List<EnrollmentDTO> scoreList = controller.scoreView(scoreClassNo, loginUser.getUserId());
             System.out.println("====== 강의별 성적 ======");
             if (scoreList == null || scoreList.isEmpty()) {
-                System.out.println("조회된 과제 내용이 없습니다.");
+                System.out.println("⚠️ 조회된 과제 내용이 없습니다.");
             } else {
                 for (EnrollmentDTO score : scoreList) {
                     System.out.println("강의명: " + score.getClassNo());
@@ -444,7 +463,7 @@ public class StudentView {
 
     public void messageBox() {
         while (true) {
-            System.out.println("1. 메시지함 확인, 2. 메시지 보내기");
+            System.out.println("1. 📥메시지함 확인, 2. 📤메시지 보내기");
             System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
             String messageMenu = sc.nextLine();
 
@@ -459,7 +478,7 @@ public class StudentView {
             } else if (messageMenu.equals("2")) {
                 messageSend();
             } else {
-                System.out.println("옵션 번호를 확인해주세요.");
+                System.out.println("⚠️ 옵션 번호를 확인해주세요.");
                 System.out.print("엔터로 뒤로가기");
                 sc.nextLine();
             }
@@ -467,47 +486,261 @@ public class StudentView {
     }
 
     public void messageCheck() {
-        System.out.println("======= 내 메시지함 =======");
+        System.out.println("=======📫 내 메시지함 =======");
         String myId = loginUser.getUserId();
 
-        List<UserDTO> myMessages = controller.messageCheck(myId);
+        List<MessageDTO> myMessages = controller.messageCheck(myId);
+
+        if (myMessages == null || myMessages.isEmpty()) {
+            System.out.println("도착한 메시지가 없습니다.");
+            System.out.print("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
+
+        List<StudentDTO> allMembers = controller.messageMember();
 
         // 2. 개수 출력
         System.out.println("📢 전체 메시지: " + myMessages.size() + "건");
         System.out.println("-----------------------------");
+        System.out.println("📢 나에게 메시지를 보낸 사람들");
 
-        if (myMessages.isEmpty()) {
-            System.out.println("도착한 메시지가 없습니다.");
-        } else {
-            // 3. 메시지 내용들 출력
-            for (UserDTO m : myMessages) {
-                System.out.println("발신자: " + m.getUserName());
-                System.out.println("내용: " + m.getContent());
-                System.out.println("-----------------------------");
+        List<String> processedUsers = new ArrayList<>();
+        int displayTotalCount = 0;
+
+        for (MessageDTO m : myMessages) {
+            String fullSenderInfo = m.getUserId();
+            String senderId = fullSenderInfo;
+            if (fullSenderInfo.contains("(") && fullSenderInfo.contains(")")) {
+                senderId = fullSenderInfo.substring(fullSenderInfo.indexOf("(") + 1, fullSenderInfo.indexOf(")"));
+            }
+
+            String partnerId = senderId.equals(myId) ? m.getReceiverId() : senderId;
+
+            if (processedUsers.contains(partnerId)) continue;
+            processedUsers.add(partnerId);
+
+            String partnerName = partnerId; // 못 찾을 경우를 대비해 기본값은 학번
+            if (allMembers != null) {
+                for (StudentDTO member : allMembers) {
+                    if (member.getStudentId().equals(partnerId)) {
+                        partnerName = member.getStudentName(); // "이름 (구분)"
+                        break;
+                    }
+                }
+            }
+
+            // 4. 이 상대방(partnerId)과 나 사이의 가장 마지막 메시지 찾기
+            MessageDTO lastMsg = null;
+            for (MessageDTO check : myMessages) {
+                String cSender = check.getUserId();
+                String cReceiver = check.getReceiverId();
+
+                if (cSender.contains(partnerId) || (cReceiver != null && cReceiver.equals(partnerId))) {
+                    lastMsg = check;
+                }
+            }
+
+            // 5. 출력 양식 결정
+            if (partnerId.equals(myId)) {
+                // 내가 나에게 쓴 경우
+                System.out.println("- " + fullSenderInfo + " (내게 쓴 메시지)");
+            } else {
+                // 상대방과의 대화인 경우
+                int count = 0;
+                // 마지막 메시지의 발신자가 '나'가 아닐 때만 답장 필요
+                if (lastMsg != null && !lastMsg.getUserId().contains(myId)) {
+                    count = 1;
+                    displayTotalCount++;
+                }
+
+                // 이름이 포함된 fullSenderInfo를 쓰되, 내가 보낸 메시지에서 뽑은 거면 이름이 안 맞을 수 있으니
+                // 안전하게 표시 (만약 DAO에서 이름을 가져온다면 그 이름을 써도 됨)
+                System.out.println("- " + partnerName + " (" + partnerId + ") - " + count + "건");
             }
         }
-        System.out.print("엔터로 뒤로가기");
-        sc.nextLine();
+
+
+        System.out.println("📢 전체 메시지(답장 필요): " + displayTotalCount + "건");
+
+        System.out.println("-----------------------------");
+        System.out.print("상세 확인할 학번 입력 (돌아가기는 0): ");
+        String targetId = sc.nextLine();
+
+        if (targetId.equals("0")) return;
+
+        List<StudentDTO> memberList = controller.messageMember();
+        boolean isExit = false;
+
+        if (memberList != null) {
+            for (StudentDTO m : memberList) {
+                if (m.getStudentId().equals(targetId)) {
+                    isExit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isExit) {
+            System.out.println("⚠️ 존재하지 않는 ID입니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
+
+
+        // 학번만 추출해서 상세 보기로 넘기기 (이름 (S001) 형태에서 S001만 뽑기)
+        if (targetId.contains("(") && targetId.contains(")")) {
+            targetId = targetId.substring(targetId.indexOf("(") + 1, targetId.indexOf(")"));
+        }
+
+        // 2. 상세 보기 호출
+        messageDetailView(targetId);
     }
+
+    public void messageDetailView(String targetId) {
+        while (true) {
+            String myId = loginUser.getUserId();
+
+            // 중요: 나와 상대방이 주고받은 모든 내역을 가져오는 controller/dao 메소드가 필요합니다.
+            // 일단 지금은 받은 메시지만 필터링해서 보여주는 식으로 짜볼게요.
+            List<MessageDTO> chatHistory = controller.getChatHistory(myId, targetId);
+
+            String displayName = targetId; // 기본값은 학번
+
+            // 리스트를 돌면서 내가 아닌 상대방의 이름을 찾습니다.
+            for (MessageDTO m : chatHistory) {
+                if (!m.getUserId().contains(myId)) {
+                    displayName = m.getUserId(); // "최지훈 (S001)" 형태가 저장됨
+                    break;
+                }
+            }
+
+            if (displayName.equals(targetId)) {
+                displayName = loginUser.getUserName() + " (" + targetId + ")";
+            }
+
+            System.out.println("======= 🗨️ [" + displayName + "] 님과의 대화 내역 =======");
+
+            if (chatHistory.isEmpty()) {
+                System.out.println("대화 내역이 없습니다.");
+            } else {
+                String lastDate = "";
+                for (MessageDTO m : chatHistory) {
+                    String fullContent = m.getContent();
+                    String pureContent = fullContent;
+                    String timePart = "";
+                    String datePart = "";
+
+                    // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
+                    if (fullContent.contains("(발신일: ")) {
+                        int splitIdx = fullContent.lastIndexOf("(발신일: ");
+                        pureContent = fullContent.substring(0, splitIdx).trim();
+
+                        // "(발신일: 2026-03-23 (월) 15:40:48)" 괄호 안의 데이터 추출
+                        String dateTime = fullContent.substring(splitIdx + 6, fullContent.length() - 1);
+
+                        // 날짜(0~14인덱스)와 시간(15인덱스 이후) 오려내기
+                        datePart = dateTime.substring(0, 14).trim(); // 2026-03-23 (월)
+                        timePart = dateTime.substring(15).trim();    // 15:40:48
+                    }
+
+                    // 🚩 3. 날짜가 바뀌었을 때만 날짜 구분선 출력
+                    if (!datePart.equals(lastDate)) {
+                        System.out.println("\n      ------- " + datePart + " -------");
+                        lastDate = datePart; // 방금 출력한 날짜를 기억!
+                    }
+
+                    // 🚩 4. 발신자 이름 결정
+                    String senderDisplay = m.getUserId().contains(myId) ? "[나]" : "[" + m.getUserId() + "]";
+
+                    // 🚩 5. 최종 예쁜 출력: [나] 내용 (15:40:48)
+                    System.out.println(senderDisplay + "(" + timePart.substring(0, 5) + ") " + pureContent);
+
+                }
+            }
+
+            System.out.println("-------------------------------------------");
+            System.out.println("1. 📨답장하기, 0. 뒤로가기");
+            System.out.print("선택: ");
+            String menu = sc.nextLine();
+
+            if (menu.equals("1")) {
+                System.out.print("답장 내용(취소는 0): ");
+                String replyContent = sc.nextLine();
+
+                if (replyContent.equals("0")) {
+                    break;
+                }
+
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+                String now = sdf.format(new java.util.Date());
+
+                MessageDTO newMsg = new MessageDTO();
+                newMsg.setUserId(loginUser.getUserId()); // 내 아이디
+                newMsg.setReceiverId(targetId);          // 🚩 여기가 핵심! 선택했던 그 사람 ID
+                newMsg.setContent(replyContent + " \n(발신일: " + now + ")");
+
+                int result = controller.messageSend(newMsg);
+
+                if (result > 0) {
+                    if (!repliedList.contains(targetId)) {
+                        repliedList.add(targetId);
+                    }
+                }
+
+            } else {
+                return;
+            }
+        }
+    }
+
 
     public void messageSend() {
         System.out.println("======= 메시지 전송 ========");
         System.out.println("------- 보낼 대상 목록 -------");
         messageMember();
-        System.out.print("받는 사람 ID: ");
+        System.out.print("받는 사람 ID(돌아가기는 0): ");
         String acceptSend = sc.nextLine();
-        System.out.print("내용: ");
+
+        if (acceptSend.equals("0")) {
+            System.out.println("메시지 전송 취소");
+            return;
+        }
+
+        List<StudentDTO> memberList = controller.messageMember();
+        boolean isExit = false;
+
+        if (memberList != null) {
+            for (StudentDTO m : memberList) {
+                if (m.getStudentId().equals(acceptSend)) {
+                    isExit = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isExit) {
+            System.out.println("⚠️ 존재하지 않는 ID입니다.");
+            System.out.println("엔터로 뒤로가기");
+            sc.nextLine();
+            return;
+        }
+
+        System.out.print("내용(돌아가기는 0): ");
         String messageContent = sc.nextLine();
+
+        if (messageContent.equals("0")) {
+            return;
+        }
 
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
         String now = sdf.format(new java.util.Date());
 
-        UserDTO newMsg = new UserDTO();
+        MessageDTO newMsg = new MessageDTO();
         newMsg.setUserId(loginUser.getUserId());
-        newMsg.setStudentId(loginUser.getUserId());
         newMsg.setReceiverId(acceptSend);
         newMsg.setContent(messageContent + " \n(발신일: " + now + ")");
-        newMsg.setUserName(loginUser.getUserName());
 
         int result = controller.messageSend(newMsg);
 
@@ -516,7 +749,7 @@ public class StudentView {
             System.out.print("엔터로 뒤로가기");
             sc.nextLine();
         } else {
-            System.out.println("메시지 전송에 실패했습니다.");
+            System.out.println("⚠️ 메시지 전송에 실패했습니다.");
             System.out.println("엔터로 뒤로가기");
             sc.nextLine();
         }
@@ -527,10 +760,14 @@ public class StudentView {
         System.out.println("ID | 이름(구분)");
         System.out.println("-----------------------------------");
 
-        for (StudentDTO s : memberList) {
-            System.out.println(s.getStudentId() + " | " + s.getStudentName());
+        if (memberList != null && !memberList.isEmpty()) {
+            for (StudentDTO s : memberList) {
+                // DAO에서 이미 "이름 (교수)" 형태로 만들었으므로 그대로 출력
+                System.out.println(s.getStudentId() + " | " + s.getStudentName());
+            }
+        } else {
+            System.out.println("조회 가능한 회원이 없습니다.");
         }
-        System.out.println("------------------------------------");
     }
 
     private void editMyInfo() {
@@ -538,7 +775,7 @@ public class StudentView {
             StudentDTO myInfo = myInfoView();
 
             System.out.println("무엇을 수정하시겠습니까?");
-            System.out.println("1. 이름, 2. 주소, 3. 이메일, 4. 전화번호, 5. 비밀번호");
+            System.out.println("1. 🪪이름, 2. 🏠주소, 3. 📧이메일, 4. 📞전화번호, 5. 🔑비밀번호");
             System.out.print("옵션을 선택해주세요(돌아가기는 0): ");
             String infoMenu = sc.nextLine();
 
@@ -547,16 +784,21 @@ public class StudentView {
             }
 
             if (infoMenu.equals("1")) {
-                System.out.print("수정할 이름 입력: ");
-                myInfo.setStudentName(sc.nextLine());
+                System.out.print("수정할 이름 입력(돌아가기는 0): ");
+                String editName = sc.nextLine();
+                if (editName.equals("0")) {continue;}
+                myInfo.setStudentName(editName);
             } else if (infoMenu.equals("2")) {
-                System.out.print("수정할 주소 입력: ");
-                myInfo.setStudentAddress(sc.nextLine());
+                System.out.print("수정할 주소 입력(돌아가기는 0): ");
+                String editAddress = sc.nextLine();
+                if (editAddress.equals("0")) {continue;}
+                myInfo.setStudentAddress(editAddress);
             } else if (infoMenu.equals("3")) {
-                System.out.print("수정할 이메일 입력: ");
+                System.out.print("수정할 이메일 입력(돌아가기는 0): ");
                 String newEmail = sc.nextLine();
-                if (!newEmail.contains("@")) {
-                    System.out.println("올바른 이메일 형식이 아닙니다.");
+                if (newEmail.equals("0")) {continue;}
+                if (!newEmail.contains("@") || !newEmail.endsWith(".com")) {
+                    System.out.println("🚨 올바른 이메일 형식이 아닙니다.");
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
                     continue;
@@ -564,10 +806,11 @@ public class StudentView {
                     myInfo.setStudentEmail(newEmail);
                 }
             } else if (infoMenu.equals("4")) {
-                System.out.print("수정할 전화번호 입력(-제외): ");
+                System.out.print("수정할 전화번호 입력(-제외)(돌아가기는 0): ");
                 String phone = sc.nextLine();
+                if (phone.equals("0")) {continue;}
                 if (phone.length() != 11) {
-                    System.out.println("올바른 전화번호를 입력해주세요.");
+                    System.out.println("🚨 올바른 전화번호를 입력해주세요.");
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
                     continue;
@@ -578,11 +821,12 @@ public class StudentView {
                     myInfo.setStudentPhone(phonPull);
                 }
             } else if (infoMenu.equals("5")) {
-                System.out.print("수정할 비밀번호 입력: ");
+                System.out.print("수정할 비밀번호 입력(돌아가기는 0): ");
                 String newPw = sc.nextLine();
+                if (newPw.equals("0")) {continue;}
                 String regex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
                 if (!newPw.matches(regex)) {
-                    System.out.println("비밀번호는 최소 8자 이상 이여야 합니다.");
+                    System.out.println("🚨 비밀번호는 최소 8자 이상 이여야 합니다.");
                     System.out.print("엔터로 뒤로가기");
                     sc.nextLine();
                     continue;
@@ -590,18 +834,19 @@ public class StudentView {
                     myInfo.setStudentPw(newPw);
                 }
             } else {
-                System.out.println("옵션 번호를 확인해주세요.");
+                System.out.println("⚠️ 옵션 번호를 확인해주세요.");
                 System.out.print("엔터로 뒤로가기");
                 sc.nextLine();
+                continue;
             }
             int result = controller.editMyInfo(myInfo);
 
             if (result > 0) {
-                System.out.println("성공적으로 수정되었습니다.");
+                System.out.println("✅성공적으로 수정되었습니다.");
                 System.out.print("엔터로 돌아가기");
                 sc.nextLine();
             } else {
-                System.out.println("수정에 실패했습니다.");
+                System.out.println("❌수정에 실패했습니다.");
                 System.out.print("엔터로 돌아가기");
                 sc.nextLine();
             }
@@ -627,27 +872,3 @@ public class StudentView {
         return myInfoView;
     }
 }
-
-//    private int inputInt() {
-//        while (true) {
-//            try {
-//                int value = Integer.parseInt(sc.nextLine());
-//                return value;
-//            } catch (NumberFormatException e) {
-//                System.out.print("숫자만 입력해주세요 : ");
-//            }
-//        }
-//    }
-//
-//    private long inputLong() {
-//        while (true) {
-//            try {
-//                // nextLine으로 받아서 long으로 파싱!
-//                return Long.parseLong(sc.nextLine());
-//            } catch (NumberFormatException e) {
-//                System.out.print("숫자(ID)만 입력해주세요 : ");
-//            }
-//        }
-//    }
-//
-

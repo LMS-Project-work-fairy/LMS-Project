@@ -83,4 +83,17 @@ public class UserMessageDTO {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "UserMessageDTO{" +
+                "userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", professorId='" + professorId + '\'' +
+                ", id=" + id +
+                ", receiverId='" + receiverId + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

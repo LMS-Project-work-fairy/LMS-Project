@@ -161,6 +161,28 @@
         WHERE professor_id = ?
     </query>
 
+    <query key="message.findUserId">
+        SELECT
+        user_id
+        FROM 사용자 WHERE professor_id = ?
+    </query>
+
+    <query key ="message.getAllUsers">
+        SELECT
+        user_id, user_name, student_id, professor_id
+        FROM 사용자 WHERE user_id != ?
+    </query>
+
+    <query key="message.getChatHistory">
+        SELECT
+        m.id, m.user_id, u.user_name, m.receiver_id, m.content
+        FROM 메시지 m JOIN 사용자 u ON m.user_id = u.user_id WHERE (m.user_id = ? AND m.receiver_id = ?) OR (m.user_id = ? AND m.receiver_id = ?) ORDER BY m.id ASC
+    </query>
+
+    <query key="message.sendChatMessage">
+        INSERT INTO 메시지 (user_id, receiver_id, content, id) VALUES (?, ?, ?, (SELECT new_id FROM (SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM 메시지) t))
+    </query>
+
     <query key="message.newProfMessage">
         INSERT INTO 메시지 (user_id, professor_id, receiver_id, content, user_name) VALUES (?, ?, ?, ?, (SELECT professor_name FROM 교수 WHERE professor_id = ?))
 
@@ -169,6 +191,10 @@
     <query key="message.profContentView">
         SELECT user_id, user_name, content FROM 메시지 WHERE receiver_id = ?
     </query>
+
+
+
+
 
     <query key="deleteCourse">
 
@@ -254,26 +280,53 @@
         where student_id = ?
     </query>
 
-
+    <query key="message.ensureUser">
+        INSERT IGNORE INTO 사용자 (user_id, user_name)
+        SELECT ?, IFNULL(
+        (SELECT student_name FROM 학생 WHERE student_id = ?),
+        IFNULL((SELECT professor_name FROM 교수 WHERE professor_id = ?), '미등록사용자')
+        )
+    </query>
 
     <query key="message.newMessage">
-        update 메시지
-            set user_id = ?,
-            student_id = ?,
-            receiver_id = ?,
-            content = ?,
-            user_name = ?
-        where student_id = ?
+        INSERT INTO 메시지 (id, user_id, receiver_id, content) -- user_name 삭제
+        VALUES ((SELECT IFNULL(MAX(id), 0) + 1 FROM 메시지 alias), ?, ?, ?) -- 단순 INSERT로 변경
     </query>
 
     <query key="message.contentView">
         select
-            user_id,
-            user_name,
-            content
-        from 메시지
-        where receiver_id = ?
+        m.user_id,
+        u.user_name,
+        m.content,
+        m.receiver_id
+        from 메시지 m
+        join 사용자 u on m.user_id = u.user_id
+        where m.receiver_id = ? OR m.user_id = ?  -- 👈 나에게 온 것과 내가 보낸 것 모두 조회
+        order by m.id ASC
     </query>
 
+    <query key="message.chatHistory">
+        select
+            m.user_id,
+            m.content,
+            m.receiver_id,
+            m.id,
+            u.user_name
+        from 메시지 m
+        join 사용자 u on m.user_id = u.user_id
+        where (m.user_id = ? and m.receiver_id = ?)
+            or (m.user_id = ? and m.receiver_id = ?)
+        order by m.id ASC
+    </query>
+
+    <query key="updateCourseInfo">
+        UPDATE 강의
+        SET class_name = ?,
+        class_point = ?,
+        class_time = ?,
+        class_room = ?,
+        class_capacity = ?
+        WHERE class_no = ? AND professor_id = ?
+    </query>
 
 </properties>

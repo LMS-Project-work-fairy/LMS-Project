@@ -302,16 +302,26 @@ public class MainView {
 
 
     public String inputProfessorId () {
-        System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
-        System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
-        String id = sc.nextLine().trim();
-        if ("0".equalsIgnoreCase(id)) return null;
-        return id;
+        while (true) {
+            System.out.println("\n========== 교수 회원가입 ========== \n(뒤로가기는 '1', 취소는 '0' 입니다.)");
+            System.out.print("\n📌 가입하실 교수 번호를 입력해주세요 (P0000): ");
+            String id = sc.nextLine().trim();
+            if ("0".equalsIgnoreCase(id)) return null;
+            if ("1".equalsIgnoreCase(id)) return "BACK";
+
+            id = id.toUpperCase();
+
+            if (id.matches("^P[0-9]{4}$")) {
+                return id;
+            } else {
+                System.out.println("🚨 [입력 오류] 교수 번호는 'P'와 숫자 4자리 형식이어야 합니다. (예: P1001)");
+            }
+        }
     }
 
 
 
-        public ProfessorDTO inputRestOfProfessorInfo(String inputId) {
+        public ProfessorDTO inputRestOfProfessorInfo(String inputId, AuthService authService) {
             System.out.println("\n✅ 번호 확인 완료.");
             ProfessorDTO professorDTO = new ProfessorDTO();
             professorDTO.setProfessorId(inputId);
@@ -326,8 +336,10 @@ public class MainView {
                     System.out.print("이름을 입력해주세요 \n");
                     String name = sc.nextLine().trim();
                     if ("0".equalsIgnoreCase(name)) return null;
-                    if ("1".equalsIgnoreCase(name)) {
-                        step--;
+                    if ("1".equalsIgnoreCase(name)) return null;
+
+                    if (name.isEmpty()) {
+                        System.out.println("🚨 이름을 반드시 입력해야 합니다.");
                         continue;
                     }
                     professorDTO.setProfessorName(name);
@@ -348,6 +360,11 @@ public class MainView {
                     if (inputNo.length() == 13) {
                         String formattedNo = inputNo.substring(0,6) + "-" + inputNo.substring(6);
                         professorDTO.setProfessorNo(formattedNo);
+
+                        if (authService.isDuplicateNo(formattedNo)) {
+                            System.out.println("🚨 [중복 오류] 이미 등록된 주민번호입니다. 다시 입력해주세요.");
+                            continue;
+                        }
 
                         System.out.println("➡️ 입력 확인: " + formattedNo);
                         System.out.print("이 정보가 맞습니까? (y/n): ");
@@ -388,6 +405,20 @@ public class MainView {
                         continue;
                     }
 
+                    if (authService.isDuplicateEmail(email)) {
+                        System.out.println("🚨 [중복 오류] 이미 등록된 이메일입니다. 다시 입력해주세요.");
+                        continue;
+                    }
+
+                    if (email.matches(emailRegex)) {
+                        professorDTO.setProfessorEmail(email);
+                        System.out.println("✅ 이메일 형식이 일치합니다.");
+                        step++;
+                    } else {
+                        System.out.println("🚨 이메일 형식이 올바르지 않습니다. '@'를 포함한 정확한 주소를 입력해주세요.");
+                    }
+                    break;
+
                 case 6:
                     System.out.print("전화번호를 입력해주세요 \n");
                     String inputPhone = sc.nextLine().trim().replaceAll("[^0-9]", "");
@@ -398,13 +429,14 @@ public class MainView {
                         continue;
                     }
 
-                    if (inputPhone.matches("^01\\d{8,9}$")) {
-                        String formattedPhone;
-                        if (inputPhone.length() == 11) {
-                            formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 7) + "-" + inputPhone.substring(7);
-                        } else {
-                            formattedPhone = inputPhone.substring(0, 3) + "-" + inputPhone.substring(3, 6) + "-" + inputPhone.substring(6);
+                    if (inputPhone.matches("^010\\d{8}$")) {
+                        String formattedPhone = "010-" + inputPhone.substring(3, 7) + "-" + inputPhone.substring(7);
+
+                        if (authService.isDuplicatePhone(formattedPhone)) {
+                            System.out.println("🚨 [중복 오류] 이미 등록된 전화번호입니다. 다시 입력해주세요.");
+                            continue;
                         }
+
                         professorDTO.setProfessorPhone(formattedPhone);
                         System.out.println("➡️ 변환된 형식: " + formattedPhone);
                         System.out.print("이 정보가 맞습니까? (y/n): ");

@@ -1,12 +1,13 @@
 package com.lms.view;
 import com.lms.controller.ProfessorController;
 
-import com.lms.model.dto.EnrollmentCourseDTO;
-import com.lms.model.dto.UserDTO;
-import com.lms.model.dto.StudentDTO;
+import com.lms.model.dto.*;
 
 import java.util.Scanner;
 import java.util.List;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class ProfessorView {
     private final ProfessorController controller;
@@ -28,7 +29,7 @@ public class ProfessorView {
             System.out.println("2. 강좌 등록");
             System.out.println("3. 강좌 삭제");
             System.out.println("4. 개인정보 수정");
-            System.out.println("5. 메시지함 (쪽지)");
+            System.out.println("5. 채팅방");
             System.out.println("6. 로그아웃");
             System.out.print("번호를 입력해주세요 : ");
 
@@ -59,19 +60,17 @@ public class ProfessorView {
 
 
             System.out.println("=================================");
-            System.out.print("상세 옵션을 확인할 [과목명]을 입력해주세요 (이전 메뉴로: 0) : ");
-            String selectedCourseName = inputString();
+            System.out.print("상세 옵션을 확인할 [강의번호]를 입력해주세요 (이전 메뉴로: 0) : ");
+            String selectedClassNo = inputString();
 
-            if (selectedCourseName.equals("0")) return;
+            if (selectedClassNo.equals("0")) return;
 
+            EnrollmentCourseDTO targetCourse = getCourseById(courseList, selectedClassNo);
 
-            String targetCourseId = getCourseIdByName(courseList, selectedCourseName);
-
-            if (targetCourseId == null) {
-                printError("일치하는 과목명이 없습니다. 띄어쓰기를 확인해주세요.");
+            if (targetCourse == null) {
+                printError("일치하는 강의번호가 없습니다. 다시 확인해주세요.");
             } else {
-
-                showCourseDetailMenu(profId, targetCourseId, selectedCourseName);
+                showCourseDetailMenu(profId, targetCourse.getClassNo(), targetCourse.getClassName());
             }
         }
     }
@@ -103,45 +102,41 @@ public class ProfessorView {
                 case 1:
                     System.out.print("새로운 비밀번호를 입력하세요: ");
                     newValue = inputString();
-                    columnName = "professor_pw";
-                    itemName = "비밀번호";
-                    break;
+                    columnName = "professor_pw"; itemName = "비밀번호"; break;
                 case 2:
                     System.out.print("새로운 이름을 입력하세요: ");
                     newValue = inputString();
-                    columnName = "professor_name";
-                    itemName = "이름";
-                    break;
+                    columnName = "professor_name"; itemName = "이름"; break;
                 case 3:
-                    System.out.print("새로운 전화번호(예: 010-1111-1111)를 입력하세요: ");
+                    System.out.print("새로운 전화번호를 입력하세요: ");
                     newValue = inputString();
-                    columnName = "professor_phone";
-                    itemName = "전화번호";
-                    break;
+                    columnName = "professor_phone"; itemName = "전화번호"; break;
                 case 4:
                     System.out.print("새로운 이메일을 입력하세요: ");
                     newValue = inputString();
-                    columnName = "professor_email";
-                    itemName = "이메일";
-                    break;
+                    columnName = "professor_email"; itemName = "이메일"; break;
                 case 5:
                     System.out.print("새로운 주소를 입력하세요: ");
                     newValue = inputString();
-                    columnName = "professor_address";
-                    itemName = "주소";
-                    break;
+                    columnName = "professor_address"; itemName = "주소"; break;
                 default:
                     printError("잘못된 선택입니다. 다시 번호를 확인해주세요.");
                     continue;
             }
 
 
-            int result = controller.updateSingleInfo(profId, columnName, newValue);
+            System.out.print("\n정말로 [" + itemName + "] 정보를 [" + newValue + "](으)로 수정하시겠습니까? (1. 수정 진행 / 0. 취소) : ");
+            int confirm = inputInt();
 
-            if(result > 0) {
-                printSuccess("[" + itemName + "] 정보가 성공적으로 수정되었습니다!");
+            if (confirm == 1) {
+
+                int result = controller.updateSingleInfo(profId, columnName, newValue);
+                if(result > 0) printSuccess("[" + itemName + "] 정보가 성공적으로 수정되었습니다!");
+                else printError("[" + itemName + "] 수정에 실패했습니다.");
+            } else if (confirm == 0) {
+                printMessage("수정이 취소되었습니다.");
             } else {
-                printError("[" + itemName + "] 수정에 실패했습니다.");
+                printError("잘못된 입력입니다. 안전을 위해 수정을 취소합니다.");
             }
         }
     }
@@ -155,102 +150,196 @@ public class ProfessorView {
         return null;
     }
 
-    // 신규 강좌 등록 화면
+    private EnrollmentCourseDTO getCourseById(List<EnrollmentCourseDTO> list, String classNo) {
+        for (EnrollmentCourseDTO c : list) {
+            if (c.getClassNo().equals(classNo)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+
+
+
+    // 강좌 등록
     private void registerNewCourse(String profId) {
-        System.out.println("\n=== [신규 강좌 등록] ===");
+        while (true) {
+            System.out.println("\n=== [신규 강좌 등록] ===");
 
-        System.out.print("1. 강의명: ");
-        String className = inputString();
-        System.out.print("2. 학점(예: 3.0): ");
-        double classPoint = inputDouble();
-        System.out.print("3. 시간표(예: 월1-3): ");
-        String classTime = inputString();
-        System.out.print("4. 강의실(예: A101): ");
-        String classRoom = inputString();
+            System.out.print("1. 강의명: ");
+            String className = inputString();
+            System.out.print("2. 학점(예: 3.0): ");
+            double classPoint = inputDouble();
+            System.out.print("3. 시간표(예: 월1-3): ");
+            String classTime = inputString();
+            System.out.print("4. 강의실(예: A101): ");
+            String classRoom = inputString();
 
-        System.out.print("5. 분류 선택 (1. 전공 / 2. 교양): ");
-        int typeChoice = inputInt();
-        String classType = (typeChoice == 1) ? "전공" : "교양";
+            System.out.print("5. 분류 선택 (1. 전공 / 2. 교양): ");
+            int typeChoice = inputInt();
+            String classType = (typeChoice == 1) ? "전공" : "교양";
 
-        System.out.print("6. 수용 인원: ");
-        float classCapacity = (float) inputDouble();
-
-
-        EnrollmentCourseDTO newCourse = new EnrollmentCourseDTO();
-        newCourse.setClassName(className);
-        newCourse.setClassPoint(classPoint);
-        newCourse.setClassTime(classTime);
-        newCourse.setClassRoom(classRoom);
-        newCourse.setClassType(classType);
-        newCourse.setClassCapacity(classCapacity);
-        newCourse.setProfessorId(profId);
+            System.out.print("6. 수용 인원: ");
+            float classCapacity = (float) inputDouble();
 
 
-        int result = controller.registerCourse(newCourse);
+            System.out.println("\n--- [입력하신 정보 확인] ---");
+            System.out.println("강의명: " + className + " | 학점: " + classPoint + " | 시간표: " + classTime);
+            System.out.println("강의실: " + classRoom + " | 분류: " + classType + " | 수용인원: " + classCapacity);
+            System.out.println("----------------------------");
+            System.out.print("위 정보로 등록하시겠습니까? (1. 등록  2. 다시 작성  0. 취소) : ");
 
-        if(result == -1) {
-            printError("등록 실패: 해당 시간과 강의실에 이미 다른 강의가 존재합니다!");
-        } else if(result > 0) {
-            printSuccess("신규 강좌 등록이 성공적으로 완료되었습니다!");
-        } else {
-            printError("시스템 오류로 강좌 등록에 실패했습니다.");
+            int confirm = inputInt();
+
+            if (confirm == 2) {
+                printMessage("정보를 처음부터 다시 작성합니다.");
+                continue;
+            } else if (confirm == 0) {
+                printMessage("강좌 등록을 취소합니다.");
+                return;
+            } else if (confirm == 1) {
+                EnrollmentCourseDTO newCourse = new EnrollmentCourseDTO();
+                newCourse.setClassName(className);
+                newCourse.setClassPoint(classPoint);
+                newCourse.setClassTime(classTime);
+                newCourse.setClassRoom(classRoom);
+                newCourse.setClassType(classType);
+                newCourse.setClassCapacity(classCapacity);
+                newCourse.setProfessorId(profId);
+
+                int result = controller.registerCourse(newCourse);
+
+                if(result == -1) {
+                    printError("등록 실패: 해당 시간과 강의실에 이미 다른 강의가 존재합니다! 다시 작성해주세요.");
+                    continue;
+                } else if(result > 0) {
+                    printSuccess("신규 강좌 등록이 성공적으로 완료되었습니다!");
+                    return;
+                } else {
+                    printError("시스템 오류로 강좌 등록에 실패했습니다.");
+                    return;
+                }
+            } else {
+                printError("잘못된 입력입니다. 다시 작성해주세요.");
+                continue;
+            }
         }
     }
 
-    // 메시지함 관리
+    // 메시지방 입장
     private void manageMessages(String profId) {
+        String myUserId = controller.findUserIdByProfId(profId);
+
         while (true) {
-            System.out.println("\n=== [메시지함] ===");
-            System.out.println("1. 받은 메시지 확인");
-            System.out.println("2. 새 메시지 보내기");
-            System.out.println("0. 이전 메뉴로 돌아가기");
-            System.out.print("선택: ");
+            System.out.println("\n=== [LMS 메신저 주소록] ===");
+            List<UserDTO> userList = controller.getAllUsers(myUserId);
 
-            int menu = inputInt();
+            for (UserDTO user : userList) {
+                String role = (user.getProfessorId() != null) ? "교수" : "학생";
+                System.out.println("▶ ID: " + user.getUserId() + " | 이름: " + user.getUserName() + " (" + role + ")");
+            }
+            System.out.println("---------------------------------");
+            System.out.print("대화할 상대의 ID를 입력하세요 (이전 메뉴: 0) : ");
+            String targetUserId = inputString();
 
-            if (menu == 0) return;
+            if (targetUserId.equals("0")) return;
 
-            if (menu == 1) {
-                // 받은 메시지 조회
-                List<UserDTO> msgList = controller.checkMessages(profId);
-                printMessage("\n--- [받은 메시지 목록] ---");
-                if (msgList.isEmpty()) {
-                    System.out.println("도착한 메시지가 없습니다.");
-                } else {
-                    for (UserDTO msg : msgList) {
-                        System.out.println("💌 보낸사람: " + msg.getUserName() + " (" + msg.getUserId() + ")");
-                        System.out.println("   내용: " + msg.getContent());
-                        System.out.println("-------------------------");
-                    }
+
+            boolean isValidUser = false;
+            for (UserDTO user : userList) {
+                if (user.getUserId().equals(targetUserId)) {
+                    isValidUser = true;
+                    break;
                 }
-            } else if (menu == 2) {
-                System.out.println("\n[새 메시지 작성 📝]");
+            }
 
 
-                List<StudentDTO> memberList = controller.getAllMembers();
-                System.out.println("--- [수신 가능 사용자 주소록] ---");
-                for (StudentDTO member : memberList) {
+            if (!isValidUser) {
+                printError("목록에 없는 잘못된 ID입니다. 대소문자와 숫자를 다시 확인해주세요!");
+                continue;
+            }
 
-                    System.out.println("▶ ID: " + member.getStudentId() + " | 이름: " + member.getStudentName());
-                }
-                System.out.println("---------------------------------");
 
-                System.out.print("받는 사람의 ID를 정확히 입력하세요: ");
-                String receiverId = inputString();
-                System.out.print("보낼 내용을 입력하세요: ");
-                String content = inputString();
+            enterChatRoom(myUserId, targetUserId);
+        }
+    }
 
-                UserDTO newMsg = new UserDTO();
-                newMsg.setUserId(profId);
-                newMsg.setProfessorId(profId);
-                newMsg.setReceiverId(receiverId);
-                newMsg.setContent(content);
+    // 1:1 채팅방
+    private void enterChatRoom(String myUserId, String targetUserId) {
+        while (true) {
+            System.out.println("\n=================================");
+            System.out.println("        💬 1:1 대화방 (" + targetUserId + ")        ");
+            System.out.println("=================================");
 
-                int result = controller.sendMessage(newMsg);
-                if (result > 0) printSuccess("메시지 전송 성공!");
-                else printError("메시지 전송 실패. 수신자 ID를 확인해주세요.");
+            List<UserMessageDTO> history = controller.getChatHistory(myUserId, targetUserId);
+            if (history.isEmpty()) {
+                System.out.println(" (대화 기록이 없습니다. 첫 인사를 건네보세요!)");
             } else {
-                printError("잘못된 입력입니다.");
+                String lastDate = "";
+                for (UserMessageDTO msg : history) {
+                    String fullContent = msg.getContent();
+                    String pureContent = fullContent;
+                    String timePart = "";
+                    String datePart = "";
+
+                    // 🚩 2. 문자열 자르기 (날짜와 내용 분리)
+                    if (fullContent.contains("(발신일: ")) {
+                        int splitIdx = fullContent.lastIndexOf("(발신일: ");
+                        pureContent = fullContent.substring(0, splitIdx).trim();
+
+                        // "(발신일: 2026-03-23 (월) 15:40:48)" 괄호 안의 데이터 추출
+                        String dateTime = fullContent.substring(splitIdx + 6, fullContent.length() - 1);
+
+                        // 날짜(0~14인덱스)와 시간(15인덱스 이후) 오려내기
+                        datePart = dateTime.substring(0, 14).trim(); // 2026-03-23 (월)
+                        timePart = dateTime.substring(15).trim();    // 15:40:48
+                    }
+
+                    // 🚩 3. 날짜가 바뀌었을 때만 날짜 구분선 출력
+                    if (!datePart.equals(lastDate)) {
+                        System.out.println("\n      ------- " + datePart + " -------");
+                        lastDate = datePart; // 방금 출력한 날짜를 기억!
+                    }
+
+// 🚩 4. 발신자 이름 결정
+                    String senderDisplay = msg.getUserId().contains(myUserId) ? "[나]" : "[" + msg.getUserId() + "]";
+
+                    // 🚩 5. 최종 예쁜 출력: [나] 내용 (15:40:48)
+                    System.out.println(senderDisplay + "(" + timePart.substring(0, 5) + ") " + pureContent);
+
+
+
+//                    if (msg.getUserId().equals(myUserId)) {
+//                        System.out.println("[나] : " + msg.getContent());
+//                    } else {
+//                        System.out.println("[" + msg.getUserName() + "] : " + msg.getContent());
+//                    }
+                }
+            }
+            System.out.println("---------------------------------");
+
+
+            System.out.print("전송할 메시지 입력 (채팅방 나가기: 0) : ");
+            String content = inputString();
+
+            if (content.equals("0")) {
+                printMessage("채팅방을 나갑니다.");
+                break;
+            }
+
+
+            MessageDTO newMsg = new MessageDTO();
+            newMsg.setUserId(myUserId);
+            newMsg.setReceiverId(targetUserId);
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd (E) HH:mm:ss");
+            String now = sdf.format(new java.util.Date());
+
+            newMsg.setContent(content + " \n(발신일: " + now + ")");
+
+            int result = controller.sendChatMessage(newMsg);
+            if (result <= 0) {
+                printError("메시지 전송에 실패했습니다.");
             }
         }
     }
@@ -264,16 +353,26 @@ public class ProfessorView {
             System.out.println("\n=== [" + courseName + "] 과목 상세 옵션 ===");
             System.out.println("1. 수강 학생 확인 및 성적 관리");
             System.out.println("2. 과제 등록");
+            System.out.println("3. 등록 강좌 정보 수정");
             System.out.println("0. 과목 목록으로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
 
             int menu = inputInt();
 
-            switch (menu){
-                case 1: findEnrolledStudents(courseId); break;
-                case 2: createAssignment(profId, courseId); break;
-                case 0: return;
-                default: printError("다시 선택해주세요.");
+            switch (menu) {
+                case 1:
+                    findEnrolledStudents(courseId);
+                    break;
+                case 2:
+                    createAssignment(profId, courseId);
+                    break;
+                case 3:
+                    updateCourseInfoMenu(profId, courseId);
+                    break;
+                case 0:
+                    return;
+                default:
+                    printError("다시 선택해주세요.");
             }
         }
     }
@@ -285,7 +384,7 @@ public class ProfessorView {
             List<EnrollmentCourseDTO> studentList = controller.findStudentsByCourseId(courseId);
             printStudents(studentList);
 
-            if (studentList == null || studentList.isEmpty()) return; // 학생이 없으면 튕겨나가기
+            if (studentList == null || studentList.isEmpty()) return;
 
 
             System.out.println("\n---------------------------------");
@@ -326,24 +425,64 @@ public class ProfessorView {
         else printError("과제 등록 실패.");
     }
 
-    // 성적 관리
+    // 성적 입력
     private void manageGrades(String courseId) {
         System.out.print("\n성적을 입력할 학생의 학번을 입력해주세요 : ");
         String studentId = inputString();
 
-        System.out.print("부여할 성적을 입력해주세요 : ");
-        double grade = inputDouble();
+        double grade = 0.0;
+        while (true) {
+            System.out.print("부여할 성적을 입력해주세요 (0.0 ~ 4.5 제한) : ");
+            grade = inputDouble();
+
+            if (grade >= 0.0 && grade <= 4.5) {
+                break;
+            } else {
+                printError("성적은 0.0에서 4.5 사이로만 입력 가능합니다. 다시 입력해주세요!");
+            }
+        }
 
         int result = controller.updateGrade(courseId, studentId, grade);
         if (result > 0) printSuccess("해당 학생의 성적 입력(수정)이 완료되었습니다!");
         else printError("성적 처리 실패. 학번을 다시 확인해주세요.");
     }
 
-    //  강좌 삭제
+    // 강좌 삭제 시
+    private void deleteCourseMenu(String profId) {
+        while (true) {
+            printMessage("\n--- [강좌 삭제] ---");
+            List<EnrollmentCourseDTO> courseList = controller.findCoursesByProfId(profId);
+            printCourses(courseList);
+
+            if (courseList == null || courseList.isEmpty()) return;
+
+            System.out.println("=================================");
+            System.out.print("삭제할 [과목명]을 정확히 입력해주세요 (취소: 0) : ");
+            String selectedCourseName = inputString();
+
+            if (selectedCourseName.equals("0")) return;
+
+            String targetCourseId = getCourseIdByName(courseList, selectedCourseName);
+
+            if (targetCourseId == null) {
+
+                printError("일치하는 과목명이 없습니다. 다시 확인 후 입력해주세요.");
+                continue;
+            }
+
+            boolean isDeleted = deleteCourse(targetCourseId, selectedCourseName);
+            if (isDeleted) {
+                return;
+            } else {
+
+            }
+        }
+    }
+
     private boolean deleteCourse(String courseId, String courseName) {
         System.out.println("\n🚨 [경고] 정말로 [" + courseName + "] 강좌를 삭제하시겠습니까?");
         System.out.println("수강 중인 학생이 있다면 데이터가 함께 날아갈 수 있습니다!");
-        System.out.print("삭제를 원하시면 '삭제' 라고 정확히 타이핑해주세요 (취소: 0) : ");
+        System.out.print("삭제를 원하시면 '삭제' 라고 정확히 타이핑해주세요 : ");
         String confirm = inputString();
 
         if (confirm.equals("삭제")) {
@@ -353,40 +492,121 @@ public class ProfessorView {
                 return true;
             } else {
                 printError("강좌 삭제에 실패했습니다.");
+                return false;
             }
         } else {
-            printMessage("강좌 삭제가 취소되었습니다.");
+
+            printError("삭제 문구를 잘못 입력하셨습니다. 과목 선택 화면으로 돌아갑니다.");
+            return false;
         }
-        return false;
     }
 
+    private void updateCourseInfoMenu(String profId, String courseId) {
 
-    private void deleteCourseMenu(String profId) {
-        printMessage("\n--- [강좌 삭제] ---");
+        while (true) {
+            List<EnrollmentCourseDTO> courseList = controller.findCoursesByProfId(profId);
+            EnrollmentCourseDTO targetCourse = getCourseById(courseList, courseId);
 
+            if (targetCourse == null) {
+                printError("수정 대상 강의를 다시 찾지 못했습니다.");
+                return;
+            }
 
-        List<EnrollmentCourseDTO> courseList = controller.findCoursesByProfId(profId);
-        printCourses(courseList);
+            System.out.println("\n=== [" + targetCourse.getClassName() + "] 강좌 정보 수정 ===");
+            System.out.println("현재 강의번호 : " + targetCourse.getClassNo());
+            System.out.println("1. 강의명 수정");
+            System.out.println("2. 학점 수정");
+            System.out.println("3. 시간표 수정");
+            System.out.println("4. 강의실 수정");
+            System.out.println("5. 수용 인원 수정");
+            System.out.println("0. 이전 메뉴");
+            System.out.print("수정할 항목을 선택해주세요 : ");
 
-        if (courseList == null || courseList.isEmpty()) return;
+            int menu = inputInt();
 
+            if (menu == 0) {
+                return;
+            }
 
-        System.out.println("=================================");
-        System.out.print("삭제할 [과목명]을 정확히 입력해주세요 (취소: 0) : ");
-        String selectedCourseName = inputString();
+            EnrollmentCourseDTO updateCourse = new EnrollmentCourseDTO();
+            updateCourse.setClassNo(targetCourse.getClassNo());
+            updateCourse.setProfessorId(profId);
+            updateCourse.setClassName(targetCourse.getClassName());
+            updateCourse.setClassPoint(targetCourse.getClassPoint());
+            updateCourse.setClassTime(targetCourse.getClassTime());
+            updateCourse.setClassRoom(targetCourse.getClassRoom());
+            updateCourse.setClassCapacity(targetCourse.getClassCapacity());
 
-        if (selectedCourseName.equals("0")) return;
+            String itemName = "";
+            String previewValue = "";
 
+            switch (menu) {
+                case 1:
+                    System.out.print("새 강의명을 입력해주세요 : ");
+                    String newClassName = inputString();
+                    updateCourse.setClassName(newClassName);
+                    itemName = "강의명";
+                    previewValue = newClassName;
+                    break;
 
-        String targetCourseId = getCourseIdByName(courseList, selectedCourseName);
+                case 2:
+                    System.out.print("새 학점을 입력해주세요 (예: 3.0) : ");
+                    double newPoint = inputDouble();
+                    updateCourse.setClassPoint(newPoint);
+                    itemName = "학점";
+                    previewValue = String.valueOf(newPoint);
+                    break;
 
-        if (targetCourseId == null) {
-            printError("일치하는 과목명이 없습니다. 띄어쓰기를 확인해주세요.");
-            return;
+                case 3:
+                    System.out.print("새 시간표를 입력해주세요 (예: 월1-3) : ");
+                    String newTime = inputString();
+                    updateCourse.setClassTime(newTime);
+                    itemName = "시간표";
+                    previewValue = newTime;
+                    break;
+
+                case 4:
+                    System.out.print("새 강의실을 입력해주세요 : ");
+                    String newRoom = inputString();
+                    updateCourse.setClassRoom(newRoom);
+                    itemName = "강의실";
+                    previewValue = newRoom;
+                    break;
+
+                case 5:
+                    System.out.print("새 수용 인원을 입력해주세요 : ");
+                    float newCapacity = (float) inputDouble();
+                    updateCourse.setClassCapacity(newCapacity);
+                    itemName = "수용 인원";
+                    previewValue = String.valueOf((int) newCapacity);
+                    break;
+
+                default:
+                    printError("잘못된 메뉴 번호입니다.");
+                    continue;
+            }
+
+            System.out.print("[" + itemName + "]을(를) [" + previewValue + "]로 수정하시겠습니까? (1. 수정 / 0. 취소) : ");
+            int confirm = inputInt();
+
+            if (confirm == 0) {
+                printMessage("수정을 취소했습니다.");
+                continue;
+            }
+
+            if (confirm != 1) {
+                printError("잘못된 입력입니다.");
+                continue;
+            }
+
+            int result = controller.updateCourseInfo(updateCourse);
+
+            if (result > 0) {
+                printSuccess("강좌 정보가 성공적으로 수정되었습니다.");
+            } else {
+                printError("강좌 정보 수정에 실패했습니다.");
+            }
         }
-
-
-        deleteCourse(targetCourseId, selectedCourseName);
     }
 
 
@@ -432,9 +652,12 @@ public class ProfessorView {
         System.out.println("===============담당 과목 조회 결과==================");
         for (EnrollmentCourseDTO course : courseList) {
 
-            System.out.println("▶ " + course.getClassName() +
-                    " (강의실: " + course.getClassRoom() + ", 시간: " + course.getClassTime() +
-                    ", 수용인원: " + (int)course.getClassCapacity() + "명)");
+            System.out.println("▶ [강의번호: " + course.getClassNo() + "] "
+                    + course.getClassName()
+                    + " (강의실: " + course.getClassRoom()
+                    + ", 시간: " + course.getClassTime()
+                    + ", 학점: " + course.getClassPoint()
+                    + ", 수용인원: " + (int) course.getClassCapacity() + "명)");
         }
     }
 

@@ -25,12 +25,12 @@ public class ProfessorView {
             System.out.println("=================================");
             System.out.println("         [교수] 메인 메뉴");
             System.out.println("=================================");
-            System.out.println("1. 담당 과목 조회");
-            System.out.println("2. 강좌 등록");
-            System.out.println("3. 강좌 삭제");
-            System.out.println("4. 개인정보 수정");
-            System.out.println("5. 채팅방");
-            System.out.println("6. 로그아웃");
+            System.out.println("1. 🔍담당 과목 조회");
+            System.out.println("2. 🛒강좌 등록");
+            System.out.println("3. 🚮강좌 삭제");
+            System.out.println("4. 🔧개인정보 수정");
+            System.out.println("5. 📫채팅방");
+            System.out.println("0. 👻로그아웃");
             System.out.print("번호를 입력해주세요 : ");
 
             int menu = inputInt();
@@ -41,7 +41,7 @@ public class ProfessorView {
                 case 3: deleteCourseMenu(profId); break;
                 case 4: updateMyInfo(profId); break;
                 case 5: manageMessages(profId); break;
-                case 6:
+                case 0:
                     printMessage("== 로그아웃 합니다. ==");
                     return;
                 default: printError("다시 선택해주세요.");
@@ -68,7 +68,7 @@ public class ProfessorView {
             EnrollmentCourseDTO targetCourse = getCourseById(courseList, selectedClassNo);
 
             if (targetCourse == null) {
-                printError("일치하는 강의번호가 없습니다. 다시 확인해주세요.");
+                printError("⚠️ 일치하는 강의번호가 없습니다. 다시 확인해주세요.");
             } else {
                 showCourseDetailMenu(profId, targetCourse.getClassNo(), targetCourse.getClassName());
             }
@@ -79,11 +79,11 @@ public class ProfessorView {
     private void updateMyInfo(String profId) {
         while(true) {
             System.out.println("\n=== [개인정보 수정 메뉴] ===");
-            System.out.println("1. 비밀번호 수정");
-            System.out.println("2. 이름 수정");
-            System.out.println("3. 전화번호 수정");
-            System.out.println("4. 이메일 수정");
-            System.out.println("5. 주소 수정");
+            System.out.println("1. 🔑비밀번호 수정");
+            System.out.println("2. 🪪이름 수정");
+            System.out.println("3. 📞전화번호 수정");
+            System.out.println("4. 📧이메일 수정");
+            System.out.println("5. 🏠주소 수정");
             System.out.println("0. 수정 완료 (이전 메뉴로 돌아가기)");
             System.out.print("수정할 항목을 선택해주세요 : ");
 
@@ -136,7 +136,7 @@ public class ProfessorView {
             } else if (confirm == 0) {
                 printMessage("수정이 취소되었습니다.");
             } else {
-                printError("잘못된 입력입니다. 안전을 위해 수정을 취소합니다.");
+                printError("⚠️ 잘못된 입력입니다. 안전을 위해 수정을 취소합니다.");
             }
         }
     }
@@ -211,17 +211,17 @@ public class ProfessorView {
                 int result = controller.registerCourse(newCourse);
 
                 if(result == -1) {
-                    printError("등록 실패: 해당 시간과 강의실에 이미 다른 강의가 존재합니다! 다시 작성해주세요.");
+                    printError("⚠️ 등록 실패: 해당 시간과 강의실에 이미 다른 강의가 존재합니다! 다시 작성해주세요.");
                     continue;
                 } else if(result > 0) {
                     printSuccess("신규 강좌 등록이 성공적으로 완료되었습니다!");
                     return;
                 } else {
-                    printError("시스템 오류로 강좌 등록에 실패했습니다.");
+                    printError("🚨시스템 오류로 강좌 등록에 실패했습니다.");
                     return;
                 }
             } else {
-                printError("잘못된 입력입니다. 다시 작성해주세요.");
+                printError("⚠️ 잘못된 입력입니다. 다시 작성해주세요.");
                 continue;
             }
         }
@@ -256,7 +256,7 @@ public class ProfessorView {
 
 
             if (!isValidUser) {
-                printError("목록에 없는 잘못된 ID입니다. 대소문자와 숫자를 다시 확인해주세요!");
+                printError("⚠️ 목록에 없는 잘못된 ID입니다. 대소문자와 숫자를 다시 확인해주세요!");
                 continue;
             }
 
@@ -339,7 +339,7 @@ public class ProfessorView {
 
             int result = controller.sendChatMessage(newMsg);
             if (result <= 0) {
-                printError("메시지 전송에 실패했습니다.");
+                printError("⚠️ 메시지 전송에 실패했습니다.");
             }
         }
     }
@@ -351,9 +351,9 @@ public class ProfessorView {
     private void showCourseDetailMenu(String profId, String courseId, String courseName) {
         while(true){
             System.out.println("\n=== [" + courseName + "] 과목 상세 옵션 ===");
-            System.out.println("1. 수강 학생 확인 및 성적 관리");
-            System.out.println("2. 과제 등록");
-            System.out.println("3. 등록 강좌 정보 수정");
+            System.out.println("1. 🎯수강 학생 확인 및 성적 관리");
+            System.out.println("2. 📌과제 등록");
+            System.out.println("3. 🔧등록 강좌 정보 수정");
             System.out.println("0. 과목 목록으로 돌아가기");
             System.out.print("번호를 입력해주세요 : ");
 

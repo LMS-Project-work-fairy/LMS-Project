@@ -42,9 +42,9 @@ public class MainView {
     public LoginRequestDTO inputLoginInfo() {
         while(true) {
             System.out.println("\n========== 로그인 ==========");
-            System.out.println("🧑‍🎓학생(1)");
-            System.out.println("🧑‍🏫교수(2)");
-            System.out.println("🔙뒤로가기(0)");
+            System.out.println("1.🧑‍🎓학생");
+            System.out.println("2. 🧑‍🏫교수");
+            System.out.println("0. 🔙뒤로가기");
             System.out.print("로그인 유형 선택: ");
 
             int roleMenu;

@@ -295,13 +295,14 @@
 
     <query key="message.contentView">
         select
-            m.user_id,
-            u.user_name,
-            m.content,
-            m.receiver_id
+        m.user_id,
+        u.user_name,
+        m.content,
+        m.receiver_id
         from 메시지 m
         join 사용자 u on m.user_id = u.user_id
-        where receiver_id = ?
+        where m.receiver_id = ? OR m.user_id = ?  -- 👈 나에게 온 것과 내가 보낸 것 모두 조회
+        order by m.id ASC
     </query>
 
     <query key="message.chatHistory">

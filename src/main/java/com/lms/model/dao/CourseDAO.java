@@ -4,10 +4,7 @@ import com.lms.common.QueryUtil;
 import com.lms.model.dto.EnrollmentCourseDTO;
 import com.lms.model.dto.MessageDTO;
 import com.lms.model.dto.StudentDTO;
-<<<<<<< HEAD
-=======
 import com.lms.model.dto.UserDTO;
->>>>>>> 982c395846594eaed673f4dbcbcdd294c243317b
 import com.lms.model.dto.UserMessageDTO;
 
 

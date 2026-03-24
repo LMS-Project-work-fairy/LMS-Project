@@ -414,7 +414,7 @@ public class StudentDAO {
 //        }
 //        return list;
 //    }
-}
+
 
     public int sendMessage(MessageDTO msg) throws SQLException {
         String ensureUserQuery = QueryUtil.getQuery("message.ensureUser");
@@ -487,5 +487,5 @@ public class StudentDAO {
         }
         return list;
     }
-
 }
+

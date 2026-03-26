@@ -84,7 +84,7 @@ CREATE TABLE `메시지`
     `user_id` VARCHAR(10) NOT NULL COMMENT '사용자',
     `content`    VARCHAR(10000) COMMENT '메시지내용',
     `receiver_id`    VARCHAR(10) NOT NULL COMMENT '받는사람',
-    `id` BIGINT NOT NULL COMMENT '메시지번호',
+    `id` BIGINT NOT NULL auto_increment comment '메시지번호',
  PRIMARY KEY ( `id` ),
  CONSTRAINT `fk_user_id`
  FOREIGN KEY(`user_id`) REFERENCES `사용자`(`user_id`),
